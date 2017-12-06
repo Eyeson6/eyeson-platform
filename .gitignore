@@ -13,3 +13,4 @@ generatorConfig.xml
 *.lock
 .gradle
 LOG_PATH_IS_UNDEFINED
+out
