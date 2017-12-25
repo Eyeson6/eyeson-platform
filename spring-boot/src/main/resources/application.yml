@@ -45,8 +45,9 @@ spring:
     username :  zj
     password :  123456
 
-    resources:
-        static-locations: classpath:/template/
+#指定静态资源路径，默认为classpath:[/META-INF/resources/,/resources/, /static/, /public/]以及context:/
+#  resources:
+#    static-locations: classpath:/templates/static/
 
 
 # REDIS (RedisProperties)
