@@ -18,7 +18,7 @@ public class HelloSender {
     public void send() {
         String context = "hello " + new Date();
         System.out.println("Sender : " + context);
-        this.rabbitTemplate.convertAndSend("testQueue", context);
+        this.rabbitTemplate.convertAndSend("testQueue哈哈", context);
     }
 
 }

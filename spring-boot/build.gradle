@@ -35,5 +35,7 @@ dependencies {
     compile group: 'mysql', name: 'mysql-connector-java'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-redis'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
+    compile 'com.corundumstudio.socketio:netty-socketio:1.7.12'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
