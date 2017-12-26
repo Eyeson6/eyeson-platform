@@ -3,7 +3,7 @@
 <head>
     <title></title>
     <meta charset="utf-8"/>
-    <script src="/teststatic/qrcode.js"></script>
+    <script src="/qrcode.js"></script>
     <style>
         #qrcode {
             /*text-align: center;*/
