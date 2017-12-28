@@ -1,4 +1,4 @@
-package com.error;
+package com.eyeson.error;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 异常控制器，springmvc发生异常页面后会跳转到本控制器
- * Created by luoyifan on 2017/3/1.
+ * Created by Blues on 2017/3/1.
  */
 @RestController
 @ControllerAdvice

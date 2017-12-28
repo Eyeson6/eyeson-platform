@@ -1,7 +1,7 @@
-package com;
+package com.eyeson;
 
-import com.mapper.UserMapper;
-import com.mq.HelloSender;
+import com.eyeson.mapper.UserMapper;
+import com.eyeson.mq.HelloSender;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

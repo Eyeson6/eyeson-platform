@@ -1,4 +1,4 @@
-package com;
+package com.eyeson;
 
 import org.apache.catalina.filters.RemoteIpFilter;
 import org.mybatis.spring.annotation.MapperScan;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
-@MapperScan("com.mapper")
+@MapperScan("com.eyeson.mapper")
 public class Application {
 
     public static void main(String[] args) {

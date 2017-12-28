@@ -1,4 +1,4 @@
-package com.socketio;
+package com.eyeson.socketio;
 
 import java.net.Socket;
 import java.util.HashSet;

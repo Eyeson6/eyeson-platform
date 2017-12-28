@@ -1,4 +1,4 @@
-package com.socketio;
+package com.eyeson.socketio;
 
 public class ClientDemo {
 //    public static void main(String[] args) throws IOException {
