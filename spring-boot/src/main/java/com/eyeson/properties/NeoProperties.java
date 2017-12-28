@@ -1,4 +1,4 @@
-package com.properties;
+package com.eyeson.properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

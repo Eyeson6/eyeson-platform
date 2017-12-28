@@ -1,4 +1,4 @@
-package com.mq;
+package com.eyeson.mq;
 
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;

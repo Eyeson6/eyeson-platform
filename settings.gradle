@@ -1,0 +1,4 @@
+rootProject.name = 'eyeson-platform'
+
+include "spring-boot"
+include "eyeson-fastform-core"

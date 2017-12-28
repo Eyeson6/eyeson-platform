@@ -1,4 +1,4 @@
-package com.mapper;
+package com.eyeson.mapper;
 
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
