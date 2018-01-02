@@ -1,0 +1,56 @@
+<template menuId="4132" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="用户选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            su.su_id as su_id2,
+            su.so_id,
+            su.su_code,
+            su.su_name as su_name2,
+            su.su_sex,
+            su.su_contact,
+            su.su_email,
+            su.su_add_time
+            FROM
+            sys_user su
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${su_code}">
+                and su.su_code like %${su_code}%
+            </if>
+            <if method="isNoEmpty" args="${su_name}">
+                and su.su_name like %${su_name}%
+            </if>
+        </sql>
+
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="su_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="su_code" sortable="true" title="用户账号"/>
+            <clumn name="su_name2" sortable="true" title="用户姓名"/>
+            <clumn name="su_sex" sortable="false" title="性别"/>
+            <clumn name="su_contact" sortable="true" title="联系方式"/>
+            <clumn name="su_email" sortable="false" title="邮箱"/>
+            <clumn name="su_add_time" sortable="false" title="添加时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="用户账号" name="su_code" type="3"/>
+            <condition input="test" title="用户姓名" name="su_name" type="3"/>
+        </conditions>
+    </query>
+</template>
+
+

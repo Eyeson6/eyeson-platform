@@ -1,0 +1,141 @@
+<template menuId="412" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购订单选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            d.id,
+            p.id as pid,
+            p.supplier_code,
+            p.supplier_name,
+            p.purchaseorder_code,
+            p.purchaseorder_time,
+            p.appointed_time,
+            p.contact,
+            p.price,
+            CASE p.order_states
+            WHEN '0' THEN
+            '未清'
+            WHEN '1' THEN
+            '已清'
+            ELSE
+            '已取消'
+            END AS order_states,
+            d.number,
+            d.NAME as goods_name,
+            d.specification,
+            d.quantity as d_num,
+            d.order_price,
+            d.order_setprice,
+            d.order_amount,
+            d.place,
+            d.ty_name,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = d.unit_id
+            ) AS preparation_name,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_name,
+            d.preparation_id,
+            d.unit_id,
+            d.major_supplier,
+            d.registration_number
+            FROM
+            saas_purchaseorder p
+            LEFT JOIN saas_purchaseorder_details d ON p.purchaseorder_code = d.purchaseorder_code where 1=1 and
+            p.order_states = 0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and p.purchaseorder_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and p.purchaseorder_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime2}">
+                <![CDATA[and p.appointed_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime2}">
+                <![CDATA[ and p.appointed_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and p.supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                <![CDATA[ and p.supplier_code like %${supplier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_states}">
+                <![CDATA[ and p.order_states like %${order_states}%]]>
+            </if>
+            <if method="isNoEmpty" args="${purchaseorder_code}">
+                <![CDATA[ and p.purchaseorder_code like %${purchaseorder_code}%]]>
+            </if>
+            order by p.create_date desc
+        </sql>
+
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="supplier_name" sortable="false" title="供方单位"/>
+            <clumn name="purchaseorder_code" sortable="false" title="单号" key="true"/>
+            <clumn name="purchaseorder_time" sortable="false" title="订单日期"/>
+            <clumn name="appointed_time" sortable="false" title="预计到货日期"/>
+            <clumn name="contact" sortable="false" title="采购人"/>
+            <clumn name="price" sortable="false" title="金额"/>
+            <clumn name="order_states" sortable="false" title="状态"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="d_num" sortable="false" title="数量"/>
+            <clumn name="order_price" sortable="false" title="单价"/>
+            <clumn name="order_setprice" sortable="false" title="零售价"/>
+            <clumn name="order_amount" sortable="false" title="金额"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="ty_name" sortable="false" title="通用名"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="major_supplier" sortable="false" title="生产企业"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供货供方编码" name="supplier_code"/>
+            <condition input="text" title="供货单位名称" name="supplier_name"/>
+            <condition input="text" title="订单号" name="purchaseorder_code"/>
+            <condition input="select" title="订单状态" name="order_states">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'purchaseorder_states'
+                </sql>
+            </condition>
+            <condition input="date" title="订单日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="date" title="预计到货日期" name="startTime2" type="3"/>
+            <condition input="date" title="至" name="endTime2" type="3"/>
+        </conditions>
+    </query>
+
+
+</template>

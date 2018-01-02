@@ -1,0 +1,228 @@
+<template menuId="00703" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="菜单设置"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            sm.sm_id,
+            sm.sap_id,
+            sm.sm_name,
+            sm.sm_parentid,
+            sm.sm_icon,
+            sm.sm_type,
+            sm.sm_action,
+            sm.sm_order,
+            sm.sm_content,
+            sm.sm_admin
+            FROM
+            sys_menu sm
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${key}">
+                and sm.sm_id=${key}
+            </if>
+            <if method="isNoEmpty" args="${sm_name}">
+                and sm.sm_name like %${sm_name}%
+            </if>
+        </sql>
+
+        <sql id="querySql" method="query">
+            SELECT
+            sm.sm_id,
+            sm.sap_id,
+            sm.sm_name,
+            sm.sm_parentid,
+            sm.sm_icon,
+            sm.sm_type,
+            sm.sm_action,
+            sm.sm_order,
+            sm.sm_content,
+            sm.sm_admin
+            FROM
+            sys_menu sm
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${key}">
+                and sm.sm_id=${key}
+            </if>
+        </sql>
+
+        <sql id="insertSql" method="insert">
+            insert into sys_menu(
+            <if method="isNoEmpty" args="${primary_key}">
+                sm_id,
+            </if>
+            sap_id,
+            <if method="isNoEmpty" args="${sm_name}">
+                sm_name,
+            </if>
+            <if method="isNoEmpty" args="${sm_parentid}">
+                sm_parentid,
+            </if>
+            <if method="isNoEmpty" args="${sm_icon}">
+                sm_icon,
+            </if>
+            sm_type,
+            <if method="isNoEmpty" args="${sm_action}">
+                sm_action,
+            </if>
+            <if method="isNoEmpty" args="${sm_order}">
+                sm_order,
+            </if>
+            <if method="isNoEmpty" args="${sm_content}">
+                sm_content,
+            </if>
+            sm_admin,
+            ) values(
+            <if method="isNoEmpty" args="${primary_key}">
+                ${primary_key},
+            </if>
+            '1',
+            <if method="isNoEmpty" args="${sm_name}">
+                ${sm_name},
+            </if>
+            <if method="isNoEmpty" args="${sm_parentid}">
+                ${sm_parentid},
+            </if>
+            <if method="isNoEmpty" args="${sm_icon}">
+                ${sm_icon},
+            </if>
+            '1',
+            <if method="isNoEmpty" args="${sm_action}">
+                ${sm_action},
+            </if>
+            <if method="isNoEmpty" args="${sm_order}">
+                ${sm_order},
+            </if>
+            <if method="isNoEmpty" args="${sm_content}">
+                ${sm_content},
+            </if>
+            '1',
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update sys_menu set
+            <if method="isNoEmpty" args="${sm_name}">
+                sm_name = ${sm_name},
+            </if>
+            <if method="isNoEmpty" args="${sm_parentid}">
+                sm_parentid = ${sm_parentid},
+            </if>
+            <if method="isNoEmpty" args="${sm_icon}">
+                sm_icon = ${sm_icon},
+            </if>
+            <if method="isNoEmpty" args="${sm_action}">
+                sm_action = ${sm_action},
+            </if>
+            <if method="isNoEmpty" args="${sm_order}">
+                sm_order = ${sm_order},
+            </if>
+            <if method="isNoEmpty" args="${sm_content}">
+                sm_content = ${sm_content},
+            </if>
+            where sm_id=${key}
+        </sql>
+
+        <sql id="countSql" method="query">
+            SELECT
+            count(1) as sysMenuCount
+            FROM
+            sys_role_menu srm
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${sm_id}">
+                and srm.sm_id=${sm_id}
+            </if>
+        </sql>
+
+        <sql id="dynamicDeleteSql" method="delete">
+            DELETE FROM
+            sys_menu
+            WHERE
+            sm_id = ${sm_id}
+            AND 0=${sysMenuCount}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="loginService" method="getLoginUser"/>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="sm_name" sortable="true" title="菜单名称"/>
+            <clumn name="sm_action" sortable="true" title="Action2"/>
+            <clumn name="sm_icon" sortable="true" title="菜单图标"/>
+            <clumn name="sm_parentid" sortable="false" title="父级菜单"/>
+            <clumn name="sm_order" sortable="true" title="排序"/>
+            <clumn name="sm_content" sortable="false" title="备注"/>
+        </model>
+        <conditions>
+            <condition input="text" title="菜单名称" name="sm_name"/>
+            <condition input="text" title="父级菜单" name="sm_icon"/>
+        </conditions>
+    </query>
+
+
+    <buttons>
+        <button id="test1" title="添加" icon="icon-add" channel="query_execute" width="1200">
+            <process>
+                <step channel="service" ref="userCommonService" method="createPrimaryKey"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition input="text" title="菜单名称" name="sm_name" required="true"/>
+                <condition input="text" title="Action" name="sm_action"/>
+                <condition input="text" title="父级菜单" name="sm_parentid"/>
+                <condition input="text" title="菜单图标" name="sm_icon"/>
+                <condition input="text" title="排序" name="sm_order"/>
+                <condition input="text" title="备注" name="sm_content"/>
+            </conditions>
+        </button>
+
+        <button id="test2" title="修改" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>sm_id</key>
+            <table>sys_menu</table>
+            <conditions>
+                <condition input="text" title="菜单名称" name="sm_name"/>
+                <condition input="text" title="Action" name="sm_action"/>
+                <condition input="text" title="父级菜单" name="sm_parentid"/>
+                <condition input="text" title="菜单图标" name="sm_icon"/>
+                <condition input="text" title="排序" name="sm_order"/>
+                <condition input="text" title="备注" name="sm_content"/>
+            </conditions>
+        </button>
+
+        <button id="test3" title="删除" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="sql" ref="countSql"/>
+                <step channel="sql" ref="dynamicDeleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>sm_id</key>
+            <condition name="sm_id"/>
+        </button>
+    </buttons>
+
+</template>
+
+

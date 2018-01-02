@@ -1,0 +1,150 @@
+<template menuId="415" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="添加待入库商品"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            a.id,
+            supplier_number,
+            supplier_name,
+            pr_number,
+            pi_number as ys_number,
+            check_name,
+            put_name,
+            reviewer,
+            CASE STATUS
+            WHEN '0' THEN
+            '未清'
+            WHEN '1' THEN
+            '已清'
+            END AS state,
+            money,
+            check_time,
+            put_time,
+            b.number,
+            NAME as name,
+            common_name,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "preparation_id"
+            AND c.`value` = b.preparation_id
+            ) AS preparation_name,
+            preparation_id,
+            specification,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "unit_id"
+            AND c.`value` = b.unit_id
+            ) AS unit_name,
+            unit_id,
+            place,
+            registration_number,
+            batch_number,
+            production_date,
+            valid_period_to as expiry_date,
+            place_of_origin,
+            sterilization_batch,
+            arrival_quantity as quantity,
+            sampling_quantity,
+            number_of_qualified_acceptance,
+            quantity_rejected,
+            storage_quantity,
+            purchase_price as order_price,
+            amount_of_money as order_amount,
+            amount_of_money as order_amount_text,
+            inspection_report,
+            product_quality,
+            reasons_of_rejection,
+            acceptance_conclusion
+            FROM
+            saas_in_check a
+            JOIN saas_in_check_details b ON a.pi_number = b.order_number
+            where 1=1 and status = 0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and check_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and check_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_number = ${supplier_number}]]>
+            </if>
+            order by check_time desc
+        </sql>
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="supplier_number" sortable="false" title="供应商编号"/>
+            <clumn name="supplier_name" sortable="false" title="供应商名称"/>
+            <clumn name="pr_number" sortable="false" title="采购收货单号"/>
+            <clumn name="ys_number" sortable="false" title="采购验收单号"/>
+            <clumn name="check_name" sortable="false" title="验收人"/>
+            <clumn name="put_name" sortable="false" title="入库人员名字"/>
+            <clumn name="reviewer" sortable="false" title="审核人员"/>
+            <clumn name="state" sortable="false" title="状态"/>
+            <!-- <clumn name="money" sortable="false" title="采购订单总金额" /> -->
+            <clumn name="check_time" sortable="false" title="验收时间"/>
+            <clumn name="put_time" sortable="false" title="入库时间"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="common_name" sortable="false" title="通用名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="place" sortable="false" title="生产企业"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="batch_number" sortable="false" title="批号"/>
+            <clumn name="production_date" sortable="false" title="生产日期"/>
+            <clumn name="expiry_date" sortable="false" title="有效期至"/>
+            <clumn name="place_of_origin" sortable="false" title="产地"/>
+            <clumn name="sterilization_batch" sortable="false" title="灭菌批次"/>
+            <clumn name="quantity" sortable="false" title="到货数量"/>
+            <clumn name="sampling_quantity" sortable="false" title="抽样数量"/>
+            <clumn name="number_of_qualified_acceptance" sortable="false" title="验收合格数量"/>
+            <clumn name="quantity_rejected" sortable="false" title="拒收数量"/>
+            <!-- <clumn name="storage_quantity" sortable="false" title="入库数量" /> -->
+            <clumn name="order_price" sortable="false" title="进货单价"/>
+            <clumn name="order_amount" sortable="false" title=" 金额	"/>
+            <clumn name="inspection_report" sortable="false" title="检验报告"/>
+            <clumn name="product_quality" sortable="false" title="产品质量"/>
+            <clumn name="reasons_of_rejection" sortable="false" title="拒收原因"/>
+            <clumn name="acceptance_conclusion" sortable="false" title="验收结论"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="供应商编号" name="supplier_number"/>
+            <condition input="text" title="供应商名称" name="supplier_name"/>
+            <condition input="date" title="验收时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+
+</template>
+
+

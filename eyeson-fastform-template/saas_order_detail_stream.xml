@@ -1,0 +1,388 @@
+<template menuId="8053" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售管理"/>
+        <direct name="销售明细"/>
+        <direct name="流水查询"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="countSql" method="list">
+            select
+            '应收金额：' as create_time,sum(order_amount) as sale_mode,
+            '优惠金额：' as order_type,sum(favourable_amount) as code,
+            '实收金额：' as order_amount,sum(real_amount) as favourable,
+            '找零金额：' as favourable_amount,sum(order_amount) as real_amount,
+            '总计：' as change_amount,sum(total_amount) as total_amount
+            from SAAS_TEST.saas_order
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${cashier_name}">
+                <![CDATA[ and cashier_name like %${cashier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_type}">
+                <![CDATA[ and order_type = ${order_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${sale_mode}">
+                <![CDATA[ and sale_mode = ${sale_mode}]]>
+            </if>
+        </sql>
+        <sql id="countDetailSql" method="list">
+            select
+            '应收金额：' as create_time,sum(o.order_amount) as sale_mode,
+            '优惠金额：' as order_type,sum(o.favourable_amount) as code,
+            '实收金额：' as goods_code,sum(o.real_amount) as goods_name,
+            '找零金额：' as goods_generic_name,sum(o.order_amount) as preparation_id,
+            '总计：' as goods_specification,sum(o.total_amount) as unit_id,
+            '单价总计：' as manufacturer,sum(d.retail_price) as retail_price,
+            '数量总计：' as quantity,sum(d.quantity) as order_amount
+            from SAAS_TEST.saas_order_detail d
+            left join SAAS_TEST.saas_goods g
+            on d.goods_id = g.id
+            left join SAAS_TEST.saas_order o
+            on d.order_id = o.id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and o.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and o.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${cashier_name}">
+                <![CDATA[ and o.cashier_name like %${cashier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and o.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_type}">
+                <![CDATA[ and o.order_type = ${order_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${sale_mode}">
+                <![CDATA[ and o.sale_mode = ${sale_mode}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and d.goods_code like %${goods_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and d.goods_name like %${goods_name}%]]>
+            </if>
+        </sql>
+        <sql id="listsql" method="select">
+            select
+            id,
+            code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "sale_mode"
+            AND dd.`value` = sale_mode
+            ) AS sale_mode,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "order_type"
+            AND dd.`value` = order_type
+            ) AS order_type,
+            cashier_id,
+            cashier_code,
+            cashier_name,
+            hospital_flag,
+            doctor_id,
+            doctor_code,
+            doctor_name,
+            member_id,
+            member_code,
+            member_name,
+            terminal_id,
+            terminal_name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "favourable"
+            AND dd.`value` = favourable
+            ) AS favourable,
+            favourable_amount,
+            order_amount,
+            total_amount,
+            real_amount,
+            change_amount,
+            order_status,
+            remark,
+            pay_time,
+            create_time,
+            update_time
+            from SAAS_TEST.saas_order
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${cashier_name}">
+                <![CDATA[ and cashier_name like %${cashier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_type}">
+                <![CDATA[ and order_type = ${order_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${sale_mode}">
+                <![CDATA[ and sale_mode = ${sale_mode}]]>
+            </if>
+            order by create_time desc
+        </sql>
+
+        <sql id="listDetailsql" method="select">
+            select
+            o.code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "sale_mode"
+            AND dd.`value` = o.sale_mode
+            ) AS sale_mode,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "order_type"
+            AND dd.`value` = o.order_type
+            ) AS order_type,
+            o.cashier_code,
+            o.cashier_name,
+            o.hospital_flag,
+            o.member_code,
+            o.member_name,
+            o.terminal_name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "favourable"
+            AND dd.`value` = o.favourable
+            ) AS favourable,
+            o.favourable_amount,
+            o.order_amount,
+            o.total_amount,
+            o.real_amount,
+            o.change_amount,
+            o.order_status,
+            o.create_time,
+            d.order_id,
+            d.order_code,
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.goods_generic_name,
+            d.goods_specification,
+            d.goods_place,
+            d.goods_type,
+            d.batch_code,
+            d.sequence,
+            d.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = d.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_id,
+            d.expire_time,
+            d.quantity,
+            d.retail_price
+            from SAAS_TEST.saas_order_detail d
+            left join SAAS_TEST.saas_goods g
+            on d.goods_id = g.id
+            left join SAAS_TEST.saas_order o
+            on d.order_id = o.id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and o.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and o.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${cashier_name}">
+                <![CDATA[ and o.cashier_name like %${cashier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and o.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_type}">
+                <![CDATA[ and o.order_type = ${order_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${sale_mode}">
+                <![CDATA[ and o.sale_mode = ${sale_mode}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and d.goods_code like %${goods_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and d.goods_name like %${goods_name}%]]>
+            </if>
+            order by create_time desc
+        </sql>
+    </sqls>
+
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" queryId="1" queryTitle="销售流水汇总">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="create_time" sortable="false" title="销售时间"/>
+            <clumn name="sale_mode" sortable="false" title="销售模式"/>
+            <clumn name="order_type" sortable="false" title="订单类型 "/>
+            <clumn name="code" sortable="false" title="订单编号"/>
+            <clumn name="order_amount" sortable="false" title="应收金额"/>
+            <clumn name="favourable" sortable="false" title="是否优惠"/>
+            <clumn name="favourable_amount" sortable="false" title="优惠金额"/>
+            <clumn name="real_amount" sortable="false" title="实收金额"/>
+            <clumn name="change_amount" sortable="false" title="找零"/>
+            <clumn name="total_amount" sortable="false" title="总计"/>
+            <clumn name="member_code" sortable="false" title="会员编码"/>
+            <clumn name="cashier_name" sortable="false" title="收银员名称"/>
+            <!--
+            <clumn name="id" sortable="false" title="ID" />
+            <clumn name="pay_status" sortable="false" title="支付状态，0：未支付，1：已支付" />
+            <clumn name="pay_method" sortable="false" title="付款方式 -1未付 0现金 1在线 2医保" />
+            <clumn name="pay_channel" sortable="false" title="支付渠道 -1未使用 0银联卡 1微信 2支付宝" />
+            <clumn name="online_code" sortable="false" title="在线支付关联信息" />
+            <clumn name="cashier_id" sortable="false" title="收银员ID" />
+            <clumn name="cashier_code" sortable="false" title="收银员编码" />
+            <clumn name="hospital_flag" sortable="false" title="是否医馆，0：非医馆，1：医馆" />
+            <clumn name="doctor_id" sortable="false" title="医生ID" />
+            <clumn name="doctor_code" sortable="false" title="医生编码" />
+            <clumn name="doctor_name" sortable="false" title="医生名称" />
+            <clumn name="member_id" sortable="false" title="会员ID" />
+            <clumn name="member_name" sortable="false" title="会员名称" />
+            <clumn name="terminal_id" sortable="false" title="终端ID" />
+            <clumn name="terminal_name" sortable="false" title="终端名称" />
+            <clumn name="link_code" sortable="false" title="关联单号" />
+            <clumn name="order_status" sortable="false" title="状态" />
+            <clumn name="remark" sortable="false" title="备注" />
+            <clumn name="pay_time" sortable="false" title="支付时间" />
+            <clumn name="update_time" sortable="false" title="更新时间" />-->
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="date" title="销售日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="select" title="销售模式" name="sale_mode">
+                <sql>
+                    select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category='sale_mode'
+                </sql>
+            </condition>
+            <condition input="select" title="订单类型" name="order_type">
+                <sql>
+                    select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category='order_type'
+                </sql>
+            </condition>
+            <condition input="text" title="收银员名称" name="cashier_name"/>
+            <condition input="text" title="订单编号" name="code"/>
+
+        </conditions>
+    </query>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" queryId="2" queryTitle="销售流水明细">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listDetailsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="create_time" sortable="false" title="销售时间"/>
+            <clumn name="sale_mode" sortable="false" title="销售模式"/>
+            <clumn name="order_type" sortable="false" title="订单类型 "/>
+            <clumn name="code" sortable="false" title="订单编号"/>
+
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="retail_price" sortable="false" title="单价"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="order_amount" sortable="false" title="应收金额"/>
+            <clumn name="favourable" sortable="false" title="是否优惠"/>
+            <clumn name="favourable_amount" sortable="false" title="优惠金额"/>
+            <clumn name="real_amount" sortable="false" title="实收金额"/>
+            <clumn name="change_amount" sortable="false" title="找零"/>
+            <clumn name="total_amount" sortable="false" title="总计"/>
+            <clumn name="member_code" sortable="false" title="会员编码"/>
+            <clumn name="cashier_name" sortable="false" title="收银员名称"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countDetailSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="date" title="销售日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="select" title="销售模式" name="sale_mode">
+                <sql>
+                    select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category='sale_mode'
+                </sql>
+            </condition>
+            <condition input="select" title="订单类型" name="order_type">
+                <sql>
+                    select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category='order_type'
+                </sql>
+            </condition>
+            <condition input="text" title="收银员名称" name="cashier_name"/>
+            <condition input="text" title="订单编号" name="code"/>
+
+
+        </conditions>
+    </query>
+</template>

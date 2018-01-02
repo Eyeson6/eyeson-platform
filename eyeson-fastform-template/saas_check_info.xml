@@ -1,0 +1,365 @@
+<template menuId="402" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="检查计划明细"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            check_id,
+            number,
+            goods_name,
+            generic_name,
+            CASE preparation_id
+            WHEN '1' THEN
+            '针剂'
+            WHEN '2' THEN
+            '成药'
+            WHEN '3' THEN
+            '器械'
+            WHEN '4' THEN
+            '麻药'
+            WHEN '5' THEN
+            '饮片'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '基药'
+            ELSE
+            '其他'
+            END AS preparation_id,
+            specification,
+            CASE unit_id
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+            major_supplier,
+            place,
+            registration_number,
+            batch_number,
+            produce_date,
+            expiry_date,
+            goods_allocation,
+            inventory_num,
+            check_num,
+            check_content,
+            unqualified_num,
+            suggestion,
+            verdict,
+            (select su_name from sys_user where su_id = check_user) as check_user,
+            check_date,
+            bz
+            FROM
+            saas_check_info info where 1=1
+            <if method="isNoEmpty" args="${check_id}">
+                <![CDATA[and check_id = ${check_id}]]>
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_check_info where id=${key}
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_check_info set
+            <if method="isNoEmpty" args="${check_num}">
+                check_num=${check_num},
+            </if>
+            <if method="isNoEmpty" args="${check_content}">
+                check_content=${check_content},
+            </if>
+            <if method="isNoEmpty" args="${unqualified_num}">
+                unqualified_num=${unqualified_num},
+            </if>
+            <if method="isNoEmpty" args="${produce_date}">
+                produce_date=${produce_date},
+            </if>
+            <if method="isNoEmpty" args="${suggestion}">
+                suggestion=${suggestion},
+            </if>
+            <if method="isNoEmpty" args="${verdict}">
+                verdict=${verdict},
+            </if>
+            <if method="isNoEmpty" args="${check_user}">
+                check_user=${check_user},
+            </if>
+            check_date=now(),
+            where id=${key}
+        </sql>
+
+        <sql id="updateSql2" method="update">
+            UPDATE saas_check c
+            SET c.check_finish_date = NOW()
+            WHERE
+            (
+            SELECT
+            count(1)
+            FROM
+            saas_check_info info
+            WHERE
+            info.check_id = (
+            SELECT
+            check_id
+            FROM
+            saas_check_info
+            WHERE
+            id = ${key}
+            )
+            AND info.check_date IS NOT NULL
+            ) = (
+            SELECT
+            count(1)
+            FROM
+            saas_check_info info
+            WHERE
+            info.check_id = (
+            SELECT
+            check_id
+            FROM
+            saas_check_info
+            WHERE
+            id = ${key}
+            )
+            )
+            AND c.check_code = (
+            SELECT
+            check_id
+            FROM
+            saas_check_info
+            WHERE
+            id = ${key}
+            )
+        </sql>
+
+        <sql id="insertSql2" method="insert">
+            insert into saas_check_log(
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                batch_number,
+            </if>
+            <if method="isNoEmpty" args="${key}">
+                check_info_id,
+            </if>
+            check_date,
+            ) values(
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                ${batch_number},
+            </if>
+            <if method="isNoEmpty" args="${key}">
+                ${key},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            <!--delete from  saas_supplier where -->
+            update saas_supplier set delete_state = '1' where
+
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" key="true"/>
+            <clumn name="check_id" width="150" sortable="false" title="计划单号" sort="desc"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型id"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="major_supplier" sortable="false" title="生产厂商"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="batch_number" sortable="false" title="批号"/>
+            <clumn name="produce_date" sortable="false" title="生产日期"/>
+            <clumn name="expiry_date" sortable="false" title="有效期"/>
+            <clumn name="goods_allocation" sortable="false" title="货位"/>
+            <clumn name="inventory_num" sortable="false" title="库存数量"/>
+            <clumn name="check_num" sortable="false" title="检查数量" editor="true"/>
+            <clumn name="check_content" sortable="false" title="检查项目" editor="true"/>
+            <clumn name="unqualified_num" sortable="false" title="不合格数量" editor="true"/>
+            <clumn name="suggestion" sortable="false" title="处理意见" editor="true"/>
+            <clumn name="verdict" sortable="false" title="结论" editor="true"/>
+            <clumn name="check_user" sortable="false" title="检查人"/>
+            <clumn name="check_date" sortable="true" title="检查日期"/>
+            <clumn name="bz" sortable="false" title="备注" editor="true"/>
+
+        </model>
+        <conditions>
+            <condition input="text" title="计划单号" name="check_id"/>
+
+        </conditions>
+    </query>
+
+
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <buttons>
+        <button id="saas_check_info_edit" title="修改" icon="icon-edit" channel="select_query_execute" width="1180">
+
+            <process>
+
+                <step channel="sql" ref="updateSql"/>
+                <step channel="sql" ref="insertSql2"/>
+                <step channel="sql" ref="updateSql2"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_check_info</table>
+            <conditions>
+                <condition name="number" input="text" title="商品编码" readonly="true"/>
+                <condition name="goods_name" input="text" title="商品名称" readonly="true"/>
+                <condition name="generic_name" input="text" title="通用名称" readonly="true"/>
+                <condition name="preparation_id" input="text" title="剂型" readonly="true"/>
+                <condition name="specification" input="text" title="规格" readonly="true"/>
+                <condition name="unit_id" input="text" title="单位" readonly="true"/>
+                <condition name="major_supplier" input="text" title="生产厂商" readonly="true"/>
+                <condition name="place" input="text" title="产地" readonly="true"/>
+                <condition name="registration_number" input="text" title="批准文号" readonly="true"/>
+                <condition name="batch_number" input="text" title="批号" readonly="true"/>
+                <condition name="produce_date" input="text" title="生产日期" readonly="true"/>
+                <condition name="expiry_date" input="text" title="失效期" readonly="true"/>
+                <condition name="goods_allocation" input="text" title="货位" readonly="true"/>
+                <condition name="inventory_num" input="text" title="库存数量" readonly="true"/>
+                <condition name="check_num" input="text" title="检查数量"/>
+                <condition name="check_content" input="text" title="检查项目"/>
+                <condition name="unqualified_num" input="text" title="不合格数量"/>
+                <condition name="suggestion" input="text" title="处理意见"/>
+                <condition name="verdict" input="text" title="结论"/>
+                <condition name="check_user_name" hiddenid="check_user" input="text" readonly="true" title="检查人"/>
+                <condition name="check_date" input="text" readonly="true" title="检查日期"/>
+                <condition name="bz" input="text" title="备注"/>
+            </conditions>
+
+        </button>
+    </buttons>
+    <!-- 	<update  width="1200">
+
+         <process>
+           <step channel="service" ref="SaasCheckService" method="saveReviewedData" />
+             <step channel="sql" ref="updateSql" />
+             <step channel="sql" ref="insertSql2" />
+             <step channel="sql" ref="updateSql2" />
+
+         </process>
+             <queryProcess>
+                 <step channel="service" ref="commonSearchService2" method="test" />
+                 <step channel="sql" ref="querySql" />
+                 <step channel="service" ref="commonSearchService2" method="test" />
+             </queryProcess>
+         <key>id</key>
+         <table>saas_check_info</table>
+        <conditions>
+               <condition name="number"  input="text"   title="商品编码" readonly="true"/>
+             <condition name="goods_name"  input="text"   title="商品名称"  readonly="true"/>
+             <condition name="generic_name"  input="text"   title="通用名称"  readonly="true"/>
+             <condition name="preparation_id"  input="text"   title="剂型" readonly="true"/>
+             <condition name="specification"  input="text"   title="规格" readonly="true"/>
+             <condition name="unit_id"  input="text"    title="单位" readonly="true"/>
+             <condition name="major_supplier"  input="text"   title="生产厂商" readonly="true"/>
+             <condition name="place"  input="text"   title="产地" readonly="true"/>
+             <condition name="registration_number"  input="text"   title="批准文号"  readonly="true"/>
+             <condition name="batch_number"  input="text"   title="批号" readonly="true"/>
+             <condition name="produce_date"   input="text" title="生产日期" readonly="true"/>
+             <condition name="expiry_date"   input="text" title="失效期" readonly="true"/>
+             <condition name="goods_allocation"   input="text"   title="货位" readonly="true"/>
+             <condition name="inventory_num"   input="text"   title="库存数量" readonly="true"/>
+             <condition name="check_num"   input="text"   title="检查数量" />
+             <condition name="check_content"   input="text"   title="检查项目" />
+             <condition name="unqualified_num"   input="text"   title="不合格数量" />
+             <condition name="suggestion"   input="text"   title="处理意见" />
+             <condition name="verdict"   input="text"   title="结论" />
+             <condition name="check_user_name" hiddenid="check_user"  input="text" readonly="true"  title="检查人" />
+             <condition name="check_date"   input="text" readonly="true"  title="检查日期" />
+             <condition name="bz"   input="text"   title="备注" />
+         </conditions>
+
+     </update> -->
+</template>

@@ -1,0 +1,228 @@
+<template menuId="8002" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="统计分析"/>
+        <direct name="采购分析"/>
+        <direct name="购进分析-按明细"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="countSql" method="list">
+            select
+            '到货数量：' as supplier_code,sum(arrival_quantity) as supplier_name,
+            '抽样数量：' as create_time,sum(sampling_quantity) as acceptance_code,
+            '验收合格数量：' as storage_user_name,sum(acceptance_quantity) as goods_code,
+            '拒收数量：' as goods_name,sum(rejected_quantity) as goods_generic_name,
+            '入库数量：' as preparation_id,sum(storage_quantity) as goods_specification,
+            '总金额：' as unit_id,sum(d.acceptance_amount) as manufacturer
+            FROM
+            SAAS_TEST.saas_acceptance_detail d
+            left join SAAS_TEST.saas_acceptance a
+            on d.acceptance_id=a.id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and d.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and d.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and a.supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                <![CDATA[ and a.supplier_code like %${supplier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${acceptance_code}">
+                <![CDATA[ and d.acceptance_code like %${acceptance_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and d.goods_name like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and d.goods_code like %${goods_code}%]]>
+            </if>
+        </sql>
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            d.id,
+            d.acceptance_id,
+            d.acceptance_code,
+            d.purchase_order_detail_id,
+            d.receive_id,
+            d.receive_detail_id,
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.goods_generic_name,
+            d.goods_specification,
+            d.goods_place,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = d.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_id,
+            d.manufacturer,
+            d.registration_code,
+            d.batch_code,
+            d.production_time,
+            d.expire_time,
+            d.sterilization_batch,
+            d.arrival_quantity,
+            d.sampling_quantity,
+            d.acceptance_quantity,
+            d.rejected_quantity,
+            d.storage_quantity,
+            d.purchase_price,
+            d.acceptance_amount,
+            d.inspection_report,
+            d.goods_quality,
+            d.rejection_reason,
+            d.acceptance_conclusion,
+            d.create_time,
+            d.update_time,
+            a.supplier_id,
+            a.supplier_code,
+            a.supplier_name,
+            a.storage_user_name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "purchase_order_states"
+            AND dd.`value` = a.pay_status
+            ) AS status
+
+            FROM
+            SAAS_TEST.saas_acceptance_detail d
+            left join SAAS_TEST.saas_acceptance a
+            on d.acceptance_id=a.id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and d.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and d.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and a.supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                <![CDATA[ and a.supplier_code like %${supplier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${acceptance_code}">
+                <![CDATA[ and d.acceptance_code like %${acceptance_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and d.goods_name like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and d.goods_code like %${goods_code}%]]>
+            </if>
+            order by create_time desc
+        </sql>
+
+
+        <!-- 计算总量 -->
+        <sql id="totalSql" method="select">
+            select count(a.id) channelsid
+            from saas_in_check a
+            JOIN saas_in_check_details b ON a.pi_number = b.order_number
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and check_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and check_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_number}">
+                <![CDATA[ and supplier_number like %${supplier_number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pi_number}">
+                <![CDATA[ and pi_number like %${pi_number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and suname like %${_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and number like %${number}%]]>
+            </if>
+        </sql>
+
+
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="supplier_code" sortable="false" title="供应商编号"/>
+            <clumn name="supplier_name" sortable="false" title="供应商名称"/>
+            <clumn name="create_time" sortable="false" title="购进日期"/>
+            <clumn name="acceptance_code" sortable="false" title="购进单号"/>
+            <clumn name="storage_user_name" sortable="false" title="采购人员"/>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="通用名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="production_time" sortable="false" title="生产日期"/>
+            <clumn name="status" sortable="false" title="状态"/>
+            <clumn name="expire_time" sortable="false" title="有效期"/>
+            <clumn name="arrival_quantity" sortable="false" title="到货数量"/>
+            <clumn name="sampling_quantity" sortable="false" title="抽样数量"/>
+            <clumn name="acceptance_quantity" sortable="false" title="验收合格数量"/>
+            <clumn name="rejected_quantity" sortable="false" title="拒收数量"/>
+            <clumn name="storage_quantity" sortable="false" title="入库数量"/>
+            <clumn name="purchase_price" sortable="false" title="进货单价"/>
+            <clumn name="acceptance_amount" sortable="false" title=" 金额	"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="date" title="购进时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="text" title="供应商编号" name="supplier_code"/>
+            <condition input="text" title="供应商名称" name="supplier_name"/>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="购进单号" name="acceptance_code"/>
+        </conditions>
+    </query>
+
+
+</template>
+
+

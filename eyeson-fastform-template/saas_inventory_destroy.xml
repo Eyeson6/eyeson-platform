@@ -1,0 +1,708 @@
+<template menuId="8074" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="问题药品"/>
+        <direct name="药品销毁"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            b.id,
+            b.inventory_locking_code,
+            b.goods_id,
+            b.goods_code,
+            b.goods_name,
+            b.goods_generic_name,
+            b.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = b.preparation_id
+            ) AS preparation_name,
+            b.goods_specification,
+            b.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = b.unit_id
+            ) AS unit_name,
+            b.manufacturer,
+            b.goods_place,
+            b.registration_code,
+            b.batch_code,
+            b.production_time,
+            b.expire_time,
+            b.inventory_quantity,
+            b.practical_quantity,
+            b.locking_reason,
+            b.locking_state,
+            b.remark,
+            b.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = b.storage_id
+            ) AS storage_name,
+            b.creater_id,
+            b.creater_name,
+            b.create_time,
+            b.update_time,
+            b.modifier_id,
+            b.modifier_name
+            FROM
+            SAAS_TEST.saas_inventory_locking b
+            where 1=1 and b.locking_state=1
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and b.goods_code like %${goods_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and b.batch_code = ${batch_code}]]>
+            </if>
+            order by b.create_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select *,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = storage_id
+            ) AS storage_name
+            from SAAS_TEST.saas_inventory_locking where id=${key}
+        </sql>
+        <sql id="listDetailSql" method="select">
+            SELECT
+            b.id,
+            b.goods_id,
+            b.goods_code,
+            b.goods_name,
+            b.goods_generic_name,
+            b.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = b.preparation_id
+            ) AS preparation_name,
+            b.goods_specification,
+            b.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = b.unit_id
+            ) AS unit_name,
+            b.manufacturer,
+            b.goods_place,
+            b.registration_code,
+            b.batch_code,
+            b.production_time,
+            b.expire_time,
+            b.inventory_quantity,
+            b.destroy_reason,
+            b.remark,
+            b.electronic_supervision_code,
+            b.creater_id,
+            b.creater_name,
+            b.create_time,
+            b.update_time,
+            b.modifier_id,
+            b.modifier_name
+            FROM
+            SAAS_TEST.saas_inventory_destroy b
+            where 2=1
+        </sql>
+
+
+        <sql id="insertSql" method="execute">
+            insert into SAAS_TEST.saas_inventory_destroy(
+            <if method="isNoEmpty" args="${test9.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${test9.supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${test9.supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${test9.preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${test9.unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${test9.manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${test9.registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${test9.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test9.production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${test9.expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${test9.inventory_quantity}">
+                inventory_quantity,
+            </if>
+            <if method="isNoEmpty" args="${destroy_adss}">
+                destroy_adss,
+            </if>
+            <if method="isNoEmpty" args="${keeping_id}">
+                keeping_id,
+            </if>
+            <if method="isNoEmpty" args="${keeping_name}">
+                keeping_name,
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                examine_id,
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                examine_name,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                complex_id,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                complex_name,
+            </if>
+            <if method="isNoEmpty" args="${electronic_supervision_code}">
+                electronic_supervision_code,
+            </if>
+            <if method="isNoEmpty" args="${destroy_time}">
+                destroy_time,
+            </if>
+            <if method="isNoEmpty" args="${destroy_reason}">
+                destroy_reason,
+            </if>
+            <if method="isNoEmpty" args="${test9.remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name,
+            </if>
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${test9.goods_id}">
+                ${test9.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_code}">
+                ${test9.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_name}">
+                ${test9.goods_name},
+            </if>
+            <if method="isNoEmpty" args="${test9.supplier_id}">
+                ${test9.supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${test9.supplier_code}">
+                ${test9.supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_generic_name}">
+                ${test9.goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${test9.preparation_id}">
+                ${test9.preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_specification}">
+                ${test9.goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${test9.unit_id}">
+                ${test9.unit_id},
+            </if>
+            <if method="isNoEmpty" args="${test9.manufacturer}">
+                ${test9.manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${test9.goods_place}">
+                ${test9.goods_place},
+            </if>
+            <if method="isNoEmpty" args="${test9.registration_code}">
+                ${test9.registration_code},
+            </if>
+            <if method="isNoEmpty" args="${test9.batch_code}">
+                ${test9.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test9.production_time}">
+                ${test9.production_time},
+            </if>
+            <if method="isNoEmpty" args="${test9.expire_time}">
+                ${test9.expire_time},
+            </if>
+            <if method="isNoEmpty" args="${test9.inventory_quantity}">
+                ${test9.inventory_quantity},
+            </if>
+            <if method="isNoEmpty" args="${destroy_adss}">
+                ${destroy_adss},
+            </if>
+            <if method="isNoEmpty" args="${keeping_id}">
+                ${keeping_id},
+            </if>
+            <if method="isNoEmpty" args="${keeping_name}">
+                ${keeping_name},
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                ${approver_id},
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                ${approver_name},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                ${reviewer_id},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                ${reviewer_name},
+            </if>
+            <if method="isNoEmpty" args="${electronic_supervision_code}">
+                ${electronic_supervision_code},
+            </if>
+            <if method="isNoEmpty" args="${destroy_time}">
+                ${destroy_time},
+            </if>
+            <if method="isNoEmpty" args="${destroy_reason}">
+                ${destroy_reason},
+            </if>
+            <if method="isNoEmpty" args="${test9.remark}">
+                ${test9.remark},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                ${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                ${modifier_name},
+            </if>
+            now(),
+            now()
+            )
+
+        </sql>
+        <sql id="updateInventory" method="execute">
+            update SAAS_TEST.saas_inventory
+            set qualified = 3,
+            update_time = now(),
+            modifier_id = ${modifier_id},
+            modifier_name = ${modifier_name}
+            where goods_id = ${test9.goods_id} and batch_code = ${test9.batch_code}
+            and supplier_id = ${test9.supplier_id} and qualified = 1 and storage_id = ${test9.storage_id}
+        </sql>
+
+        <sql id="update" method="execute">
+            update SAAS_TEST.saas_inventory_locking
+            set locking_state = 3
+            where id=${key}
+        </sql>
+        <sql id="updateInventory2" method="execute">
+            update SAAS_TEST.saas_inventory
+            set qualified = 3,
+            update_time = now(),
+            modifier_id = ${modifier_id},
+            modifier_name = ${modifier_name}
+            where goods_id = ${goods_id} and batch_code = ${batch_code}
+            and supplier_id = ${supplier_id} and qualified = 1 and storage_id = ${storage_id}
+        </sql>
+
+        <sql id="insertSql2" method="execute">
+            insert into SAAS_TEST.saas_inventory_destroy(
+            <if method="isNoEmpty" args="${goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${inventory_quantity}">
+                inventory_quantity,
+            </if>
+            <if method="isNoEmpty" args="${destroy_adss}">
+                destroy_adss,
+            </if>
+            <if method="isNoEmpty" args="${keeping_id}">
+                keeping_id,
+            </if>
+            <if method="isNoEmpty" args="${keeping_name}">
+                keeping_name,
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                examine_id,
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                examine_name,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                complex_id,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                complex_name,
+            </if>
+            <if method="isNoEmpty" args="${electronic_supervision_code}">
+                electronic_supervision_code,
+            </if>
+            <if method="isNoEmpty" args="${destroy_time}">
+                destroy_time,
+            </if>
+            <if method="isNoEmpty" args="${destroy_reason}">
+                destroy_reason,
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name,
+            </if>
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${goods_id}">
+                ${goods_id},
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                ${goods_code},
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                ${goods_name},
+            </if>
+            <if method="isNoEmpty" args="${supplier_id}">
+                ${supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                ${supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${goods_generic_name}">
+                ${goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${goods_specification}">
+                ${goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${manufacturer}">
+                ${manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${goods_place}">
+                ${goods_place},
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                ${registration_code},
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                ${batch_code},
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                ${production_time},
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                ${expire_time},
+            </if>
+            <if method="isNoEmpty" args="${inventory_quantity}">
+                ${inventory_quantity},
+            </if>
+            <if method="isNoEmpty" args="${destroy_adss}">
+                ${destroy_adss},
+            </if>
+            <if method="isNoEmpty" args="${keeping_id}">
+                ${keeping_id},
+            </if>
+            <if method="isNoEmpty" args="${keeping_name}">
+                ${keeping_name},
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                ${approver_id},
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                ${approver_name},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                ${reviewer_id},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                ${reviewer_name},
+            </if>
+            <if method="isNoEmpty" args="${electronic_supervision_code}">
+                ${electronic_supervision_code},
+            </if>
+            <if method="isNoEmpty" args="${destroy_time}">
+                ${destroy_time},
+            </if>
+            <if method="isNoEmpty" args="${destroy_reason}">
+                ${destroy_reason},
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                ${remark},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                ${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                ${modifier_name},
+            </if>
+            now(),
+            now()
+            )
+
+        </sql>
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <!-- <clumn name="electronic_supervision_code" sortable="false" title="电子监管码" />-->
+            <clumn name="goods_code" sortable="false" title="商品编号"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="unit_id" sortable="false" hidden="true" title="单位id"/>
+            <clumn name="preparation_id" hidden="true" sortable="false" title="剂型ID"/>
+            <clumn name="goods_specification" sortable="false" title="商品规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="商品产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="有效期至"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+            <clumn name="practical_quantity" sortable="false" title="不合格数量"/>
+            <!--
+            <clumn name="inventory_quantity" sortable="false" title="销毁数量" />
+            <clumn name="destroy_reason" sortable="false" title="销毁原因" />
+            <clumn name="destroy_adss" sortable="false" title="销毁地点" />-->
+            <clumn name="remark" sortable="false" title="备注"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="批号" name="batch_code"/>
+        </conditions>
+    </query>
+
+    <buttons>
+
+        <button id="test2" title="销毁" icon="icon-edit" channel="select_query_execute" width="900" colNumber="3"
+                height="400">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="sql" ref="update"/>
+                <step channel="sql" ref="insertSql2"/>
+                <step channel="sql" ref="updateInventory2"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_inventory_destroy</table>
+            <conditions>
+                <condition name="goods_code" input="text" size="50" title="商品编号" hiddenid="goods_id" readonly="true"/>
+                <condition name="batch_code" input="text" size="20" title="批号" readonly="true"/>
+                <condition name="supplier_code" input="text" size="100" title="供应商编号" hiddenid="supplier_id"
+                           readonly="true"/>
+                <condition name="storage_name" input="text" size="20" title="货位" hiddenid="storage_id" readonly="true"/>
+                <condition name="destroy_time" input="date" title="销毁时间"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition name="destroy_adss" input="text" size="50" title="销毁地点"/>
+                <condition name="creater_name" input="text" size="20" title="销毁人" hiddenid="creater_id"
+                           readonly="true"/>
+
+                <condition name="keeping_name" input="text" size="20" title="保管员" hiddenid="keeping_id"
+                           popuplinkage="8076" popuptitle="用户选择" passvalue="fasle" width="800"/>
+                <!--
+                <condition name="examine_name" input="text" size="20" title="审核人"  hiddenid="examine_id" popuplinkage="8077" popuptitle="用户选择" passvalue="fasle" width="800"/>
+                <condition name="complex_name" input="text" size="20" title="复合人"  hiddenid="complex_id" popuplinkage="8078" popuptitle="用户选择" passvalue="fasle" width="800"/>
+                -->
+                <condition name="approver_name" title="审批员" hiddenid="approver_id" required="true" targetMenuId="777"
+                           targetButtonId="testApproverLogin" input="popup"/>
+                <condition name="reviewer_name" title="复核员" hiddenid="reviewer_id" required="true" targetMenuId="777"
+                           targetButtonId="testReviewerLogin" input="popup"/>
+                <condition name="destroy_reason" input="text" size="100" title="销毁原因"/>
+                <condition name="electronic_supervision_code" input="text" size="50" title="电子监管码"/>
+            </conditions>
+        </button>
+        <!--添加节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置
+        <button id="test_ddd" title="添加" icon="icon-edit" channel="query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test" />
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData" />
+                <step channel="batchSql" ref="insertSql" collection="test9" item="test9"/>
+                <step channel="batchSql" ref="updateInventory" collection="test9" item="test9" />
+                <step channel="service" ref="commonSearchService2" method="test" />
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test" />
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData" />
+                <step channel="service" ref="commonSearchService2" method="test" />
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_inventory_destroy</table>
+            <conditions>
+              <condition name="destroy_time" input="date" title="销毁时间" defaultprocess="SaasmaintainService.defaultProcess" />
+              <condition name="destroy_adss" input="text" size="50" title="销毁地点"/>
+              <condition name="creater_name" input="text" size="20" title="销毁人"  hiddenid="creater_id"  readonly="true"/>
+              <condition name="keeping_name" input="text" size="20" title="保管员"  hiddenid="keeping_id" popuplinkage="8076" popuptitle="用户选择" passvalue="fasle" width="800"/>
+              <condition name="examine_name" input="text" size="20" title="审核人"  hiddenid="examine_id" popuplinkage="8077" popuptitle="用户选择" passvalue="fasle" width="800"/>
+              <condition name="complex_name" input="text" size="20" title="复合人"  hiddenid="complex_id" popuplinkage="8078" popuptitle="用户选择" passvalue="fasle" width="800"/>
+              <condition name="destroy_reason" input="text" size="100" title="销毁原因"/>
+              <condition name="electronic_supervision_code" input="text" size="50" title="电子监管码"/>
+            </conditions>
+
+            <querys>
+                <query id="test9" key="goods_id,batch_code,supplier_id,qualified" channel="popupselect_removerow" pagesize="50" popupselect="8075" popuptitle="查询结果" width="1200" isPage="false">
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test" />
+                        <step channel="sql" ref="listDetailSql"/>
+                        <step channel="service" ref="commonSearchService2" method="test" />
+                    </process>
+                    <model>
+                        <clumn name="goods_id" sortable="false" title="商品ID" />
+                        <clumn name="goods_code" sortable="false" title="商品编号" />
+                        <clumn name="goods_name" sortable="false" title="商品名称" />
+                        <clumn name="supplier_id" sortable="false" title="供应商ID" />
+                        <clumn name="supplier_code" sortable="false" title="供应商编号" />
+                        <clumn name="goods_generic_name" sortable="false" title="商品通用名称" />
+                        <clumn name="preparation_name" sortable="false" title="剂型" />
+                        <clumn name="unit_id" sortable="false" hidden="true" title="单位id" />
+                        <clumn name="preparation_id" hidden="true" sortable="false" title="剂型ID" />
+                        <clumn name="goods_specification" sortable="false" title="商品规格" />
+                        <clumn name="unit_name" sortable="false" title="单位" />
+                        <clumn name="manufacturer" sortable="false" title="生产企业" />
+                        <clumn name="goods_place" sortable="false" title="商品产地" />
+                        <clumn name="registration_code" sortable="false" title="批准文号" />
+                        <clumn name="batch_code" sortable="false" title="批号" />
+                        <clumn name="supplier_id" sortable="false" title="供应商id" />
+                        <clumn name="qualified" sortable="false" title="状态" />
+                        <clumn name="production_time" sortable="false" title="生产时间" />
+                        <clumn name="expire_time" sortable="false" title="有效期至" />
+                        <clumn name="inventory_quantity" sortable="false" title="不合格数量"/>
+                        <clumn name="remark" sortable="false" title="备注"/>
+                    </model>
+                </query>
+            </querys>
+        </button>-->
+    </buttons>
+</template>
+
+

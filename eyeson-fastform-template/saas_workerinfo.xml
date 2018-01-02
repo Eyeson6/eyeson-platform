@@ -1,0 +1,397 @@
+<template menuId="492" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="职工信息管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            worker_num,
+            worker_name,
+
+            CASE sex
+            WHEN '0' THEN
+            '男'
+            WHEN '1' THEN
+            '女'
+            ELSE
+            '其他'
+            END AS sex,
+
+            birth_date,
+
+            CASE department
+            WHEN '0' THEN
+            '库房'
+            WHEN '1' THEN
+            '销售部'
+            WHEN '2' THEN
+            '财务部'
+            WHEN '3' THEN
+            '质检部'
+            WHEN '4' THEN
+            '配送大厅'
+            ELSE
+            '无'
+            END AS department,
+
+            position,
+
+            CASE qualification
+            WHEN '0' THEN
+            '博士'
+            WHEN '1' THEN
+            '硕士'
+            WHEN '2' THEN
+            '本科'
+            WHEN '3' THEN
+            '大专'
+            ELSE
+            '无'
+            END AS qualification,
+
+            title,
+            tel,
+            interest_hobbies,
+            delete_state,
+            creater_id,
+            creater_name,
+            create_date
+
+            FROM
+            saas_workerinfo where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${worker_num}">
+                <![CDATA[ and worker_num like %${worker_num}%]]>
+            </if>
+            <if method="isNoEmpty" args="${worker_name}">
+                <![CDATA[ and worker_name like %${worker_name}%]]>
+            </if>
+            order by create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_workerinfo where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_workerinfo(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${worker_num}">
+                worker_num,
+            </if>
+            <if method="isNoEmpty" args="${worker_name}">
+                worker_name,
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                sex,
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                birth_date,
+            </if>
+            <if method="isNoEmpty" args="${department}">
+                department,
+            </if>
+            <if method="isNoEmpty" args="${position}">
+                position,
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                qualification,
+            </if>
+            <if method="isNoEmpty" args="${title}">
+                title,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                interest_hobbies,
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${worker_num}">
+                ${worker_num},
+            </if>
+            <if method="isNoEmpty" args="${worker_name}">
+                ${worker_name},
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                ${sex},
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                ${birth_date},
+            </if>
+            <if method="isNoEmpty" args="${department}">
+                ${department},
+            </if>
+            <if method="isNoEmpty" args="${position}">
+                ${position},
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                ${qualification},
+            </if>
+            <if method="isNoEmpty" args="${title}">
+                ${title},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                ${interest_hobbies},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                ${delete_state},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_workerinfo set
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${worker_num}">
+                worker_num=${worker_num},
+            </if>
+            <if method="isNoEmpty" args="${worker_name}">
+                worker_name=${worker_name},
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                sex=${sex},
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                birth_date=${birth_date},
+            </if>
+            <if method="isNoEmpty" args="${department}">
+                department=${department},
+            </if>
+            <if method="isNoEmpty" args="${position}">
+                position=${position},
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                qualification=${qualification},
+            </if>
+            <if method="isNoEmpty" args="${title}">
+                title=${title},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                interest_hobbies=${interest_hobbies},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state=${delete_state},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id=${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${create_date}">
+                create_date=${create_date},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from saas_workerinfo a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${worker_num}">
+                <![CDATA[ and worker_num like %${worker_num}%]]>
+            </if>
+            <if method="isNoEmpty" args="${worker_name}">
+                <![CDATA[ and worker_name like %${worker_name}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update saas_workerinfo set delete_state = '1' where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="worker_num" sortable="false" title="职工编号"/>
+            <clumn name="worker_name" sortable="false" title="职工名称"/>
+            <clumn name="sex" sortable="false" title="性别"/>
+            <clumn name="birth_date" sortable="false" title="出生日期"/>
+            <clumn name="department" sortable="false" title="部门"/>
+            <clumn name="position" sortable="false" title="职务"/>
+            <clumn name="qualification" sortable="false" title="学历"/>
+            <clumn name="title" sortable="false" title="职称"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="interest_hobbies" sortable="false" title="兴趣爱好"/>
+        </model>
+        <conditions>
+            <condition input="text" title="职工编号" name="worker_num"/>
+            <condition input="text" title="职工名称" name="worker_name"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <insert width="940">
+        <process>
+            <step channel="service" ref="saasWorkerinfoService" method="saveReviewedData"/>
+            <step channel="sql" ref="insertSql"/>
+            <!--<step channel="sql" ref="insertAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <conditions>
+            <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+            <condition name="worker_num" input="text" size="20" title="职工编号"/>
+            <condition name="worker_name" input="text" size="20" title="职工名称"/>
+            <condition name="sex" input="select" size="20" title="性别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_sex'
+                </sql>
+            </condition>
+
+            <condition name="birth_date" input="date" title="出生日期"/>
+            <condition name="department" input="select" size="20" title="部门">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'department'
+                </sql>
+            </condition>
+
+            <condition name="position" input="text" size="50" title="职务"/>
+            <condition name="qualification" input="select" size="20" title="学历">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'qualification'
+                </sql>
+            </condition>
+
+            <condition name="title" input="text" size="50" title="职称"/>
+            <condition name="tel" input="text" size="20" title="联系电话"/>
+            <condition name="interest_hobbies" input="text" title="兴趣爱好"/>
+        </conditions>
+    </insert>
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <update width="940">
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_workerinfo</table>
+        <conditions>
+            <condition name="worker_num" input="text" size="20" title="职工编号"/>
+            <condition name="worker_name" input="text" size="20" title="职工名称"/>
+            <condition name="sex" input="select" size="20" title="性别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_sex'
+                </sql>
+            </condition>
+
+            <condition name="birth_date" input="date" title="出生日期"/>
+            <condition name="department" input="select" size="20" title="部门">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'department'
+                </sql>
+            </condition>
+
+            <condition name="position" input="text" size="50" title="职务"/>
+            <condition name="qualification" input="select" size="20" title="学历">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'qualification'
+                </sql>
+            </condition>
+
+            <condition name="title" input="text" size="50" title="职称"/>
+            <condition name="tel" input="text" size="20" title="联系电话"/>
+            <condition name="interest_hobbies" input="text" title="兴趣爱好"/>
+        </conditions>
+
+    </update>
+
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

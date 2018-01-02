@@ -1,0 +1,115 @@
+<template menuId="2400" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="入库审核"/>
+        <direct name="添加供应商"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            supplier_number,
+            supplier_name,
+            pr_number,
+            pi_number,
+            check_name,
+            put_name,
+            reviewer,
+            STATUS,
+            money,
+            check_time,
+            put_time,
+            b.number,
+            name,
+            common_name,
+            preparation_id,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "preparation_id"
+            AND c.`value` = b.preparation_id
+            ) AS preparation_name,
+            specification,
+            unit_id,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "unit_id"
+            AND c.`value` = b.unit_id
+            ) AS unit_name,
+            place AS factory,
+            registration_number,
+            batch_number,
+            production_date,
+            valid_period_to,
+            place_of_origin,
+            sterilization_batch,
+            arrival_quantity,
+            sampling_quantity,
+            number_of_qualified_acceptance,
+            quantity_rejected,
+            storage_quantity,
+            purchase_price,
+            amount_of_money,
+            inspection_report,
+            product_quality,
+            reasons_of_rejection,
+            acceptance_conclusion
+            FROM
+            saas_in_check a
+            LEFT JOIN saas_in_check_details b ON a.pi_number = b.order_number
+            where 1=1 and quantity_rejected > 0
+            <!-- <if method="isNoEmpty" args="${startTime}"> <![CDATA[and check_time >= ${startTime}]]> </if> <if method="isNoEmpty" args="${endTime}"> <![CDATA[ and check_time <= ${endTime}]]> </if> -->
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_number}">
+                <![CDATA[ and supplier_number = ${supplier_number}]]>
+            </if>
+            <if method="isNoEmpty" args="${pr_number}">
+                <![CDATA[ and pr_number = ${pr_number}]]>
+            </if>
+            order by check_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_supplier where id=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="supplier_number" sortable="false" title="供应商编号"/>
+            <clumn name="supplier_name" sortable="false" title="供应商名称"/>
+            <clumn name="pr_number" sortable="false" title="采购收货单号"/>
+            <clumn name="pi_number" sortable="false" title="采购验收单号"/>
+            <clumn name="check_name" sortable="false" title="验收人"/>
+            <clumn name="put_name" sortable="false" title="入库人员名字"/>
+            <clumn name="reviewer" sortable="false" title="审核人员"/>
+            <clumn name="status" sortable="false" title="状态"/>
+            <clumn name="money" sortable="false" title="采购订单总金额"/>
+            <clumn name="check_time" sortable="false" title="验收时间"/>
+            <clumn name="put_time" sortable="false" title="入库时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供应商编号" name="supplier_number"/>
+            <condition input="text" title="供应商名字" name="supplier_name"/>
+            <condition input="text" title="退回单号" name="pr_number"/>
+            <!-- <condition input="date" title="创建时间" name="startTime" type="3" /> <condition input="date" title="至" name="endTime" type="3" /> -->
+        </conditions>
+    </query>
+</template>

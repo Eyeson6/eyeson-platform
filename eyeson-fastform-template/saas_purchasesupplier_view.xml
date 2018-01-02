@@ -1,0 +1,64 @@
+<template menuId="408" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品管理"/>
+        <direct name="供方信息添加"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id as supplier_id,
+            code as supplier_code,
+            name as supplier_name,
+            business_person as salesperson_name,
+            first,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = first
+            ) AS first_name,
+            business_person_tel as salesperson_tel
+            FROM
+            SAAS_TEST.saas_supplier where 1=1
+            <if method="isNoEmpty" args="${sname}">
+                <![CDATA[ and name like %${sname}%]]>
+            </if>
+            <if method="isNoEmpty" args="${scode}">
+                <![CDATA[ and code like %${scode}%]]>
+            </if>
+            order by update_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from SAAS_TEST.saas_supplier where id=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="supplier_code" sortable="true" title="供方编码"/>
+            <clumn name="supplier_name" sortable="false" title="供方名称"/>
+            <clumn name="first_name" sortable="false" title="是否首营"/>
+            <clumn name="salesperson_name" sortable="false" title="联系人"/>
+            <clumn name="salesperson_tel" sortable="false" title="联系方式"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供货单位编码" name="scode"/>
+            <condition input="text" title="供货单位名称" name="sname"/>
+        </conditions>
+    </query>
+</template>

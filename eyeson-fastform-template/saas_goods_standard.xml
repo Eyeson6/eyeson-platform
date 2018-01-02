@@ -1,0 +1,160 @@
+<template menuId="222222" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品添加"/>
+        <direct name="从标准库"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            toxicology,
+            domestic_import,
+            registration_code,
+            registration_code_expire_date,
+            barcode,
+            operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,
+            factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            category_id,
+            gsp_category_id,
+            retail_price,
+            member_price,
+            mcountry_price,
+            integral_good,
+            special_price,
+            safe_inventory,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            scatter_specification,
+            scattered,
+            curing,
+            prescription_drug,
+            ephedrine,
+            medical_insurance,
+            medical_insurance_code,
+            GMP,
+            GMP_code,
+            storage_condition,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND
+            dd.`value` = FIRST
+            )
+            AS FIRST_name,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            sale_status,
+            CASE
+            sale_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS sale_status_name,
+
+            enable_user_id,
+            enable_user_name,
+            disable_user_id,
+            disable_user_name,
+            department,
+            enable_reason,
+            disable_reason,
+            enable_time,
+            disable_time,
+            create_time,
+            update_time,
+            remarks,
+            attachment
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1
+            <if method="isNoEmpty" args="${name}"> <![CDATA[ and name like %${name}%]]>
+            </if>
+            order by create_time desc
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="saasGoodsService" method="searchMPH"/>
+
+        </process>
+        <!--  <queryProcess>
+                 <step channel="service" ref="commonSearchService2" method="test" />
+                 <step channel="sql" ref="listsql" />
+                 <step channel="service" ref="commonSearchService2" method="test" />
+         </queryProcess> -->
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="barcode" sortable="false" title="药品条形码"/>
+        </model>
+        <conditions>
+            <condition input="text" title="药品名称" name="sname"/>
+            <condition input="text" title="批准文号" name="registration_code"/>
+            <condition input="text" title="生产厂家" name="manufacturer"/>
+        </conditions>
+    </query>
+</template>

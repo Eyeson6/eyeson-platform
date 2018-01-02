@@ -1,0 +1,72 @@
+<template menuId="6000" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="会员类型选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id as member_type,
+            type_name,
+            price_policy,
+            CASE price_policy
+            WHEN '0' THEN
+            '零售价'
+            WHEN '1' THEN
+            '会员价'
+            WHEN '2' THEN
+            '批发价'
+            END AS price_policy_name,
+            member_discount,
+            integral_set,
+            integral_int,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = integral_int
+            ) AS integral_int_name,
+            remark
+            FROM
+            SAAS_TEST.saas_member_type where 1=1
+            <if method="isNoEmpty" args="${type_name}">
+                <![CDATA[ and type_name like %${type_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${price_policy}">
+                <![CDATA[ and price_policy like %${price_policy}%]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="sr_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="saasSupplierService" method="setMemberType"/>
+            <!-- <step channel="sql" ref="listsql" />
+            <step channel="service" ref="commonSearchService2" method="test" /> -->
+        </process>
+        <model>
+            <clumn name="type_name" sortable="false" title="类型名称"/>
+            <clumn name="price_policy_name" sortable="false" title="价格政策"/>
+            <clumn name="member_discount" sortable="false" title="会员折扣"/>
+            <clumn name="integral_set" sortable="false" title="积分设置"/>
+            <clumn name="integral_int_name" sortable="false" title="积分取整"/>
+            <clumn name="remark" sortable="false" title="备注"/>
+        </model>
+        <conditions>
+            <condition input="text" title="类型名称" name="type_name"/>
+            <condition name="price_policy" input="select" size="20" title="价格政策">
+                <option id="0" text="零售价"/>
+                <option id="1" text="会员价"/>
+                <option id="2" text="批发价"/>
+            </condition>
+        </conditions>
+    </query>
+</template>

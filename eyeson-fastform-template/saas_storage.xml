@@ -1,0 +1,242 @@
+<template menuId="8018" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="基础数据"/>
+        <direct name="货位管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "storage_type"
+            AND dd.`value` = storage_type
+            ) AS storage_type,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "storage_status"
+            AND dd.`value` = status
+            ) AS status,
+            case when id=-1 then 'false'
+            when id=0 then 'false'
+            when id=1 then 'false'
+            when id=2 then 'false'
+            else 'true' end as show_scattered,
+            pinyin_code,
+            create_name,
+            create_time,
+            update_name,
+            update_time
+            FROM SAAS_TEST.saas_storage
+            where 1=1
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${storage_type}">
+                <![CDATA[ and storage_type = ${storage_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${storage_status}">
+                <![CDATA[ and status = ${storage_status}]]>
+            </if>
+            order by create_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select *,
+            status as storage_status
+            from SAAS_TEST.saas_storage
+            where id = ${key}
+
+        </sql>
+        <sql id="insertSql" method="execute">
+            insert into SAAS_TEST.saas_storage(
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${storage_type}">
+                storage_type,
+            </if>
+            <if method="isNoEmpty" args="${storage_status}">
+                status,
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${create_id}">
+                create_id,
+            </if>
+            <if method="isNoEmpty" args="${create_name}">
+                create_name,
+            </if>
+            create_time
+            )
+            values(
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${storage_type}">
+                ${storage_type},
+            </if>
+            <if method="isNoEmpty" args="${storage_status}">
+                ${storage_status},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${create_id}">
+                ${create_id},
+            </if>
+            <if method="isNoEmpty" args="${create_name}">
+                ${create_name},
+            </if>
+            now()
+            )
+        </sql>
+
+        <sql id="updateSql" method="execute">
+            update SAAS_TEST.saas_storage
+            set
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${storage_type}">
+                storage_type=${storage_type},
+            </if>
+            <if method="isNoEmpty" args="${storage_status}">
+                status = ${storage_status},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code = ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${update_id}">
+                update_id = ${update_id},
+            </if>
+            <if method="isNoEmpty" args="${update_name}">
+                update_name =${update_name},
+            </if>
+            update_time = now()
+            where id = ${key}
+        </sql>
+
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="show_scattered" sortable="false" title="hidden" hidden="false"/>
+            <clumn name="id" sortable="false" title="ID" hidden="true"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="storage_type" sortable="false" title="类型 "/>
+            <clumn name="status" sortable="false" title="状态"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="create_name" sortable="false" title="创建人"/>
+            <clumn name="create_time" sortable="false" title="创建时间"/>
+            <clumn name="update_name" sortable="false" title="更新人"/>
+            <clumn name="update_time" sortable="false" title="更新时间"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="select" title="类型" name="storage_type">
+                <sql>
+                    select a.value id,a.name text
+                    from SAAS_TEST.saas_dictionary a where a.category = 'storage_type' and a.value != '0'
+                </sql>
+            </condition>
+            <condition input="select" title="状态" name="storage_status">
+                <sql>
+                    select a.value id,a.name text
+                    from SAAS_TEST.saas_dictionary a where a.category = 'storage_status'
+                </sql>
+            </condition>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+        </conditions>
+    </query>
+    <buttons>
+        <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+        <button id="test1" title="添加" colNumber="2" icon="icon-add" channel="query_execute" width="600" height="200">
+            <process>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+            </process>
+            <conditions>
+                <condition name="name" input="text" size="20" title="名称" required="true">
+                    <event mode="change" popuplinkage="888888" width="1000" passvalue="false"/>
+                </condition>
+
+                <condition name="storage_type" input="select" size="20" title="类型 " required="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'storage_type' and a.value != '0'
+                    </sql>
+                </condition>
+                <condition name="storage_status" input="select" size="20" title="状态 " required="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'storage_status' and a.value != '0'
+                    </sql>
+                </condition>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true"/>
+            </conditions>
+        </button>
+    </buttons>
+    <operate>
+        <button id="up1" title="修改" icon="icon-edit" channel="query_execute" colNumber="2" width="600" height="200"
+                vcolumn="show_scattered">
+            <process>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_storage</table>
+            <conditions>
+                <condition name="name" input="text" size="20" title="名称" required="true">
+                    <event mode="cursor" popuplinkage="888888" width="1000" passvalue="true"/>
+                </condition>
+                <condition name="storage_type" input="select" size="20" title="类型 " required="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'storage_type'
+                    </sql>
+                </condition>
+                <condition name="storage_status" input="select" size="20" title="状态 " required="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'storage_status'
+                    </sql>
+                </condition>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true"/>
+            </conditions>
+        </button>
+    </operate>
+
+</template>
+
+

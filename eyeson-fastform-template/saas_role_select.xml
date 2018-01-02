@@ -1,0 +1,49 @@
+<template menuId="700" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品管理"/>
+        <direct name="供方信息添加"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            sr.sr_id,
+            sr.sr_code,
+            sr.sr_name,
+            sr.sr_status,
+            sr.sr_add_user,
+            sr.sr_add_time
+            FROM
+            sys_role sr
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${key}">
+                and sr.sr_id=${key}
+            </if>
+            <if method="isNoEmpty" args="${sr_name_n}">
+                and sr.sr_name like %${sr_name_n}%
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="sr_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="loginService" method="getLoginUser"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="sr_id" sortable="false" hidden="true" title="ID" key="true"/>
+            <clumn name="sr_code" sortable="true" title="角色编码"/>
+            <clumn name="sr_name" sortable="false" title="角色名称"/>
+        </model>
+        <conditions>
+            <condition input="text" title="角色名称" name="sr_name_n"/>
+        </conditions>
+    </query>
+</template>

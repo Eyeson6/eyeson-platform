@@ -1,0 +1,1865 @@
+<template menuId="7003" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购管理"/>
+        <direct name="采购验收"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            code,
+            supplier_id,
+            supplier_code,
+            supplier_name,
+            purchase_order_id,
+            purchase_order_code,
+            accepter_id,
+            accepter_code,
+            accepter_name,
+            accept_time,
+            creater_id,
+            creater_name,
+            originator_id,
+            originator_name,
+            originate_time,
+            modifier_id,
+            modifier_name,
+            storage_user_id,
+            storage_user_name,
+            storage_time,
+            approver_id,
+            approver_name,
+            approve_time,
+            pay_status,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "purchase_acceptance_status"
+            AND dd.`value` = pay_status
+            ) AS status_name,
+            finance_approve_status,
+            amount,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_acceptance
+            where 1=1
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                <![CDATA[ and supplier_code like %${supplier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${purchaseorder_code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and originate_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and originate_time <= ${endTime}]]>
+            </if>
+            <if method="notEquals" args="${pay_status},9">
+                <![CDATA[ and pay_status = ${pay_status}]]>
+            </if>
+            <if method="isNoEmpty" args="${originator_name}">
+                <![CDATA[ and originator_name like %${originator_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${out_reviewer_name}">
+                <![CDATA[ and approver_name like %${approver_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and accept_time >= ${startTime2}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and accept_time <= ${endTime2}]]>
+            </if>
+            order by create_time desc
+        </sql>
+
+        <sql id="listSqlDetail" method="select">
+            SELECT
+            id,
+            acceptance_id,
+            acceptance_code,
+            purchase_order_id,
+            purchase_order_code,
+            purchase_order_detail_id,
+            receive_id,
+            receive_code,
+            receive_detail_id,
+            goods_id,
+            goods_code,
+            goods_name,
+            goods_generic_name,
+            goods_specification,
+            goods_place,
+            preparation_id,
+            unit_id,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="preparation_id" and d.`value` =
+            preparation_id ) as preparation_name,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="unit_id" and d.`value` = unit_id ) as
+            unit_name,
+            manufacturer,
+            registration_code,
+            batch_code,
+            production_time,
+            expire_time,
+            sterilization_batch,
+            arrival_quantity,
+            sampling_quantity,
+            acceptance_quantity,
+            rejected_quantity,
+            storage_quantity,
+            purchase_price,
+            acceptance_amount,
+            amount,
+            inspection_report,
+            goods_quality,
+            rejection_reason,
+            acceptance_conclusion,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_acceptance_detail
+            where acceptance_id = ${key}
+        </sql>
+
+        <sql id="querySql" method="query">
+            SELECT
+            id,
+            code,
+            supplier_id,
+            supplier_code,
+            supplier_name,
+            purchase_order_id,
+            purchase_order_code,
+            accepter_id,
+            accepter_code,
+            accepter_name,
+            accept_time,
+            creater_id,
+            creater_name,
+            originator_id,
+            originator_name,
+            originate_time,
+            modifier_id,
+            modifier_name,
+            storage_user_id,
+            storage_user_name,
+            storage_time,
+            approver_id,
+            approver_name,
+            approve_time,
+            reviewer_id,
+            reviewer_name,
+            reviewer_time,
+            pay_status,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "purchase_acceptance_status"
+            AND dd.`value` = pay_status
+            ) AS status_name,
+            finance_approve_status,
+            amount,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_acceptance where id=${key}
+        </sql>
+        <sql id="insertSql" method="execute">
+            insert into SAAS_TEST.saas_acceptance(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                supplier_name,
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_id}">
+                purchase_order_id,
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_code}">
+                purchase_order_code,
+            </if>
+            <if method="isNoEmpty" args="${accepter_id}">
+                accepter_id,
+            </if>
+            <if method="isNoEmpty" args="${accepter_code}">
+                accepter_code,
+            </if>
+            <if method="isNoEmpty" args="${accepter_name}">
+                accepter_name,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${originator_id}">
+                originator_id,
+            </if>
+            <if method="isNoEmpty" args="${originator_name}">
+                originator_name,
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name,
+            </if>
+            <if method="isNoEmpty" args="${storage_user_id}">
+                storage_user_id,
+            </if>
+            <if method="isNoEmpty" args="${storage_user_name}">
+                storage_user_name,
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                approver_id,
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                approver_name,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                reviewer_id,
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                reviewer_name,
+            </if>
+            <if method="isNoEmpty" args="${pay_status}">
+                pay_status,
+            </if>
+            <if method="isNoEmpty" args="${finance_approve_status}">
+                finance_approve_status,
+            </if>
+            <if method="isNoEmpty" args="${amount}">
+                amount,
+            </if>
+            accept_time,
+            originate_time,
+            approve_time,
+            reviewer_time,
+            storage_time,
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_id}">
+                ${supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                ${supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                ${supplier_name},
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_id}">
+                ${purchase_order_id},
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_code}">
+                ${purchase_order_code},
+            </if>
+            <if method="isNoEmpty" args="${accepter_id}">
+                ${accepter_id},
+            </if>
+            <if method="isNoEmpty" args="${accepter_code}">
+                ${accepter_code},
+            </if>
+            <if method="isNoEmpty" args="${accepter_name}">
+                ${accepter_name},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${originator_id}">
+                ${originator_id},
+            </if>
+            <if method="isNoEmpty" args="${originator_name}">
+                ${originator_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                ${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                ${modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${storage_user_id}">
+                ${storage_user_id},
+            </if>
+            <if method="isNoEmpty" args="${storage_user_name}">
+                ${storage_user_name},
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                ${approver_id},
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                ${approver_name},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_id}">
+                ${reviewer_id},
+            </if>
+            <if method="isNoEmpty" args="${reviewer_name}">
+                ${reviewer_name},
+            </if>
+            <if method="isNoEmpty" args="${pay_status}">
+                ${pay_status},
+            </if>
+            <if method="isNoEmpty" args="${finance_approve_status}">
+                ${finance_approve_status},
+            </if>
+            <if method="isNoEmpty" args="${amount}">
+                ${amount},
+            </if>
+            now(),
+            now(),
+            now(),
+            now(),
+            now(),
+            now(),
+            now()
+            )
+        </sql>
+
+        <sql id="insertSerialNumberSql" method="execute">
+            insert into saas_serial_number(type, date, num )
+            select
+            'pur_accept_num',
+            now(),
+            IFNULL((select num FROM
+            saas_serial_number
+            WHERE
+            type = 'pur_accept_num' and to_days(date) = to_days(now()) order by num desc LIMIT 0,1),0)+1 as num;
+        </sql>
+
+        <sql id="selectSerialNumberSql" method="query">
+            SELECT
+            CONCAT('CGYS',DATE_FORMAT(now(),'%Y%m%d'),LPAD(num,4,'0')) AS code
+            FROM
+            saas_serial_number
+            WHERE
+            type = 'pur_accept_num' and to_days(date) = to_days(now()) order by num desc LIMIT 0,1;
+        </sql>
+
+        <sql id="insertSqlDetail" method="insert">
+            insert into SAAS_TEST.saas_acceptance_detail(
+            <if method="isNoEmpty" args="${keyProperty}">
+                acceptance_id,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                acceptance_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_id}">
+                purchase_order_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_code}">
+                purchase_order_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_detail_id}">
+                purchase_order_detail_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_id}">
+                receive_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_code}">
+                receive_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_detail_id}">
+                receive_detail_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${test8.expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${test8.sterilization_batch}">
+                sterilization_batch,
+            </if>
+            <if method="isNoEmpty" args="${test8.arrival_quantity}">
+                arrival_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.sampling_quantity}">
+                sampling_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                acceptance_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                rejected_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_quantity}">
+                storage_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                purchase_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_amount}">
+                acceptance_amount,
+            </if>
+            <if method="isNoEmpty" args="${test8.amount}">
+                amount,
+            </if>
+            <if method="isNoEmpty" args="${test8.inspection_report}">
+                inspection_report,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_quality}">
+                goods_quality,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejection_reason}">
+                rejection_reason,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_conclusion}">
+                acceptance_conclusion,
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                storage_id,
+            </if>
+            create_time,
+            update_time,
+            ) values(
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_id}">
+                ${test8.purchase_order_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_code}">
+                ${test8.purchase_order_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_detail_id}">
+                ${test8.purchase_order_detail_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_id}">
+                ${test8.receive_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_code}">
+                ${test8.receive_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_detail_id}">
+                ${test8.receive_detail_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                ${test8.goods_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                ${test8.goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                ${test8.goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                ${test8.goods_place},
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                ${test8.preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                ${test8.unit_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                ${test8.manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                ${test8.registration_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.production_time}">
+                ${test8.production_time},
+            </if>
+            <if method="isNoEmpty" args="${test8.expire_time}">
+                ${test8.expire_time},
+            </if>
+            <if method="isNoEmpty" args="${test8.sterilization_batch}">
+                ${test8.sterilization_batch},
+            </if>
+            <if method="isNoEmpty" args="${test8.arrival_quantity}">
+                ${test8.arrival_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.sampling_quantity}">
+                ${test8.sampling_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                ${test8.acceptance_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                <!--${test8.arrival_quantity}-${test8.acceptance_quantity},-->
+                ${test8.rejected_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_quantity}">
+                ${test8.storage_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_amount}">
+                ${test8.acceptance_quantity}*${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.amount}">
+                ${test8.amount},
+            </if>
+            <if method="isNoEmpty" args="${test8.inspection_report}">
+                ${test8.inspection_report},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_quality}">
+                ${test8.goods_quality},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejection_reason}">
+                ${test8.rejection_reason},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_conclusion}">
+                ${test8.acceptance_conclusion},
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                ${test8.storage_id},
+            </if>
+            now(),
+            now(),
+            )
+        </sql>
+
+        <sql id="insertSqlDetail2" method="insert">
+            insert into SAAS_TEST.saas_acceptance_detail(
+            <if method="isNoEmpty" args="${key}">
+                acceptance_id,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                acceptance_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_id}">
+                purchase_order_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_code}">
+                purchase_order_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_detail_id}">
+                purchase_order_detail_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_id}">
+                receive_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_code}">
+                receive_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_detail_id}">
+                receive_detail_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${test8.expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${test8.sterilization_batch}">
+                sterilization_batch,
+            </if>
+            <if method="isNoEmpty" args="${test8.arrival_quantity}">
+                arrival_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.sampling_quantity}">
+                sampling_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                acceptance_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                rejected_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_quantity}">
+                storage_quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                purchase_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_amount}">
+                acceptance_amount,
+            </if>
+            <if method="isNoEmpty" args="${test8.inspection_report}">
+                inspection_report,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_quality}">
+                goods_quality,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejection_reason}">
+                rejection_reason,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_conclusion}">
+                acceptance_conclusion,
+            </if>
+            create_time,
+            update_time,
+            ) values(
+            <if method="isNoEmpty" args="${key}">
+                ${key},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_id}">
+                ${test8.purchase_order_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_code}">
+                ${test8.purchase_order_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_order_detail_id}">
+                ${test8.purchase_order_detail_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_id}">
+                ${test8.receive_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_code}">
+                ${test8.receive_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.receive_detail_id}">
+                ${test8.receive_detail_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                ${test8.goods_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                ${test8.goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                ${test8.goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                ${test8.goods_place},
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                ${test8.preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                ${test8.unit_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                ${test8.manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                ${test8.registration_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.production_time}">
+                ${test8.production_time},
+            </if>
+            <if method="isNoEmpty" args="${test8.expire_time}">
+                ${test8.expire_time},
+            </if>
+            <if method="isNoEmpty" args="${test8.sterilization_batch}">
+                ${test8.sterilization_batch},
+            </if>
+            <if method="isNoEmpty" args="${test8.arrival_quantity}">
+                ${test8.arrival_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.sampling_quantity}">
+                ${test8.sampling_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                ${test8.acceptance_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                ${test8.rejected_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_quantity}">
+                ${test8.storage_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_amount}">
+                ${test8.acceptance_amount},
+            </if>
+            <if method="isNoEmpty" args="${test8.inspection_report}">
+                ${test8.inspection_report},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_quality}">
+                ${test8.goods_quality},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejection_reason}">
+                ${test8.rejection_reason},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_conclusion}">
+                ${test8.acceptance_conclusion},
+            </if>
+            now(),
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSqlDetail" method="execute">
+            update SAAS_TEST.saas_purchase_receive_detail set
+            status= '1'
+            where id=${test8.receive_detail_id}
+        </sql>
+
+        <sql id="updateAcceptSqlDetail" method="execute">
+            update SAAS_TEST.saas_purchase_receive_detail set
+            status= '0'
+            where purchase_receive_id=${test8.receive_id}
+        </sql>
+
+        <sql id="updateAcceptDSqlDetail" method="execute">
+            UPDATE SAAS_TEST.saas_purchase_receive o
+            SET o.`status` = '0'
+            WHERE
+            id = ${test8.receive_id}
+        </sql>
+
+        <sql id="updateSqlDetail2" method="execute">
+            UPDATE SAAS_TEST.saas_purchase_receive o
+            SET o.`status` = '1',
+            o.finish_time = now()
+            WHERE
+            id = ${test8.receive_id}
+            AND (SELECT
+            count(*)
+            FROM
+            SAAS_TEST.saas_purchase_receive_detail d
+            WHERE
+            d.purchase_receive_id = ${test8.receive_id} and d.status = '0') = 0
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_acceptance set
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code=${code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_id}">
+                supplier_id=${supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                supplier_code=${supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                supplier_name=${supplier_name},
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_id}">
+                purchase_order_id=${purchase_order_id},
+            </if>
+            <if method="isNoEmpty" args="${purchase_order_code}">
+                purchase_order_code=${purchase_order_code},
+            </if>
+            <if method="isNoEmpty" args="${accepter_id}">
+                accepter_id=${accepter_id},
+            </if>
+            <if method="isNoEmpty" args="${accepter_code}">
+                accepter_code=${accepter_code},
+            </if>
+            <if method="isNoEmpty" args="${accepter_name}">
+                accepter_name=${accepter_name},
+            </if>
+            <if method="isNoEmpty" args="${accept_time}">
+                accept_time=${accept_time},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id=${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${originator_id}">
+                originator_id=${originator_id},
+            </if>
+            <if method="isNoEmpty" args="${originator_name}">
+                originator_name=${originator_name},
+            </if>
+            <if method="isNoEmpty" args="${originate_time}">
+                originate_time=${originate_time},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id=${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name=${modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${storage_user_id}">
+                storage_user_id=${storage_user_id},
+            </if>
+            <if method="isNoEmpty" args="${storage_user_name}">
+                storage_user_name=${storage_user_name},
+            </if>
+            <if method="isNoEmpty" args="${storage_time}">
+                storage_time=${storage_time},
+            </if>
+            <if method="isNoEmpty" args="${approver_id}">
+                approver_id=${approver_id},
+            </if>
+            <if method="isNoEmpty" args="${approver_name}">
+                approver_name=${approver_name},
+            </if>
+            <if method="isNoEmpty" args="${approve_time}">
+                approve_time=${approve_time},
+            </if>
+            <if method="isNoEmpty" args="${pay_status}">
+                pay_status=${pay_status},
+            </if>
+            <if method="isNoEmpty" args="${finance_approve_status}">
+                finance_approve_status=${finance_approve_status},
+            </if>
+            <if method="isNoEmpty" args="${amount}">
+                amount=${amount},
+            </if>
+            <if method="isNoEmpty" args="${create_time}">
+                create_time=${create_time},
+            </if>
+            <if method="isNoEmpty" args="${update_time}">
+                update_time=${update_time},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="insertAmountSql" method="execute">
+            update SAAS_TEST.saas_acceptance set
+            amount= (select IFNULL(sum(amount), 0) from SAAS_TEST.saas_acceptance_detail where
+            acceptance_id = ${keyProperty})
+            where id=${keyProperty}
+        </sql>
+
+        <sql id="insertAcceptanceAmountSql" method="execute">
+            update SAAS_TEST.saas_acceptance set
+            acceptance_amount= (select IFNULL(sum(acceptance_amount), 0) from SAAS_TEST.saas_acceptance_detail where
+            acceptance_id = ${keyProperty})
+            where id=${keyProperty}
+        </sql>
+
+        <sql id="updateAmountSql" method="execute">
+            update SAAS_TEST.saas_acceptance set
+            amount= (select IFNULL(sum(amount), 0) from SAAS_TEST.saas_acceptance_detail where
+            acceptance_id = ${key})
+            where id=${key}
+        </sql>
+
+        <sql id="updateAcceptanceAmountSql" method="execute">
+            update SAAS_TEST.saas_acceptance set
+            acceptance_amount= (select IFNULL(sum(acceptance_amount), 0) from SAAS_TEST.saas_acceptance_detail where
+            acceptance_id = ${key})
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.s_id) channelsid
+            from saas_purchase_order a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                <![CDATA[ and s_id like %${s_id}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_states}">
+                <![CDATA[ and order_states like %${order_states}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from SAAS_TEST.saas_purchase_order where
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id= ${id}]]>
+            </if>
+        </sql>
+        <sql id="deleteDetailSql" method="delete">
+            delete from SAAS_TEST.saas_acceptance_detail where
+            <if method="isNoEmpty" args="${key}">
+                <![CDATA[acceptance_id= ${key}]]>
+            </if>
+        </sql>
+
+        <sql id="insertInventorySql" method="execute">
+            insert into SAAS_TEST.saas_inventory(
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                order_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_name}">
+                modifier_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                status,
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                storage_id,
+            </if>
+            qualified,
+            inventory_type,
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                ${test8.supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                ${test8.supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                ${test8.acceptance_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.inventory_type}">
+                ${test8.inventory_type},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.remark}">
+                ${test8.remark},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                ${test8.creater_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                ${test8.creater_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_id}">
+                ${test8.modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_name}">
+                ${test8.modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                ${test8.status},
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                ${test8.storage_id},
+            </if>
+            0,
+            0,
+            now(),
+            now()
+            )
+        </sql>
+
+        <sql id="insertGoodsBatchSql" method="execute">
+            insert into saas_goods_batch(
+            goods_id,
+            code,
+            production_time,
+            expire_time
+            )select
+            ${test8.goods_id},
+            ${test8.batch_code},
+            ${test8.production_time},
+            ${test8.expire_time}
+            from dual where
+            NOT EXISTS (select * from saas_goods_batch d where d.goods_id = ${test8.goods_id}
+            and d.code = ${test8.batch_code})
+
+        </sql>
+
+        <!-- 不合格存库存 -->
+        <sql id="insertQualifiedInventorySql" method="execute">
+            insert into SAAS_TEST.saas_inventory(
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                order_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_name}">
+                modifier_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                status,
+            </if>
+            storage_id,
+            qualified,
+            inventory_type,
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                ${test8.supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                ${test8.supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                ${test8.rejected_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.inventory_type}">
+                ${test8.inventory_type},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.remark}">
+                ${test8.remark},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                ${test8.creater_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                ${test8.creater_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_id}">
+                ${test8.modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.modifier_name}">
+                ${test8.modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                ${test8.status},
+            </if>
+            -1,
+            1,
+            0,
+            now(),
+            now()
+            )
+        </sql>
+
+
+        <sql id="insertInventoryDetailSql" method="execute">
+            insert into SAAS_TEST.saas_inventory_detail(
+            <if method="isNoEmpty" args="${keyProperty}">
+                inventory_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                purchased_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                status,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                storage_id,
+            </if>
+            inventory_type,
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                ${test8.goods_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                ${test8.supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                ${test8.supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                ${test8.goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                ${test8.goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                ${test8.manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                ${test8.goods_place},
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                ${test8.preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                ${test8.unit_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                ${test8.registration_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.acceptance_quantity}">
+                ${test8.acceptance_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                ${test8.status},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                ${test8.creater_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                ${test8.creater_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.storage_id}">
+                ${test8.storage_id},
+            </if>
+            0,
+            now(),
+            now()
+            )
+        </sql>
+
+        <!-- 不合格库存 -->
+        <sql id="insertQualifiedInventoryDetailSql" method="execute">
+            insert into SAAS_TEST.saas_inventory_detail(
+            <if method="isNoEmpty" args="${keyProperty}">
+                inventory_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                supplier_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                goods_generic_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                goods_place,
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                registration_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                purchased_price,
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                status,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                creater_name,
+            </if>
+            storage_id,
+            qualified,
+            inventory_type,
+            create_time,
+            update_time
+            ) values(
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_id}">
+                ${test8.goods_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_code}">
+                ${test8.goods_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_name}">
+                ${test8.goods_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_id}">
+                ${test8.supplier_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.supplier_code}">
+                ${test8.supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_generic_name}">
+                ${test8.goods_generic_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_specification}">
+                ${test8.goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${test8.manufacturer}">
+                ${test8.manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${test8.goods_place}">
+                ${test8.goods_place},
+            </if>
+            <if method="isNoEmpty" args="${test8.preparation_id}">
+                ${test8.preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.unit_id}">
+                ${test8.unit_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.registration_code}">
+                ${test8.registration_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.batch_code}">
+                ${test8.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.purchase_price}">
+                ${test8.purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${test8.rejected_quantity}">
+                ${test8.rejected_quantity},
+            </if>
+            <if method="isNoEmpty" args="${test8.status}">
+                ${test8.status},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_id}">
+                ${test8.creater_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.creater_name}">
+                ${test8.creater_name},
+            </if>
+            -1,
+            1,
+            0,
+            now(),
+            now()
+            )
+        </sql>
+
+        <sql id="checkNumSql" method="query">
+            select
+            CASE
+            WHEN CONVERT(${test8.arrival_quantity},SIGNED) >= CONVERT(${test8.acceptance_quantity},SIGNED) THEN
+            'false'
+            ELSE
+            'true'
+            END AS mustBreak
+        </sql>
+
+        <sql id="checkDateSql" method="query">
+            SELECT
+            CASE
+            WHEN ${test8.production_time} >= ${test8.expire_time} THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+        </sql>
+
+        <sql id="checkDetailIsNull" method="query">
+            SELECT
+            CASE
+            WHEN ${test8} = '[]' THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="supplier_name" sortable="false" title="供货单位名称"/>
+            <clumn name="code" sortable="false" title="验收单编号"/>
+            <clumn name="accept_time" sortable="false" title="验收时间"/>
+            <clumn name="accepter_name" sortable="false" title="验收人"/>
+            <clumn name="storage_time" sortable="false" title="入库时间"/>
+            <clumn name="approver_name" sortable="false" title="审批人名称"/>
+            <clumn name="status_name" sortable="false" title="状态"/>
+            <clumn name="amount" sortable="false" title="验收金额"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供货单位编码" name="supplier_code"/>
+            <condition input="text" title="供货单位名称" name="supplier_name"/>
+            <!--<condition input="text" title="单号"  name="code"/>-->
+            <condition input="select" title="验收单状态" name="pay_status">
+                <sql>
+                    select a.value id,a.name text
+                    from SAAS_TEST.saas_dictionary a where a.category = 'purchase_acceptance_status'
+                </sql>
+            </condition>
+            <condition input="date" title="验收时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_purchase_order_add" title="新增验收单" icon="icon-add" channel="query_execute" width="1200">
+            <process>
+                <step channel="service" ref="saasPurchaseOrderService" method="saveAcceptanceReviewedData">
+                    <breakMessage>合格数量大于到货数量，请重新输入！</breakMessage>
+                </step>
+
+                <step channel="batchSql" ref="checkNumSql" collection="test8" item="test8">
+                    <breakMessage>合格数量大于到货数量，请重新输入！</breakMessage>
+                </step>
+
+                <step channel="batchSql" ref="checkDateSql" collection="test8" item="test8">
+                    <breakMessage>有效期需大于生产日期，请重新输入！</breakMessage>
+                </step>
+
+                <step channel="sql" ref="checkDetailIsNull">
+                    <breakMessage>没有需要保存的信息，请先添加！</breakMessage>
+                </step>
+
+                <step channel="sql" ref="insertSerialNumberSql"/>
+                <step channel="sql" ref="selectSerialNumberSql"/>
+
+                <step channel="sql" ref="insertSql"/>
+                <step channel="batchSql" ref="insertSqlDetail" collection="test8" item="test8"/>
+                <step channel="batchSql" ref="updateSqlDetail" collection="test8" item="test8"/>
+                <step channel="batchSql" ref="updateSqlDetail2" collection="test8" item="test8"/>
+
+                <step channel="sql" ref="insertAmountSql"/>
+
+                <step channel="sql" ref="insertAcceptanceAmountSql"/>
+
+                <step channel="batchSql" ref="insertGoodsBatchSql" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="insertInventorySql" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="insertInventoryDetailSql" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="insertQualifiedInventorySql" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="insertQualifiedInventoryDetailSql" collection="test8" item="test8"/>
+
+                <!--<step channel="sql" ref="insertReturnSql" />-->
+            </process>
+            <conditions>
+                <condition name="supplier_code" input="text" readonly="true" title="供货单位编码"/>
+                <condition name="supplier_name" input="text" required="true" title="供货单位名称" hiddenid="supplier_id"
+                           popuplinkage="408" popuptitle="供货单位选择" width="800" passvalue="fasle"/>
+                <condition name="originator_name" input="text" title="制单员" hiddenid="originator_id" popuplinkage="7105"
+                           popuptitle="用户选择" passvalue="fasle" width="800"/>
+
+                <condition name="accept_time" input="text" readonly="true" title="验收时间"
+                           defaultprocess="saasPurchaseOrderService.defaultProcess"/>
+                <condition name="accepter_name" input="text" title="验收员" hiddenid="accepter_id" popuplinkage="7108"
+                           popuptitle="用户选择" passvalue="fasle" width="800"/>
+                <condition name="approver_name" title="审批员" hiddenid="approver_id" required="true" targetMenuId="777"
+                           targetButtonId="testApproverLogin" input="popup"/>
+                <condition name="reviewer_name" title="复核员" hiddenid="reviewer_id" required="true" targetMenuId="777"
+                           targetButtonId="testReviewerLogin" input="popup"/>
+            </conditions>
+            <querys>
+                <query id="test8" channel="popupselect_removerow" selectButtonName="选择药品" removeButtonName="删除药品"
+                       pagesize="50" popupselect="7107" popuptitle="采购收货明细选择" width="800" isPage="false"
+                       checkbox="false" passvalue="supplier_id">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listSqlDetail"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="purchase_order_id" hidden="true" sortable="false" title="采购订单ID"/>
+                        <clumn name="purchase_order_code" hidden="true" sortable="false" title="采购订单编码"/>
+                        <clumn name="purchase_order_detail_id" hidden="true" sortable="false" title="采购订单明细ID"/>
+                        <clumn name="receive_id" hidden="true" sortable="false" title="收货单ID"/>
+                        <clumn name="receive_code" hidden="true" sortable="false" title="收货单ID"/>
+                        <clumn name="receive_detail_id" hidden="true" sortable="false" title="收货单明细ID"/>
+                        <clumn name="goods_id" hidden="true" sortable="false" title="商品ID"/>
+                        <clumn name="goods_code" sortable="false" title="商品编码"/>
+                        <clumn name="goods_name" sortable="false" title="商品名称"/>
+                        <clumn name="supplier_id" hidden="true" sortable="false" title="供方ID"/>
+                        <clumn name="supplier_code" sortable="false" title="供方编码"/>
+                        <clumn name="batch_code" sortable="false" title="批号" editor="true" required="true"
+                               editortype="validatebox"/>
+                        <clumn name="production_time" sortable="false" title="生产日期" editor="true" required="true"
+                               editortype="datebox" validate="date"/>
+                        <clumn name="expire_time" sortable="false" title="有效期至" editor="true" required="true"
+                               editortype="datebox" validate="date"/>
+                        <clumn name="arrival_quantity2" sortable="false" title="到货数量"/>
+                        <clumn name="arrival_quantity" sortable="false" title="到货数量" hidden="true" editor="true"
+                               required="true" editortype="validatebox" validate="number"/>
+                        <clumn name="storage_id" sortable="false" title="货位" editor="true" required="true"
+                               editortype="combobox">
+                            <sql>
+                                select a.id id,a.name text
+                                from SAAS_TEST.saas_storage a where a.id != '-1'
+                            </sql>
+                        </clumn>
+                        <clumn name="acceptance_quantity" sortable="false" title="合格数量" editor="true" required="true"
+                               editortype="validatebox" validate="number">
+                            <event mode="change" hiddenid="id"
+                                   popuplinkage="7202" popuptitle="合格金额" width="1000" passvalue="true"/>
+                        </clumn>
+
+                        <clumn name="rejected_quantity" sortable="false" title="拒收数量" editor="true" required="true"
+                               eeditortype="validatebox" validate="number" readonly="true"/>
+                        <clumn name="storage_quantity" sortable="false" title="入库数量" editor="true" required="true"
+                               editortype="validatebox" validate="number" readonly="true"/>
+                        <clumn name="sampling_quantity" sortable="false" title="抽样数量" editor="true" required="true"
+                               editortype="validatebox" validate="number"/>
+                        <clumn name="sterilization_batch" sortable="false" title="灭菌批次" editor="true"
+                               editortype="validatebox"/>
+                        <clumn name="inspection_report" sortable="false" title="检验报告" editor="true"
+                               editortype="validatebox">
+                            <!--<sql>
+                                    select a.value id,a.name text
+                                    from SAAS_TEST.saas_dictionary a where a.category = 'inspection_report'
+                            </sql>-->
+                        </clumn>
+                        <!--<clumn name="rejection_reason" sortable="false" title="拒收原因" editor="true"  editortype="validatebox"/>-->
+                        <clumn name="purchase_price" sortable="false" title="进货单价" editor="true" required="true"
+                               readonly="true"/>
+                        <clumn name="acceptance_amount" sortable="false" title="验收合格金额" required="true" editor="true"
+                               readonly="true"/>
+                        <clumn name="amount" sortable="false" title="总金额" editor="true" required="true"
+                               readonly="true"/>
+                        <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+                        <clumn name="goods_specification" sortable="false" title="商品规格"/>
+                        <!--<clumn name="preparation_id" sortable="false" title="剂型" editor="true" required="true" readonly="true" editortype="combobox">
+                            <sql>
+                                    select a.value id,a.name text
+                                    from SAAS_TEST.saas_dictionary a where a.category = 'preparation_id'
+                            </sql>
+                        </clumn>-->
+                        <clumn name="preparation_id" hidden="true" sortable="false" title="剂型"/>
+                        <clumn name="preparation_name" sortable="false" title="剂型"/>
+                        <!--<clumn name="unit_id" sortable="false" title="单位" editor="true" required="true" readonly="true" editortype="combobox">
+                            <sql>
+                                    select a.value id,a.name text
+                                    from SAAS_TEST.saas_dictionary a where a.category = 'unit_id'
+                            </sql>
+                        </clumn>-->
+                        <clumn name="unit_id" hidden="true" sortable="false" title="单位"/>
+                        <clumn name="unit_name" sortable="false" title="单位"/>
+                        <clumn name="manufacturer" sortable="false" title="生产企业"/>
+                        <clumn name="goods_place" sortable="false" title="商品产地"/>
+                        <clumn name="registration_code" sortable="false" title="批准文号"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+    </buttons>
+
+    <operate>
+        <!--<button id="saas_purchase_order_operate_edit" title="修改验收单" icon="icon-edit" channel="select_query_execute" width="1200">
+        <process>
+            <step channel="service" ref="saasPurchaseOrderService" method="saveModifierReviewedData" />
+            <step channel="sql" ref="updateSql" />
+            <step channel="batchSql"  ref="deleteDetailSql"/>
+            <step channel="batchSql"  ref="insertSqlDetail2" collection="test8" item="test8" />
+
+            <step channel="batchSql"  ref="updateAcceptSqlDetail" collection="test8" item="test8" />
+            <step channel="batchSql"  ref="updateAcceptDSqlDetail" collection="test8" item="test8" />
+
+            <step channel="batchSql"  ref="updateSqlDetail" collection="test8" item="test8" />
+            <step channel="batchSql"  ref="updateSqlDetail2" collection="test8" item="test8"/>
+
+            <step channel="sql" ref="updateAmountSql" />
+
+            <step channel="sql" ref="updateAcceptanceAmountSql" />
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test" />
+            <step channel="sql" ref="querySql" />
+            <step channel="service" ref="commonSearchService2" method="test" />
+       </queryProcess>
+       <key>id</key>
+       <table>saas_acceptance</table>
+       <conditions>
+               <condition name="code" input="text" readonly="true"  title="验收单编号"  />
+               <condition name="supplier_code" input="text" readonly="true"  title="供货单位编码"  />
+            <condition name="supplier_name" input="text" required="true"  title="供货单位名称" hiddenid="supplier_id" popuplinkage="408" popuptitle="供货单位选择" width="800" passvalue="fasle"/>
+            <condition name="originator_name" input="text"  title="制单员"  hiddenid="originator_id" popuplinkage="7105" popuptitle="用户选择" passvalue="fasle" width="800"/>
+            <condition name="accept_time" input="text"  readonly="true"  title="验收时间"/>
+            <condition name="storage_time" input="text"  readonly="true"  title="入库时间"/>
+            <condition name="accepter_name" input="text"  title="验收员"  hiddenid="accepter_id" popuplinkage="7108" popuptitle="用户选择" passvalue="fasle" width="800"/>
+            <condition name="approver_name" input="text"  title="审批员"  hiddenid="approver_id" popuplinkage="7103" popuptitle="用户选择" passvalue="fasle" width="800"/>
+       </conditions>
+       <querys>
+               <query id="test8" channel="popupselect_removerow" pagesize="50" popupselect="7107" popuptitle="采购收货明细选择" width="800" isPage="false" >
+                <process>
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                    <step channel="sql" ref="listSqlDetail"/>
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                </process>
+                <model>
+                    <clumn name="purchase_order_id" hidden="true" sortable="false" title="采购订单ID" />
+                       <clumn name="purchase_order_detail_id" hidden="true" sortable="false" title="采购订单明细ID" />
+                    <clumn name="receive_id" hidden="true" sortable="false" title="收货单ID" />
+                    <clumn name="receive_detail_id" hidden="true" sortable="false" title="收货单明细ID" />
+                    <clumn name="goods_id" hidden="true" sortable="false" title="商品ID" />
+                    <clumn name="goods_code" sortable="false" title="商品编码" />
+                    <clumn name="goods_name" sortable="false" title="商品名称" />
+                    <clumn name="batch_code" sortable="false" title="批号" editor="true" required="true" editortype="validatebox"/>
+                    <clumn name="production_time" sortable="false" title="生产日期" editor="true" required="true" editortype="datebox"/>
+                    <clumn name="expire_time" sortable="false" title="有效期至" editor="true" required="true" editortype="datebox"/>
+                    <clumn name="arrival_quantity" sortable="false" title="到货数量" editor="true" required="true" editortype="numberbox" min="0" precision="2"/>
+                    <clumn name="acceptance_quantity" sortable="false" title="合格数量" editor="true" required="true" editortype="numberbox" min="0" precision="2">
+                        <event mode="cursor" hiddenid="id"
+                               popuplinkage="7202" popuptitle="合格金额" width="1000" passvalue="true"/>
+
+                    </clumn>
+                    <clumn name="sampling_quantity" sortable="false" title="验收数量" editor="true" required="true" editortype="numberbox" min="0" precision="2"/>
+                    <clumn name="sterilization_batch" sortable="false" title="灭菌批次" editor="true" required="true" editortype="validatebox"/>
+                    <clumn name="inspection_report" sortable="false" title="检验报告" editor="true" required="true" editortype="validatebox"/>
+                    <clumn name="rejection_reason" sortable="false" title="拒收原因" editor="true"  editortype="validatebox"/>
+                    <clumn name="purchase_price" sortable="false" title="进货单价" editor="true" required="true" readonly="true"/>
+                    <clumn name="acceptance_amount" sortable="false" title="验收合格金额" editor="true"/>
+                    <clumn name="goods_generic_name" sortable="false" title="商品通用名称" />
+                    <clumn name="goods_specification" sortable="false" title="商品规格" />
+                    <clumn name="preparation_id" sortable="false" title="剂型" editor="true" required="true" readonly="true" editortype="combobox">
+                        <sql>
+                                select a.value id,a.name text
+                                from SAAS_TEST.saas_dictionary a where a.category = 'preparation_id'
+                        </sql>
+                    </clumn>
+                    <clumn name="unit_id" sortable="false" title="单位" editor="true" required="true" readonly="true" editortype="combobox">
+                        <sql>
+                                select a.value id,a.name text
+                                from SAAS_TEST.saas_dictionary a where a.category = 'unit_id'
+                        </sql>
+                    </clumn>
+                    <clumn name="manufacturer" sortable="false" title="生产企业" />
+                    <clumn name="goods_place" sortable="false" title="商品产地" />
+                    <clumn name="registration_code" sortable="false" title="批准文号" />
+                </model>
+               </query>
+       </querys>
+    </button>-->
+
+        <button id="saas_purchase_order_operate_query" title="查看验收单" icon="icon-edit" channel="select_query"
+                width="1200">
+            <process>
+                <step channel="service" ref="saasPurchaseOrderService" method="saveModifierReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="batchSql" ref="deleteDetailSql"/>
+                <step channel="batchSql" ref="insertSqlDetail2" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="updateAcceptSqlDetail" collection="test8" item="test8"/>
+                <step channel="batchSql" ref="updateAcceptDSqlDetail" collection="test8" item="test8"/>
+
+                <step channel="batchSql" ref="updateSqlDetail" collection="test8" item="test8"/>
+                <step channel="batchSql" ref="updateSqlDetail2" collection="test8" item="test8"/>
+
+                <step channel="sql" ref="updateAmountSql"/>
+
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_acceptance</table>
+            <conditions>
+                <condition name="code" input="text" readonly="true" title="验收单编号"/>
+                <condition name="supplier_code" input="text" readonly="true" title="供货单位编码"/>
+                <condition name="supplier_name" input="text" title="供货单位名称"/>
+                <condition name="originator_name" input="text" readonly="true" title="制单员"/>
+                <condition name="accept_time" input="text" readonly="true" title="验收时间"/>
+                <condition name="storage_time" input="text" readonly="true" title="入库时间"/>
+                <condition name="accepter_name" input="text" title="验收员" readonly="true"/>
+                <condition name="approver_name" input="text" title="审批员" readonly="true"/>
+                <condition name="reviewer_name" input="text" title="复核员" readonly="true"/>
+                <condition name="amount" input="text" title="验收金额" readonly="true"/>
+            </conditions>
+            <querys>
+                <query id="test8" channel="" pagesize="50" popupselect="7107" popuptitle="采购收货明细选择" width="800"
+                       checkbox="false" isPage="false">
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listSqlDetail"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="purchase_order_id" hidden="true" sortable="false" title="采购订单ID"/>
+                        <clumn name="purchase_order_code" hidden="true" sortable="false" title="采购订单编码"/>
+                        <clumn name="purchase_order_detail_id" hidden="true" sortable="false" title="采购订单明细ID"/>
+                        <clumn name="receive_id" hidden="true" sortable="false" title="收货单ID"/>
+                        <clumn name="receive_code" hidden="true" sortable="false" title="收货单ID"/>
+                        <clumn name="receive_detail_id" hidden="true" sortable="false" title="收货单明细ID"/>
+                        <clumn name="goods_id" hidden="true" sortable="false" title="商品ID"/>
+                        <clumn name="goods_code" sortable="false" title="商品编码"/>
+                        <clumn name="goods_name" sortable="false" title="商品名称"/>
+                        <clumn name="batch_code" sortable="false" title="批号"/>
+                        <clumn name="production_time" sortable="false" title="生产日期"/>
+                        <clumn name="expire_time" sortable="false" title="有效期至"/>
+                        <clumn name="arrival_quantity" sortable="false" title="到货数量"/>
+                        <clumn name="acceptance_quantity" sortable="false" title="合格数量"/>
+                        <clumn name="rejected_quantity" sortable="false" title="拒收数量"/>
+                        <clumn name="storage_quantity" sortable="false" title="入库数量"/>
+                        <clumn name="sampling_quantity" sortable="false" title="抽样数量"/>
+                        <clumn name="sterilization_batch" sortable="false" title="灭菌批次"/>
+                        <clumn name="inspection_report" sortable="false" title="检验报告"/>
+                        <!--<clumn name="rejection_reason" sortable="false" title="拒收原因" />-->
+                        <clumn name="purchase_price" sortable="false" title="进货单价"/>
+                        <clumn name="acceptance_amount" sortable="false" title="验收合格金额"/>
+                        <clumn name="amount" sortable="false" title="总金额"/>
+                        <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+                        <clumn name="goods_specification" sortable="false" title="商品规格"/>
+                        <!--<clumn name="preparation_id" sortable="false" title="剂型" editor="true" required="true" readonly="true" editortype="combobox">
+                            <sql>
+                                    select a.value id,a.name text
+                                    from SAAS_TEST.saas_dictionary a where a.category = 'preparation_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="unit_id" sortable="false" title="单位" editor="true" required="true" readonly="true" editortype="combobox">
+                            <sql>
+                                    select a.value id,a.name text
+                                    from SAAS_TEST.saas_dictionary a where a.category = 'unit_id'
+                            </sql>
+                        </clumn>-->
+                        <clumn name="preparation_id" hidden="true" sortable="false" title="剂型"/>
+                        <clumn name="preparation_name" sortable="false" title="剂型"/>
+                        <clumn name="unit_id" hidden="true" sortable="false" title="单位"/>
+                        <clumn name="unit_name" sortable="false" title="单位"/>
+                        <clumn name="manufacturer" sortable="false" title="生产企业"/>
+                        <clumn name="goods_place" sortable="false" title="商品产地"/>
+                        <clumn name="registration_code" sortable="false" title="批准文号"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+    </operate>
+</template>

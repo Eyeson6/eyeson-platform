@@ -1,0 +1,187 @@
+<template menuId="2401" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="日期段查询"/>
+        <direct name="采购订单查询"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            p.purchaseorder_code,
+            p.creater_name,
+            p.price,
+            p.create_date,
+            p.appointed_time,
+            d.number,
+            d.name,
+            d.ty_name,
+            d.specification,
+            d.place,
+
+            CASE d.unit_id
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+
+            d.quantity,
+            d.order_price,
+            d.order_amount,
+
+
+            CASE p.order_states
+            WHEN '0' THEN
+            '待验收'
+            WHEN '1' THEN
+            '已验收'
+            WHEN '2' THEN
+            '已入库'
+            ELSE
+            '其他'
+            END AS order_states
+
+            FROM
+            saas_purchaseorder_details d
+            LEFT JOIN saas_purchaseorder p ON d.purchaseorder_code = p.purchaseorder_code
+            WHERE 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and p.create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(p.create_date,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                <![CDATA[ and p.creater_name = ${creater_name}]]>
+            </if>
+        </sql>
+
+        <sql id="deleteSql" method="delete">
+            <!--delete from  saas_supplier where -->
+            update saas_supplier set delete_state = '1' where
+
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id= ${id}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="purchaseorder_code" sortable="true" title="采购单号"/>
+            <clumn name="creater_name" sortable="true" title="登记人"/>
+            <clumn name="create_date" sortable="true" title="登记时间"/>
+            <clumn name="price" sortable="true" title="订单总额"/>
+            <clumn name="appointed_time" sortable="true" title="预计到货日期"/>
+            <clumn name="number" sortable="true" title="商品编码"/>
+            <clumn name="name" sortable="true" title="商品名称"/>
+            <clumn name="ty_name" sortable="true" title="通用名称"/>
+            <clumn name="specification" sortable="true" title="规格"/>
+            <clumn name="place" sortable="true" title="生产厂家"/>
+            <clumn name="unit_id" sortable="true" title="单位"/>
+            <!--<clumn name="packing_amount" sortable="false" title="包装量" />-->
+            <clumn name="quantity" sortable="true" title="订货数量"/>
+            <clumn name="order_price" sortable="true" title="订货单价"/>
+            <clumn name="order_amount" sortable="true" title="订货金额"/>
+            <clumn name="order_states" sortable="true" title="订单状态"/>
+        </model>
+        <conditions>
+            <condition input="date" title="开始日期" name="startTime" defaultvalue="2015-06-07"
+                       defaultprocess="saasSupplierService.setDate" type="3"/>
+            <condition input="date" title="截止日期" name="endTime" defaultvalue="2015-06-07"
+                       defaultprocess="saasSupplierService.setDate" type="3"/>
+            <condition input="text" title="操作员" name="creater_name" defaultvalue="1"
+                       defaultprocess="saasSupplierService.setCreaterName"/>
+        </conditions>
+    </query>
+
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+</template>
+
+

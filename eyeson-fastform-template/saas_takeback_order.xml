@@ -1,0 +1,408 @@
+<template menuId="411" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购管理"/>
+        <direct name="采购收货"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            p.id,
+            p.supplier_code,
+            p.supplier_name,
+            p.takeback_order_code,
+            p.takeback_time,
+            (select su_name from sys_user where su_id = p.contact) as contact,
+            CASE p.order_states
+            WHEN '0' THEN
+            '未验收'
+            WHEN '1' THEN
+            '已验收'
+            ELSE
+            '已取消'
+            END AS order_states,
+            d.number,
+            d.goods_name,
+            d.specification,
+            d.place,
+            d.d_num,
+            d.s_num,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = d.unit_id
+            ) AS preparation_name,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_name,
+            d.preparation_id,
+            d.unit_id,
+            d.major_supplier,
+            d.registration_number
+            FROM
+            saas_takeback_order p
+            LEFT JOIN saas_takeback_order_details d ON p.takeback_order_code = d.takeback_order_code where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and p.takeback_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and p.takeback_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and p.supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                <![CDATA[ and p.supplier_code like %${supplier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_states}">
+                <![CDATA[ and p.order_states like %${order_states}%]]>
+            </if>
+            <if method="isNoEmpty" args="${takeback_order_code}">
+                <![CDATA[ and p.takeback_order_code like %${takeback_order_code}%]]>
+            </if>
+            order by p.create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            SELECT
+            p.id,
+            p.supplier_code,
+            p.supplier_name,
+            p.purchaseorder_code,
+            p.purchaseorder_time,
+            p.appointed_time,
+            (select su_name from sys_user where su_id = p.contact) as contact,
+            p.approved_id,
+            p.approved_name,
+            p.price,
+            p.order_states,
+            d.number,
+            d.NAME as name,
+            d.specification,
+            d.d_num,
+            d.s_num,
+            d.place,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = d.unit_id
+            ) AS preparation_name,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_name,
+            d.preparation_id,
+            d.unit_id,
+            d.major_supplier,
+            d.registration_number
+            FROM
+            saas_purchaseorder p
+            LEFT JOIN saas_purchaseorder_details d ON p.purchaseorder_code = d.purchaseorder_code where p.id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_takeback_order(
+            <if method="isNoEmpty" args="${purchaseorder_code}">
+                purchaseorder_code,
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                supplier_code,
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                supplier_name,
+            </if>
+            <if method="isNoEmpty" args="${su_id}">
+                contact,
+            </if>
+            <if method="isNoEmpty" args="${takeback_time}">
+                takeback_time,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${takeback_order_code}">
+                takeback_order_code,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${purchaseorder_code}">
+                ${purchaseorder_code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_code}">
+                ${supplier_code},
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                ${supplier_name},
+            </if>
+            <if method="isNoEmpty" args="${su_id}">
+                ${su_id},
+            </if>
+            <if method="isNoEmpty" args="${takeback_time}">
+                ${takeback_time},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${takeback_order_code}">
+                ${takeback_order_code},
+            </if>
+            now(),
+            )
+        </sql>
+        <sql id="insertSql2" method="insert">
+            insert into saas_takeback_order_details(
+            <if method="isNoEmpty" args="${takeback_order_code}">
+                takeback_order_code,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${ty_name}">
+                ty_name,
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification,
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${d_num}">
+                d_num,
+            </if>
+            <if method="isNoEmpty" args="${s_num}">
+                s_num,
+            </if>
+            <if method="isNoEmpty" args="${major_supplier}">
+                major_supplier,
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                registration_number,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${takeback_order_code}">
+                ${takeback_order_code},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                ${goods_name},
+            </if>
+            <if method="isNoEmpty" args="${ty_name}">
+                ${ty_name},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                ${specification},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                ${place},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${d_num}">
+                ${d_num},
+            </if>
+            <if method="isNoEmpty" args="${s_num}">
+                ${s_num},
+            </if>
+            <if method="isNoEmpty" args="${major_supplier}">
+                ${major_supplier},
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                ${registration_number},
+            </if>
+            now(),
+            )
+        </sql>
+
+
+        <sql id="updateSql" method="update">
+            update saas_purchaseorder set
+            order_states = 1,
+            where id=${pid}
+        </sql>
+        <sql id="updateSql2" method="update">
+            update saas_purchaseorder_details set
+            <if method="isNoEmpty" args="${quantity}">
+                quantity = ${quantity},
+            </if>
+            <if method="isNoEmpty" args="${order_price}">
+                order_price = ${order_price},
+            </if>
+            <if method="isNoEmpty" args="${order_setprice}">
+                order_setprice = ${order_setprice},
+            </if>
+            <if method="isNoEmpty" args="${order_amount}">
+                order_amount = ${order_amount},
+            </if>
+            where purchaseorder_code=(select purchaseorder_code from saas_purchaseorder p where p.id = ${key})
+        </sql>
+        <sql id="totalSql" method="select">
+            select count(a.s_id) channelsid
+            from saas_purchaseorder a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                <![CDATA[ and s_id like %${s_id}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_states}">
+                <![CDATA[ and order_states like %${order_states}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from saas_purchaseorder where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[s_id= ${value}]]>
+            </if>
+        </sql>
+        <sql id="checkNumSql" method="query">
+            SELECT
+            CASE
+            WHEN ${s_num} > quantity THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            FROM
+            saas_purchaseorder_details
+            WHERE
+            id = ${id}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="supplier_name" sortable="false" title="供方单位"/>
+            <clumn name="takeback_order_code" sortable="false" title="单号" key="true"/>
+            <clumn name="takeback_time" sortable="false" title="收货日期"/>
+            <clumn name="contact" sortable="false" title="收货人"/>
+            <clumn name="order_states" sortable="false" title="状态"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="d_num" sortable="false" title="订货数量"/>
+            <clumn name="s_num" sortable="false" title="收货数量"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="ty_name" sortable="false" title="通用名"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="major_supplier" sortable="false" title="生产企业"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供货供方编码" name="supplier_code"/>
+            <condition input="text" title="供货单位名称" name="supplier_name"/>
+            <condition input="text" title="收货单号" name="takeback_order_code"/>
+            <!-- <condition input="select" title="订单状态"  name="order_states">
+                <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'purchaseorder_states'
+                </sql>
+            </condition> -->
+            <condition input="date" title="收货日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_takeback_order_add" title="添加" icon="icon-add" channel="query_execute" width="1200">
+            <process>
+                <step channel="sql" ref="checkNumSql">
+                    <breakMessage>输入值不得超过订货数量,请重新输入！</breakMessage>
+                </step>
+                <step channel="service" ref="saasPurchaseOrderService" method="saveReviewedDataByTakeBack"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertSql2"/>
+                <step channel="sql" ref="updateSql"/>
+            </process>
+
+            <conditions>
+                <condition name="purchaseorder_code" input="text" required="true" title="订单单号" hiddenid="id"
+                           popuplinkage="412" popuptitle="采购订单选择" passvalue="false" width="800"/>
+                <condition name="supplier_code" input="text" readonly="true" hiddenid="pid" title="供货单位编码"/>
+                <condition name="supplier_name" input="text" readonly="true" title="供货单位名称"/>
+                <condition name="su_name" input="text" title="收货人" hiddenid="su_id" popuplinkage="413" popuptitle="用户选择"
+                           passvalue="fasle" width="800"/>
+                <condition name="takeback_time" input="text" readonly="true" title="收货日期"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition name="number" input="text" readonly="true" title="商品编码"/>
+                <condition name="goods_name" input="text" title="商品名称" readonly="true"/>
+                <condition name="specification" input="text" readonly="true" title="规格"/>
+                <condition name="d_num" input="text" validate="number" readonly="true" title="订货数量" defaultvalue="0"/>
+                <condition name="s_num" input="text" validate="number" title="收货数量" defaultvalue="0"/>
+                <condition name="place" input="text" title="产地"/>
+                <condition name="ty_name" input="text" title="通用名" readonly="true"/>
+                <condition name="preparation_name" input="text" hiddenid="preparation_id" title="剂型" readonly="true"/>
+                <condition name="unit_name" input="text" title="单位" hiddenid="unit_id" readonly="true"/>
+                <condition name="major_supplier" input="text" title="生产企业" readonly="true"/>
+                <condition name="registration_number" input="text" title="批准文号" readonly="true"/>
+                <!--  <condition name="un_type" input="select"  title="不合格原因" defaultvalue="1">
+                     <sql>
+                             select a.value id,a.name text
+                             from saas_dictionary a where a.code = 'unqualified_type'
+                     </sql>u
+                 </condition> -->
+
+            </conditions>
+        </button>
+
+    </buttons>
+
+</template>

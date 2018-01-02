@@ -27,11 +27,12 @@ repositories {
 bootRun {
     addResources = true
 }
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
+    compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
+    compile group: 'xom', name: 'xom', version: '1.2.5'
     compile("org.springframework.boot:spring-boot-starter-web")
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '1.4.3.RELEASE'
     compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.1.1'
@@ -40,5 +41,9 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
     compile 'com.corundumstudio.socketio:netty-socketio:1.7.12'
+    compile "net.sf.json-lib:json-lib:2.4:jdk15"
+    compile("org.codehaus.jackson:jackson-mapper-asl:1.9.11")
+    compile("org.apache.poi:poi:3.9")
+    compile("org.apache.poi:poi-ooxml:3.9")
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

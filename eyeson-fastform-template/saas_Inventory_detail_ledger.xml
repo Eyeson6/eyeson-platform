@@ -1,0 +1,780 @@
+<template menuId="8009" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="库存明细"/>
+        <direct name="进销存台账"/>
+    </directions>
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as id,
+            g.id as goods_ids,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.registration_code,
+            i.purchased_price,
+            <!-- 期末数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) AS inventory_quantity,
+            <!-- 期末金额-->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as inventory_price,
+            <!-- 期初数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time <=  ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) AS zong_quantity,
+            <!-- 期初金额-->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time <= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as zong_price,
+            <!-- 本期入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_quantity,
+            <!-- 本期入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_price,
+            <!-- 本期采购入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_purchase_quantity,
+            <!-- 本期采购入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_purchase_price,
+            <!-- 本期销退入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_return_quantity,
+            <!-- 本期销退入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_return_price,
+            <!-- 本期盘盈入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 4
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_check_quantity,
+            <!-- 本期盘盈入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 4
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_check_price,
+            <!-- 本期拆零入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 5
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_scatter_quantity,
+            <!-- 本期拆零入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type = 5
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_scatter_price,
+            <!-- 本期其他入库数量 -->
+            (SELECT COALESCE(sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type not in(0,1,4,5)
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_other_quantity,
+            <!-- 本期其他入库金额 -->
+            (SELECT COALESCE(sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and i.quantity > 0 and g.id=goods_ids and i.inventory_type not in(0,1,4,5)
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as come_other_price,
+            <!-- 本期出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_quantity,
+            <!-- 本期出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_price,
+            <!-- 本期销售出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 2
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_sales_quantity,
+            <!-- 本期销售出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 2
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_sales_price,
+            <!-- 本期采退出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 3
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_return_quantity,
+            <!-- 本期采退出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 3
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_return_price,
+            <!-- 本期盘亏出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 4
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_check_quantity,
+            <!-- 本期盘亏出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 4
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_check_price,
+            <!-- 本期拆零出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 5
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_scatter_quantity,
+            <!-- 本期拆零出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 5
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_scatter_price,
+            <!-- 本期清斗出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 9
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_clear_quantity,
+            <!-- 本期清斗出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified=0 and 0 >= i.quantity and g.id=goods_ids and i.inventory_type = 9
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_clear_price,
+            <!-- 本期销毁出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.qualified=3 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_destroy_quantity,
+            <!-- 本期销毁出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where qualified = 3 and g.id=goods_ids
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_destroy_price,
+            <!-- 本期其它出库数量 -->
+            (SELECT COALESCE(-1*sum(i.quantity),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where (g.id=goods_ids and qualified = 0 and 0 >= i.quantity
+            and i.inventory_type not in(2,3,4,5,9)) or (g.id=goods_ids and qualified != 3 and 0 >= i.quantity)
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_other_quantity,
+            <!-- 本期其它出库金额 -->
+            (SELECT COALESCE(-1*sum(i.quantity*i.purchased_price),0) FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where (g.id=goods_ids and qualified = 0 and 0 >= i.quantity
+            and i.inventory_type not in(2,3,4,5,9)) or
+            (g.id=goods_ids and qualified != 3 and 0 >= i.quantity)
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            ) as go_other_price
+
+
+            FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where 1=1 and i.qualified=0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= CONCAT(${endTime},' 23:59:59')]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            group by i.goods_id
+            order by g.create_time desc
+        </sql>
+    </sqls>
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="true" title="商品编号" urlAction="/commonSearch/main.do?menuId=8001"
+                   urlType="open" urlName="出入库明细"/>
+            <clumn name="goods_name" sortable="true" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="true" title="通用名称"/>
+            <clumn name="goods_specification" sortable="true" title="规格"/>
+            <clumn name="preparation_id" sortable="true" title="剂型"/>
+            <clumn name="unit_id" sortable="true" title="单位"/>
+            <clumn name="goods_place" sortable="true" title="产地"/>
+            <clumn name="manufacturer" sortable="true" title="生产厂家"/>
+            <clumn name="registration_code" sortable="true" title="批准文号"/>
+
+            <clumn name="zong_quantity" sortable="true" title="初期结存数量" urlAction="/commonSearch/main.do?menuId=8001"
+                   urlType="open" urlName="出入库明细"/>
+            <clumn name="zong_price" sortable="true" title="初期结存金额"/>
+
+            <clumn name="come_purchase_quantity" sortable="true" title="采购入库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="come_purchase_price" sortable="true" title="采购入库金额" hidden="true"/>
+            <clumn name="come_return_quantity" sortable="true" title="销退入库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="come_return_price" sortable="true" title="销退入库金额" hidden="true"/>
+            <clumn name="come_check_quantity" sortable="true" title="盘盈入库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="come_check_price" sortable="true" title="盘盈入库金额" hidden="true"/>
+            <clumn name="come_scatter_quantity" sortable="true" title="拆零入库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="come_scatter_price" sortable="true" title="拆零入库金额" hidden="true"/>
+            <clumn name="come_other_quantity" sortable="true" title="其他入库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="come_other_price" sortable="true" title="其他入库金额" hidden="true"/>
+            <clumn name="come_quantity" sortable="true" title="本期入库数量"/>
+            <clumn name="come_price" sortable="true" title="本期入库金额"/>
+
+            <clumn name="go_sales_quantity" sortable="true" title="销售出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_sales_price" sortable="true" title="销售出库金额" hidden="true"/>
+            <clumn name="go_return_quantity" sortable="true" title="销退出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_return_price" sortable="true" title="销退出库金额" hidden="true"/>
+            <clumn name="go_check_quantity" sortable="true" title="盘盈出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_check_price" sortable="true" title="盘盈出库金额" hidden="true"/>
+            <clumn name="go_scatter_quantity" sortable="true" title="拆零出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_scatter_price" sortable="true" title="拆零出库金额" hidden="true"/>
+
+            <clumn name="go_clear_quantity" sortable="true" title="清斗出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_clear_price" sortable="true" title="清斗出库金额" hidden="true"/>
+
+            <clumn name="go_destroy_quantity" sortable="true" title="销毁出库数量" hidden="true"/>
+            <clumn name="go_destroy_price" sortable="true" title="销毁出库金额" hidden="true"/>
+            <clumn name="go_other_quantity" sortable="true" title="其他出库数量" hidden="true"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="出入库明细"/>
+            <clumn name="go_other_price" sortable="true" title="其他出库金额" hidden="true"/>
+
+            <clumn name="go_quantity" sortable="true" title="本期出库数量"/>
+            <clumn name="go_price" sortable="true" title="本期出库金额"/>
+            <clumn name="inventory_quantity" sortable="true" title="期末结存数量"/>
+            <clumn name="inventory_price" sortable="true" title="期末结存金额"/>
+        </model>
+        <conditions>
+
+            <condition input="date" title="开始日期" name="startTime" type="3"
+                       defaultprocess="SaasmaintainService.defaultProcess"/>
+            <condition input="date" title="至" name="endTime" type="3"
+                       defaultprocess="SaasmaintainService.defaultProcess"/>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <!-- <condition input="select" title="供货单位"  name="su_code">
+                    <sql>
+                    select code id,name text
+                    from saas_supplier
+                    </sql>
+                </condition>-->
+        </conditions>
+    </query>
+</template>

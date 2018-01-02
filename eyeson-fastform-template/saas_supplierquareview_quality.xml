@@ -1,0 +1,642 @@
+<template menuId="494" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="质量评审供方审批"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            start_date,
+            end_date,
+            code,
+            name,
+            operating_procedure,
+
+            CASE certificate
+            WHEN '0' THEN
+            '质量认证证书有效'
+            WHEN '1' THEN
+            '质量认证证书无效'
+            ELSE
+            '其他'
+            END AS certificate,
+
+            CASE organizational
+            WHEN '0' THEN
+            '人员组织机构健全'
+            WHEN '1' THEN
+            '人员组织机构不健全'
+            ELSE
+            '其他'
+            END AS organizational,
+
+            CASE management_system
+            WHEN '0' THEN
+            '管理制度及操作规程完善'
+            WHEN '1' THEN
+            '管理制度及操作规程不完善'
+            ELSE
+            '其他'
+            END AS management_system,
+
+            CASE office_space
+            WHEN '0' THEN
+            '办公场所及库房符合标准'
+            WHEN '1' THEN
+            '办公场所及库房不符合标准'
+            ELSE
+            '其他'
+            END AS office_space,
+
+            CASE facility
+            WHEN '0' THEN
+            '设施设备完善'
+            WHEN '1' THEN
+            '设施设备不完善'
+            ELSE
+            '其他'
+            END AS facility,
+
+            CASE computer_management
+            WHEN '0' THEN
+            '计算机管理系统完善'
+            WHEN '1' THEN
+            '计算机管理系统不完善'
+            ELSE
+            '其他'
+            END AS computer_management,
+
+            CASE transport_tool
+            WHEN '0' THEN
+            '运输工具符合标准'
+            WHEN '1' THEN
+            '运输工具不符合标准'
+            ELSE
+            '其他'
+            END AS transport_tool,
+
+            CASE transport_process
+            WHEN '0' THEN
+            '运输过程质量保证较好'
+            WHEN '1' THEN
+            '运输过程质量保证一般'
+            ELSE
+            '其他'
+            END AS transport_process,
+
+            CASE public_certificate
+            WHEN '0' THEN
+            '公示无吊销许可证及质量认证证书'
+            WHEN '1' THEN
+            '公示有吊销许可证及质量认证证书'
+            ELSE
+            '其他'
+            END AS public_certificate,
+
+            CASE bulletin_drugs
+            WHEN '0' THEN
+            '质量公告无不合格药品'
+            WHEN '1' THEN
+            '质量公告有不合格药品'
+            ELSE
+            '其他'
+            END AS bulletin_drugs,
+
+            CASE peer_reputation
+            WHEN '0' THEN
+            '同好了解口碑较好'
+            WHEN '1' THEN
+            '同好了解口碑一般'
+            WHEN '2' THEN
+            '同好了解口碑较差'
+            END AS peer_reputation,
+
+            CASE service_quality
+            WHEN '0' THEN
+            '服务质量较好'
+            WHEN '1' THEN
+            '服务质量一般'
+            WHEN '2' THEN
+            '服务质量较差'
+            END AS service_quality,
+
+            CASE arrival_status
+            WHEN '0' THEN
+            '到货及时'
+            WHEN '1' THEN
+            '到货不及时'
+            ELSE
+            '其他'
+            END AS arrival_status,
+
+            CASE provide_invoice
+            WHEN '0' THEN
+            '发票提供及时'
+            WHEN '1' THEN
+            '发票提供不及时'
+            ELSE
+            '其他'
+            END AS provide_invoice,
+
+            CASE contract_agreement
+            WHEN '0' THEN
+            '合同及质量保证协议认真履行'
+            WHEN '1' THEN
+            '合同及质量保证协议不认真履行'
+            ELSE
+            '其他'
+            END AS contract_agreement,
+
+            inspection,
+            being_investigated,
+            inspection_date,
+            quality_approval_user_id,
+            quality_approval_user_name,
+            quality_approval_status,
+            quality_approval_time,
+            quality_approval_conclusion,
+            creater_id,
+            creater_name,
+            create_date,
+            delete_state
+
+            FROM
+            saas_supplierquareview where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            order by create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_supplierquareview where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_supplierquareview(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${start_date}">
+                start_date,
+            </if>
+            <if method="isNoEmpty" args="${end_date}">
+                end_date,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${operating_procedure}">
+                operating_procedure,
+            </if>
+            <if method="isNoEmpty" args="${certificate}">
+                certificate,
+            </if>
+            <if method="isNoEmpty" args="${organizational}">
+                organizational,
+            </if>
+            <if method="isNoEmpty" args="${management_system}">
+                management_system,
+            </if>
+            <if method="isNoEmpty" args="${office_space}">
+                office_space,
+            </if>
+            <if method="isNoEmpty" args="${facility}">
+                facility,
+            </if>
+            <if method="isNoEmpty" args="${computer_management}">
+                computer_management,
+            </if>
+            <if method="isNoEmpty" args="${transport_tool}">
+                transport_tool,
+            </if>
+            <if method="isNoEmpty" args="${transport_process}">
+                transport_process,
+            </if>
+            <if method="isNoEmpty" args="${public_certificate}">
+                public_certificate,
+            </if>
+            <if method="isNoEmpty" args="${bulletin_drugs}">
+                bulletin_drugs,
+            </if>
+            <if method="isNoEmpty" args="${peer_reputation}">
+                peer_reputation,
+            </if>
+            <if method="isNoEmpty" args="${service_quality}">
+                service_quality,
+            </if>
+            <if method="isNoEmpty" args="${arrival_status}">
+                arrival_status,
+            </if>
+            <if method="isNoEmpty" args="${provide_invoice}">
+                provide_invoice,
+            </if>
+            <if method="isNoEmpty" args="${contract_agreement}">
+                contract_agreement,
+            </if>
+            <if method="isNoEmpty" args="${inspection}">
+                inspection,
+            </if>
+            <if method="isNoEmpty" args="${being_investigated}">
+                being_investigated,
+            </if>
+            <if method="isNoEmpty" args="${inspection_date}">
+                inspection_date,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                quality_approval_time,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                quality_approval_conclusion,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${start_date}">
+                ${start_date},
+            </if>
+            <if method="isNoEmpty" args="${end_date}">
+                ${end_date},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${operating_procedure}">
+                ${operating_procedure},
+            </if>
+            <if method="isNoEmpty" args="${certificate}">
+                ${certificate},
+            </if>
+            <if method="isNoEmpty" args="${organizational}">
+                ${organizational},
+            </if>
+            <if method="isNoEmpty" args="${management_system}">
+                ${management_system},
+            </if>
+            <if method="isNoEmpty" args="${office_space}">
+                ${office_space},
+            </if>
+            <if method="isNoEmpty" args="${facility}">
+                ${facility},
+            </if>
+            <if method="isNoEmpty" args="${computer_management}">
+                ${computer_management},
+            </if>
+            <if method="isNoEmpty" args="${transport_tool}">
+                ${transport_tool},
+            </if>
+            <if method="isNoEmpty" args="${transport_process}">
+                ${transport_process},
+            </if>
+            <if method="isNoEmpty" args="${public_certificate}">
+                ${public_certificate},
+            </if>
+            <if method="isNoEmpty" args="${bulletin_drugs}">
+                ${bulletin_drugs},
+            </if>
+            <if method="isNoEmpty" args="${peer_reputation}">
+                ${peer_reputation},
+            </if>
+            <if method="isNoEmpty" args="${service_quality}">
+                ${service_quality},
+            </if>
+            <if method="isNoEmpty" args="${arrival_status}">
+                ${arrival_status},
+            </if>
+            <if method="isNoEmpty" args="${provide_invoice}">
+                ${provide_invoice},
+            </if>
+            <if method="isNoEmpty" args="${contract_agreement}">
+                ${contract_agreement},
+            </if>
+            <if method="isNoEmpty" args="${inspection}">
+                ${inspection},
+            </if>
+            <if method="isNoEmpty" args="${being_investigated}">
+                ${being_investigated},
+            </if>
+            <if method="isNoEmpty" args="${inspection_date}">
+                ${inspection_date},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                ${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                ${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                ${quality_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                ${quality_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                ${quality_approval_conclusion},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                ${delete_state},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_supplierquareview set quality_approval_time=now(),
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id=${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name=${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status=${quality_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                quality_approval_conclusion=${quality_approval_conclusion},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from saas_supplierquareview a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update saas_supplierquareview set delete_state = '1' where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="start_date" sortable="false" title="开始日期"/>
+            <clumn name="end_date" sortable="false" title="截止日期"/>
+            <clumn name="code" sortable="false" title="供方编码"/>
+            <clumn name="name" sortable="false" title="供方名称"/>
+            <clumn name="certificate" sortable="false" title="认证证书"/>
+            <clumn name="organizational" sortable="false" title="组织机构"/>
+            <clumn name="management_system" sortable="false" title="管理制度"/>
+            <clumn name="office_space" sortable="false" title="办公场所"/>
+            <clumn name="facility" sortable="false" title="设施设备"/>
+            <clumn name="computer_management" sortable="false" title="计算机管理"/>
+            <clumn name="transport_tool" sortable="false" title="运输工具"/>
+            <clumn name="transport_process" sortable="false" title="运输过程"/>
+            <clumn name="public_certificate" sortable="false" title="公示证书"/>
+            <clumn name="bulletin_drugs" sortable="false" title="公告药品"/>
+            <clumn name="peer_reputation" sortable="false" title="同行口碑"/>
+            <clumn name="service_quality" sortable="false" title="服务质量"/>
+            <clumn name="arrival_status" sortable="false" title="到货情况"/>
+            <clumn name="provide_invoice" sortable="false" title="发票提供"/>
+            <clumn name="contract_agreement" sortable="false" title="合同协议"/>
+            <clumn name="inspection" sortable="false" title="考察人"/>
+            <clumn name="being_investigated" sortable="false" title="被考察人"/>
+            <clumn name="inspection_date" sortable="false" title="考察日期"/>
+            <clumn name="quality_approval_user_name" sortable="false" title="质量审核用户名称"/>
+            <clumn name="quality_approval_time" sortable="false" title="质量审核时间"/>
+            <clumn name="quality_approval_conclusion" sortable="false" title="质量审核结论"/>
+            <clumn name="creater_name" sortable="false" title="填报人名称"/>
+            <clumn name="create_date" sortable="false" title="填报时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供方编码" name="code"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <insert width="570">
+        <process>
+            <step channel="service" ref="saasSupplierquareviewService" method="saveReviewedData"/>
+            <step channel="sql" ref="insertSql"/>
+            <!--<step channel="sql" ref="insertAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <conditions>
+            <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+            <condition name="start_date" input="date" title="开始日期"/>
+            <condition name="end_date" input="date" title="截止日期"/>
+            <condition name="code" input="text" size="20" title="供方编码"/>
+            <condition name="name" input="text" size="20" title="供方名称"/>
+            <condition name="certificate" input="select" size="20" title="认证证书">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'certificate'
+                </sql>
+            </condition>
+            <condition name="organizational" input="select" size="20" title="组织机构">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'organizational'
+                </sql>
+            </condition>
+            <condition name="management_system" input="select" size="20" title="管理制度">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'management_system'
+                </sql>
+            </condition>
+            <condition name="office_space" input="select" size="20" title="办公场所">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'office_space'
+                </sql>
+            </condition>
+            <condition name="facility" input="select" size="20" title="设施设备">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'facility'
+                </sql>
+            </condition>
+            <condition name="computer_management" input="select" size="20" title="计算机管理">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'computer_management'
+                </sql>
+            </condition>
+            <condition name="transport_tool" input="select" size="20" title="运输工具">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'transport_tool'
+                </sql>
+            </condition>
+            <condition name="transport_process" input="select" size="20" title="运输过程">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'transport_process'
+                </sql>
+            </condition>
+            <condition name="public_certificate" input="select" size="20" title="公示证书">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'public_certificate'
+                </sql>
+            </condition>
+            <condition name="bulletin_drugs" input="select" size="20" title="公告药品">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'bulletin_drugs'
+                </sql>
+            </condition>
+            <condition name="peer_reputation" input="select" size="20" title="同行口碑">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'peer_reputation'
+                </sql>
+            </condition>
+            <condition name="service_quality" input="select" size="20" title="服务质量">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'service_quality'
+                </sql>
+            </condition>
+            <condition name="arrival_status" input="select" size="20" title="到货情况">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'arrival_status'
+                </sql>
+            </condition>
+            <condition name="provide_invoice" input="select" size="20" title="发票提供">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'provide_invoice'
+                </sql>
+            </condition>
+            <condition name="contract_agreement" input="select" size="20" title="合同协议">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'contract_agreement'
+                </sql>
+            </condition>
+            <condition name="inspection" input="text" size="20" title="考察人"/>
+            <condition name="being_investigated" input="text" size="20" title="被考察人"/>
+            <condition name="inspection_date" input="date" title="考察日期"/>
+        </conditions>
+    </insert>
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <update width="570">
+        <process>
+            <step channel="service" ref="saasGoodsquareviewService" method="setReviewedQuaData"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="saasGoodsquareviewService" method="setQuaPageData"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_supplierquareview</table>
+        <conditions>
+            <!--<condition name="quality_approval_user_id" input="text" title="质量审核用户ID"/>-->
+            <condition name="quality_approval_user_name" input="text" size="20" title="质量审核用户名称"/>
+            <condition name="quality_approval_conclusion" input="text" size="400" title="评审结论"/>
+        </conditions>
+
+    </update>
+
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

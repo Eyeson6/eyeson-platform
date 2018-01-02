@@ -1,0 +1,498 @@
+<template menuId="2600" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售管理"/>
+        <direct name="销售汇总"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            o.create_time,
+            o.s_id,
+            o.sell_type,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "sell_type"
+            AND dd.`value` = o.sell_type
+            ) AS sell_type_name,
+            o.sell_model,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "sell_model"
+            AND dd.`value` = o.sell_model
+            ) AS sell_model_name,
+            o.pay_method,
+            o.cashier_code,
+            (
+            SELECT
+            su_name
+            FROM
+            sys_user
+            WHERE
+            su_id =o.cashier_code
+            ) AS cashier_name,
+            o.salesperson_code,
+            (
+            SELECT
+            su_name
+            FROM
+            sys_user
+            WHERE
+            su_id =o.salesperson_code
+            ) AS salesperson_name,
+            o.vip_code,
+            (
+            SELECT
+            memship_name
+            FROM
+            saas_membershipcard
+            WHERE
+            memship_num =o.vip_code
+            ) AS vip_name,
+            o.hospital_flag,
+            o.hospital_empcode,
+            o.terminal_id,
+            o.terminal_name,
+            o.order_type,
+            o.link_id,
+            o.has_vouchers,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "has_seal"
+            AND dd.`value` = o.has_vouchers
+            ) AS has_vouchers_name,
+            o.vouchers_price,
+            o.order_price,
+            o.total_price,
+            o.net_recive,
+            o.odd_change,
+            o.`status` ,
+            d.d_id,
+            d.serial_no,
+            d.gds_code,
+            d.goods_type,
+            d. NAME,
+            d.common_name,
+            specification,
+            d.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = d.preparation_id
+            ) AS preparation_name,
+            d.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_name,
+            d.place,
+            d.place_of_origin,
+            d.registration_number,
+            d.batch_number,
+            d.production_date,
+            d.valid_period_to,
+            d.quantity,
+            d.un_price,
+            d.pre_price,
+            d.price,
+            d.discount,
+            d.discount_price,
+            d.subtotal
+            FROM
+            saas_order o
+            LEFT JOIN saas_order_details d ON o.s_id = d.s_id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                <![CDATA[ and o.s_id = ${s_id}]]>
+            </if>
+            <if method="isNoEmpty" args="${sell_type}">
+                <![CDATA[ and sell_type = ${sell_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${sell_model}">
+                <![CDATA[ and sell_model = ${sell_model}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_type}">
+                <![CDATA[ and goods_type = ${goods_type}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${gds_code}">
+                <![CDATA[ and gds_code = ${gds_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${cashier_code}">
+                <![CDATA[ and cashier_code like %${cashier_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${salesperson_code}">
+                <![CDATA[ and salesperson_code like %${salesperson_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${prescription_drug}">
+                <![CDATA[ and prescription_drug = ${prescription_drug}]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                <![CDATA[ and registration_number like %${registration_number}%]]>
+            </if>
+            order by o.create_time desc
+        </sql>
+
+        <sql id="querySql" method="query">
+            SELECT
+            o.create_time,
+            o.s_id,
+            o.sell_type,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "sell_type"
+            AND dd.`value` = o.sell_type
+            ) AS sell_type_name,
+            o.sell_model,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "sell_model"
+            AND dd.`value` = o.sell_model
+            ) AS sell_model_name,
+            o.pay_method,
+            o.cashier_code,
+            (
+            SELECT
+            su_name
+            FROM
+            sys_user
+            WHERE
+            su_id =o.cashier_code
+            ) AS cashier_name,
+            o.salesperson_code,
+            (
+            SELECT
+            su_name
+            FROM
+            sys_user
+            WHERE
+            su_id =o.salesperson_code
+            ) AS salesperson_name,
+            o.vip_code,
+            (
+            SELECT
+            memship_name
+            FROM
+            saas_membershipcard
+            WHERE
+            memship_num =o.vip_code
+            ) AS vip_name,
+            o.hospital_flag,
+            o.hospital_empcode,
+            o.terminal_id,
+            o.terminal_name,
+            o.order_type,
+            o.link_id,
+            o.has_vouchers,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "has_seal"
+            AND dd.`value` = o.has_vouchers
+            ) AS has_vouchers_name,
+            o.vouchers_price,
+            o.order_price,
+            o.total_price,
+            o.net_recive,
+            o.odd_change,
+            o.`status` ,
+            d.d_id,
+            d.serial_no,
+            d.gds_code,
+            d.goods_type,
+            d. NAME,
+            d.common_name,
+            specification,
+            d.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = d.preparation_id
+            ) AS preparation_name,
+            d.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_name,
+            d.place,
+            d.place_of_origin,
+            d.registration_number,
+            d.batch_number,
+            d.production_date,
+            d.valid_period_to,
+            d.quantity,
+            d.un_price,
+            d.pre_price,
+            d.price,
+            d.discount,
+            d.discount_price,
+            d.subtotal
+            FROM
+            saas_order o
+            LEFT JOIN saas_order_details d ON o.s_id = d.s_id
+            where
+            o.s_id=${key}
+        </sql>
+
+        <!-- 计算总量 -->
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="create_time" sortable="false" title="销售订单时间"/>
+            <clumn name="s_id" sortable="false" title="销售订单编号"/>
+            <clumn name="sell_type_name" sortable="false" title="销售类型"/>
+            <clumn name="sell_model_name" sortable="false" title="销售模式"/>
+            <!-- <clumn name="shop_code" sortable="false" title="店铺code" /> -->
+            <!-- <clumn name="pay_method" sortable="false" title=" 付款方式" /> -->
+            <clumn name="cashier_code" sortable="false" title="收银员编码"/>
+            <!-- <clumn name="salesperson_code" sortable="false" title="销售员编码" /> <clumn name="hospital_flag" sortable="false" title="是否医馆" /> <clumn name="hospital_empcode" sortable="false" title=" 医馆编码" /> -->
+            <clumn name="vipÅ_code" sortable="false" title="会员编码"/>
+            <clumn name="terminal_id" sortable="false" title="终端ID"/>
+            <clumn name="terminal_name" sortable="false" title="终端名字"/>
+            <!-- <clumn name="order_type" sortable="false" title="订单类型" /> -->
+            <!-- <clumn name="link_id" sortable="false" title="小存单号" /> -->
+            <clumn name="has_vouchers_name" sortable="false" title="是否优惠"/>
+            <clumn name="vouchers_price" sortable="false" title="优惠金额"/>
+            <clumn name="order_price" sortable="false" title="订单应收"/>
+            <clumn name="total_price" sortable="false" title="总计"/>
+            <clumn name="net_recive" sortable="false" title="实收款"/>
+            <clumn name="odd_change" sortable="false" title="找零"/>
+            <!-- <clumn name="status" sortable="false" title="订单状态" /> -->
+            <clumn name="s_note" sortable="false" title="订单备注"/>
+
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="date" title="销售时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="text" title="销售单号" name="s_id"/>
+            <condition input="select" title="销售类型" name="sell_type">
+                <sql>
+                    SELECT
+                    dd.`value` id,
+                    dd.`name` text
+                    FROM
+                    saas_dictionary dd
+                    WHERE
+                    dd.`code` = "sell_type"
+                </sql>
+            </condition>
+            <condition input="select" title="销售模式" name="sell_model">
+                <sql>
+                    SELECT
+                    dd.`value` id,
+                    dd.`name` text
+                    FROM
+                    saas_dictionary dd
+                    WHERE
+                    dd.`code` = "sell_model"
+                </sql>
+            </condition>
+            <condition input="select" title="商品种类" name="goods_type">
+                <sql>
+                    SELECT
+                    dd.`value` id,
+                    dd.`name` text
+                    FROM
+                    saas_dictionary dd
+                    WHERE
+                    dd.`code` = "goods_type"
+                </sql>
+            </condition>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="text" title="商品编码" name="gds_code"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <!-- <condition input="text" title="药品分类" name="" /> -->
+            <condition input="text" title="收银员" name="cashier_code"/>
+            <condition input="text" title="销售员" name="salesperson_code"/>
+            <condition input="select" title="是否处方药" name="prescription_drug">
+                <option id="0" text="是"/>
+                <option id="1" text="否"/>
+            </condition>
+            <condition input="text" title="批准文号" name="registration_number"/>
+        </conditions>
+    </query>
+    <!-- 	<buttons>
+
+            修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置
+            <button id="test2" title="查看" icon="icon-edit" channel="select_query_execute" width="1200">
+                <process>
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                    <step channel="sql" ref="updateSql" /> <step channel="sql" ref="updateAddrSql" />
+
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                </process>
+                <queryProcess>
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                    <step channel="sql" ref="querySql" />
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                </queryProcess>
+                <key>s_id</key>
+                <table>saas_order</table>
+                <conditions>
+                    <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true" />
+                    <condition name="shop_code" input="text" size="20" title="店铺code" readonly="true" />
+                    <condition name="pay_method" input="text" size="20" title=" 付款方式" readonly="true" />
+                    <condition name="cashier_code" input="text" size="20" title="收银员编码" readonly="true" />
+                    <condition name="salesperson_code" input="text" size="20" title="销售员编码" readonly="true" />
+                    <condition name="hospital_flag" input="text" size="20" title="是否医馆" readonly="true" />
+                    <condition name="hospital_empcode" input="text" size="20" title="	医馆编码" readonly="true" />
+                    <condition name="vipÅ_code" input="text" size="20" title="会员编码" readonly="true" />
+                    <condition name="terminal_id" input="text" size="20" title="终端ID" readonly="true" />
+                    <condition name="terminal_name" input="text" size="20" title="	终端名字" readonly="true" />
+                    <condition name="order_type" input="text" size="20" title="订单类型" readonly="true" />
+                    <condition name="link_id" input="text" size="20" title="小存单号" readonly="true" />
+                    <condition name="has_vouchers" input="text" size="20" title="是否优惠" readonly="true" />
+                    <condition name="vouchers_price" input="text" size="20" title="优惠金额" readonly="true" />
+                    <condition name="order_price" input="text" size="20" title="订单应收" readonly="true" />
+                    <condition name="total_price" input="text" size="20" title="总计" readonly="true" />
+                    <condition name="net_recive" input="text" size="20" title="实收款" readonly="true" />
+                    <condition name="odd_change" input="text" size="20" title="找零" readonly="true" />
+                    <condition name="status" input="text" size="20" title="订单状态" readonly="true" />
+                    <condition name="create_time" input="date" title="销售订单时间" readonly="true" />
+                    <condition name="s_note" input="text" size="20" title="订单备注" readonly="true" />
+                    <condition name="sell_type" input="text" size="20" title="销售类型" readonly="true" />
+                    <condition name="sell_model" input="text" size="20" title="销售模式" readonly="true" />
+
+                    <condition name="s_id" input="text" size="20" title="订单编号" />
+                    <condition name="serial_no" input="text" size="20" title="序号" />
+                    <condition name="gds_code" input="text" size="20" title="商品编号" readonly="true" /> <condition name="name" input="text" size="20" title="商品名称" readonly="true" /> <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true" /> <condition name="common_name" input="text" size="20" title="通用名称" readonly="true" /> <condition name="preparation_name" input="text" size="20" title="剂型" readonly="true" /> <condition name="specification" input="text" size="20" title="规格" readonly="true"
+                        /> <condition name="unit_name" input="text" size="20" title="单位" readonly="true" /> <condition name="place" input="text" size="20" title="生产企业" readonly="true" /> <condition name="place_of_origin" input="text" size="20" title="产地" readonly="true" /> <condition name="registration_number" input="text" size="20" title="批准文号" readonly="true" /> <condition name="batch_number" input="text" size="20" title="批号" readonly="true" /> <condition name="production_date" input="date" title="生产日期" readonly="true"
+                        /> <condition name="valid_period_to" input="text" size="20" title="有效期至" readonly="true" /> <condition name="quantity" input="text" size="20" title="数量" readonly="true" /> <condition name="un_price" input="text" size="20" title="单价" /> <condition name="pre_price" input="text" size="20" title="单品优惠数额" readonly="true" /> <condition name="price" input="text" size="20" title="单品优惠后价格" readonly="true" /> <condition name="discount" input="text" size="20" title="折让" readonly="true" /> <condition name="discount_price"
+                        input="text" size="20" title="折让后价格" readonly="true" /> <condition name="subtotal" input="text" size="20" title="订单单品表" readonly="true" />
+
+                </conditions>
+
+                <querys>
+                    <query id="test8" channel="popupselect" pagesize="50" popupselect="301" popuptitle="经营范围选择" width="800" isPage="true">
+                        执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作
+                        <process>
+                            <step channel="service" ref="commonSearchService2" method="test" />
+                            <step channel="sql" ref="listsqlpopup" />
+                            <step channel="service" ref="commonSearchService2" method="test" />
+                        </process>
+                        <model>
+                            <clumn name="gds_code" sortable="false" title="商品编号" />
+                            <clumn name="NAME" sortable="false" title="商品名称" />
+                            <clumn name="pinyin_code" sortable="false" title="拼音码" />
+                            <clumn name="common_name" sortable="false" title="通用名称" />
+                            <clumn name="preparation_name" sortable="false" title="剂型" />
+                            <clumn name="specification" sortable="false" title="规格" />
+                            <clumn name="unit_name" sortable="false" title="单位" />
+                            <clumn name="place" sortable="false" title="生产企业" />
+                            <clumn name="place_of_origin" sortable="false" title="产地" />
+                            <clumn name="registration_number" sortable="false" title="批准文号" />
+                            <clumn name="batch_number" sortable="false" title="批号" />
+                            <clumn name="production_date" sortable="false" title="生产日期" />
+                            <clumn name="valid_period_to" sortable="false" title="有效期至" />
+                            <clumn name="quantity" sortable="false" title="数量" />
+                            <clumn name="un_price" sortable="false" title="单价" />
+                            <clumn name="pre_price" sortable="false" title="单品优惠数额" />
+                            <clumn name="price" sortable="false" title="单品优惠后价格" />
+                            <clumn name="discount" sortable="false" title="折让" />
+                            <clumn name="discount_price" sortable="false" title="折让后价格" />
+                            <clumn name="subtotal" sortable="false" title="订单单品表" />
+
+
+                            <clumn name="category_id" sortable="false" title="类别名称" sort="desc" editor="true" required="true" editortype="combobox" hiddenid="id" popuplinkage="301" popuptitle="供方选择" width="100" passvalue="fasle"> <sql> select a.value id,a.name text from saas_dictionary a where a.code = 'category_id' </sql> <event mode="cursor_enter_dbclick" effect="popuplinkage" hiddenid="id" popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle" /> </clumn> <clumn name="settlement_id" sortable="true"
+                                editor="true" required="true" editortype="combobox" title="结算名称"> <sql> select a.value id,a.name text from saas_dictionary a where a.code = 'settlement_id' </sql> </clumn> <clumn name="area_code" sortable="false" editor="true" required="true" editortype="numberbox" title="区号" /> <clumn name="pinyin_code" sortable="false" title="拼音码" editor="true" required="true" /> <clumn name="name" sortable="true" title="供方名称" editor="true" required="true" editortype="validatebox"> <event mode="cursor_enter_dbclick"
+                                effect="popuplinkage" hiddenid="id" popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle" /> </clumn> <clumn name="code" sortable="false" title="供方编码" /> <clumn name="address" sortable="false" title="地址" /> <clumn name="contact" sortable="false" title="联系人" /> <clumn name="tel" sortable="false" title="联系电话" /> <clumn name="bank_code" sortable="false" title="开户行代码" /> <clumn name="bank_name" sortable="false" title="开户行名称" /> <clumn name="bank_account" sortable="false" title="开户行账号" />
+                                <clumn name="business_license_code" sortable="false" title="营业执照号" /> <clumn name="business_license_date" sortable="false" title="营业执照发证日期" editor="true" required="true" editortype="datebox" /> <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期" editor="true" required="true" editortype="datebox" />
+                        </model>
+                    </query>
+                </querys>
+
+
+
+
+            </button>
+
+
+        </buttons>
+     -->
+
+
+</template>
+
+
