@@ -1,0 +1,158 @@
+<template menuId="333333" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="供货单位添加"/>
+        <direct name="从标准库"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            standard_library_id,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS
+            FIRST_name,
+            creater_id,
+            creater_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            create_time,
+            update_time,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            WHERE
+            1 = 1
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            order by create_time desc
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="saasSupplierquareviewService" method="searchMPH"/>
+        </process>
+        <model>
+            <clumn name="name" sortable="false" title="供货单位名称"/>
+            <clumn name="address" sortable="false" title="注册地址"/>
+            <clumn name="license_code" sortable="false" title="许可证号"/>
+            <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+            <clumn name="legal_person" sortable="false" title="法定代表"/>
+        </model>
+        <conditions>
+            <condition input="text" title="供货单位名称" name="sname"/>
+            <condition input="text" title="营业执照号" name="business_license_code"/>
+        </conditions>
+    </query>
+</template>

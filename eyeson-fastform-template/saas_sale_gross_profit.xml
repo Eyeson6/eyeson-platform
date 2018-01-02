@@ -1,0 +1,131 @@
+<template menuId="7023" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售分析-毛利分析"/>
+    </directions>
+
+    <!-- saas_formula_rule的gs_type 0:按数量提成，1:按金额提成-->
+    <!-- 按 金额 gs_quantity 存的是基数，gs_price 存的 百分比 -->
+    <!-- 按 数量 gs_quantity 存的是提成数量，gs_price 存的 提成金额-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            dic.`value`,
+            dic.`name`,
+            tab1.create_time,
+            CONCAT(IFNULL(tab1.maolilv, 0), '%') AS molilv
+            FROM
+            saas_dictionary dic
+            LEFT JOIN (
+            SELECT
+            g.goods_type,
+            al.create_time,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary di
+            WHERE
+            di.`category` = "goods_type"
+            AND di.`value` = g.goods_type
+            ) AS goods_type_name,
+            IFNULL(sum(al.quantity), 0) AS allquantity,
+            IFNULL(sum(al.subtotal), 0) AS allsubtotal,
+            IFNULL(sum(al.purchased_amount), 0) AS allpurchased_amount,
+            IFNULL(
+            (
+            sum(al.subtotal) - sum(al.purchased_amount)
+            ),
+            0
+            ) AS maoli,
+            IFNULL(
+            ROUND(
+            (
+            (
+            sum(al.subtotal) - sum(al.purchased_amount)
+            ) / sum(al.subtotal) * 100
+            ),
+            2
+            ),
+            0
+            ) AS maolilv
+            FROM
+            saas_goods g
+            right JOIN (
+            SELECT
+            DATE_FORMAT(o.create_time, '%Y-%m') AS create_time,
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.quantity,
+            d.retail_price,
+            d.subtotal,
+            ids.purchased_price,
+            (
+            d.quantity * ids.purchased_price
+            ) AS purchased_amount
+            FROM
+            saas_order_detail d
+            LEFT JOIN (
+            SELECT
+            *
+            FROM
+            saas_inventory_detail id
+            GROUP BY
+            id.goods_id,
+            id.batch_code,
+            id.supplier_id
+            ) ids ON d.batch_code = ids.batch_code
+            AND d.goods_id = ids.goods_id
+            AND d.supplier_id = ids.supplier_id
+            LEFT JOIN saas_order o ON d.order_id = o.id
+            WHERE
+            1 = 1
+            AND o.pay_status = '1'
+
+            AND DATE_FORMAT(o.create_time, '%Y') >= DATE_FORMAT(
+            CURDATE(), '%Y'
+            )
+            AND DATE_FORMAT(o.create_time, '%Y') &lt;= DATE_FORMAT(
+            CURDATE(), '%Y'
+            )
+            ) al ON g.id = al.goods_id
+            GROUP BY
+            g.goods_type, al.create_time
+            ) tab1 ON dic.`value` = tab1.goods_type
+            WHERE
+            dic.category = 'goods_type' order by tab1.create_time desc
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <!--<step channel="sql" ref="listsql"/>-->
+            <step channel="service" ref="saasPurchaseOrderService" method="setSaleGrossProfit"/>
+        </process>
+        <model>
+            <clumn name="create_time" sortable="false" title="期间"/>
+            <clumn name="huizong" sortable="false" title="汇总毛利"/>
+            <clumn name="goods_typeA" sortable="true" title="药品（含中成药）"/>
+            <clumn name="goods_typeB" sortable="true" title="中药饮片"/>
+            <clumn name="goods_typeC" sortable="false" title="计生用品"/>
+            <clumn name="goods_typeD" sortable="true" title="保健品"/>
+            <clumn name="goods_typeE" sortable="false" title="化妆品"/>
+            <clumn name="goods_typeF" sortable="true" title="机械设备"/>
+            <clumn name="goods_typeG" sortable="false" title="其他"/>
+        </model>
+        <conditions>
+            <condition input="select" title="统计年份" name="year">
+                <sql>
+                    select a.value id,a.name text
+                    from SAAS_TEST.saas_dictionary a where a.category = 'statistic_year'
+                </sql>
+            </condition>
+        </conditions>
+    </query>
+
+</template>

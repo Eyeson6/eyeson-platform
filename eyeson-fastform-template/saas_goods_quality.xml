@@ -1,0 +1,322 @@
+<template menuId="213" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="首营药品质量审核"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            registration_code,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_status,
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '审核通过'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS
+            quality_approval_status_name,
+            quality_approval_time,
+            quality_approval_reason,
+            quality_manager_approval_status,
+            creater_id,
+            creater_name,
+            create_time
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1 and FIRST= '1' and NOT INSTR(RIGHT(CODE,3),'_01')>0
+            <!-- where 1=1 and quality_approval_status= '0' and FIRST= '1' -->
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                <![CDATA[ and quality_approval_status = ${quality_approval_status}]]>
+            </if>
+            order by quality_approval_time desc
+        </sql>
+
+        <sql id="listsql1" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            registration_code,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_status,
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '审核通过'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS
+            quality_approval_status_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,
+            creater_name,
+            create_time
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1 and quality_approval_status=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <!-- <if method="isNoEmpty" args="${quality_approval_status}"> <![CDATA[ and quality_approval_status = ${quality_approval_status}]]> </if> -->
+            order by quality_approval_time desc
+        </sql>
+        <sql id="listsql2" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            registration_code,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_status,
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '审核通过'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS
+            quality_approval_status_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,
+            creater_name,
+            create_time
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1 and quality_approval_status=2
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                <![CDATA[ and quality_approval_status = ${quality_approval_status}]]>
+            </if>
+            order by quality_approval_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from SAAS_TEST.saas_goods where id=${key}
+        </sql>
+
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_goods set quality_approval_time=now(),
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id=${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name=${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status=${quality_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_reason}">
+                quality_approval_reason=${quality_approval_reason},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                quality_manager_approval_status=${quality_manager_approval_status},
+            </if>
+            where id=${key}
+        </sql>
+
+    </sqls>
+
+    <query pagesize="50">
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="CODE" sortable="false" title="编码"/>
+            <clumn name="NAME" sortable="false" title="名称"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="quality_approval_status_name" sortable="false" title="审核状态"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="code"/>
+            <condition input="select" title="审核状态" defaultvalue="0" name="quality_approval_status">
+                <option id="" text="全部"/>
+                <option id="0" text="未审核"/>
+                <option id="1" text="审核通过"/>
+                <option id="2" text="审核驳回"/>
+            </condition>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+    <!-- <query pagesize="50" queryId="1" queryTitle="审核通过" isPage="false"> <process> <step channel="sql" ref="listsql1" /> </process> <model> <clumn name="CODE" sortable="false" title="编码" /> <clumn name="NAME" sortable="false" title="名称" /> <clumn name="unit_id" sortable="false" title="单位" /> <clumn name="specification" sortable="false" title="规格" /> <clumn name="preparation_id" sortable="false" title="剂型" /> <clumn name="manufacturer" sortable="false" title="生产企业" /> <clumn name="registration_code"
+        sortable="false" title="批准文号" /> <clumn name="quality_approval_status_name" sortable="false" title="审核状态" /> </model> <conditions> <condition input="text" title="名称" name="name" /> <condition input="text" title="拼音码" name="pinyin_code" /> <condition input="text" title="商品编码" name="code" /> <condition input="select" title="审核状态" name="quality_approval_status"> <option id="0" text="未审核" /> <option id="1" text="审核通过" /> <option id="2" text="审核驳回" /> </condition> <condition input="date" title="创建时间"
+        name="startTime" type="3" /> <condition input="date" title="至" name="endTime" type="3" /> </conditions> </query> <query pagesize="50" queryId="2" queryTitle="审核驳回" isPage="false"> <process> <step channel="sql" ref="listsql2" /> </process> <model> <clumn name="CODE" sortable="false" title="编码" /> <clumn name="NAME" sortable="false" title="名称" /> <clumn name="unit_id" sortable="false" title="单位" /> <clumn name="specification" sortable="false" title="规格" /> <clumn name="preparation_id" sortable="false"
+        title="剂型" /> <clumn name="manufacturer" sortable="false" title="生产企业" /> <clumn name="registration_code" sortable="false" title="批准文号" /> <clumn name="quality_approval_status_name" sortable="false" title="审核状态" /> </model> <conditions> <condition input="text" title="名称" name="name" /> <condition input="text" title="拼音码" name="pinyin_code" /> <condition input="text" title="商品编码" name="code" /> <condition input="select" title="审核状态" name="quality_approval_status"> <option id="0" text="未审核" /> <option
+        id="1" text="审核通过" /> <option id="2" text="审核驳回" /> </condition> <condition input="date" title="创建时间" name="startTime" type="3" /> <condition input="date" title="至" name="endTime" type="3" /> </conditions> </query> -->
+
+
+    <buttons>
+        <button id="test2" title="审核" icon="icon-edit" channel="select_query_execute" width="1100" height="350">
+            <process>
+                <!-- <step channel="service" ref="saasGoodsService" method="setReviewedQuaData" /> -->
+                <step channel="sql" ref="updateSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="saasGoodsService" method="setQuaPageData"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_goods</table>
+            <conditions>
+                <condition name="quality_approval_id" input="text" title="质量审核ID" readonly="true"/>
+                <!-- <condition name="quality_approver_name" title="质量审核人" hiddenid="quality_approver_id" required="true" targetMenuId="777" targetButtonId="qualityApprover" input="tooltip" /> -->
+                <condition name="quality_approver_name" title="质量审核人" required="true" readonly="true" input="text"/>
+                <condition name="quality_approval_status" defaultvalue="0" input="select" title="质量审核状态">
+                    <option id="0" text=""/>
+                    <option id="1" text="同意"/>
+                    <option id="2" text="不同意"/>
+                </condition>
+                <condition name="quality_approval_reason" hiddenid="quality_manager_approval_status" input="textarea"
+                           size="400" title="原因"/>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>

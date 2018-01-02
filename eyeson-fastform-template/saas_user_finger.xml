@@ -1,0 +1,92 @@
+<template menuId="00704" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="用户管理"/>
+        <direct name="用户指纹管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            t.su_id,
+            t.su_code,
+            t.su_name,
+            CASE WHEN t1.id >0 THEN 'false' ELSE 'true' END AS show_input,
+            CASE WHEN t1.id >0 THEN '已录' ELSE '未录' END AS finger,
+            t1.update_time
+            FROM
+            sys_user t
+            LEFT JOIN sys_finger t1
+            ON t.su_id = t1.su_id
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and t1.update_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(t1.update_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${suCode}">
+                <![CDATA[ and t.su_code like %${suCode}%]]>
+            </if>
+            <if method="isNoEmpty" args="${suName}">
+                <![CDATA[ and t.su_name like %${suName}%]]>
+            </if>
+            <if method="isNoEmpty" args="${fingerStatus}">
+                <![CDATA[ AND CASE WHEN t1.id >0 THEN "已录" ELSE "未录" END  LIKE %${fingerStatus}%]]>
+            </if>
+            GROUP BY t.su_id,
+            t.su_code,
+            t.su_name
+            ORDER BY t.su_id,
+            t1.update_time DESC
+        </sql>
+        <sql id="deletesql" method="delete">
+            delete from sys_finger where su_id=${su_id}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="su_code" sortable="false" title="用户账号"/>
+            <clumn name="su_name" sortable="false" title="用户姓名"/>
+            <clumn name="finger" sortable="false" title="是否录入"/>
+            <clumn name="update_time" sortable="false" title="录入时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="用户账号" name="suCode"/>
+            <condition input="text" title="用户姓名" name="suName"/>
+            <condition input="select" title="是否录入" name="fingerStatus">
+                <option id="" text="全部"/>
+                <option id="未录" text="未录"/>
+                <option id="已录" text="已录"/>
+            </condition>
+            <condition input="date" title="录入时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <operate>
+        <button id="saas_purchase_order_operate_edit" title="录入指纹" icon="icon-edit" width="1200" channel="finger"
+                vcolumn="show_input">
+            <key>su_id</key>
+            <condition name="su_id"/>
+        </button>
+
+        <button id="test3" title="清除指纹" icon="icon-remove" channel="select_execute" width="1200" vcolumn="finger"
+                vcolumnvalue="已录">
+            <process>
+                <step channel="sql" ref="deletesql"/>
+            </process>
+            <key>su_id</key>
+            <condition name="su_id"/>
+        </button>
+    </operate>
+</template>

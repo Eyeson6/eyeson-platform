@@ -1,0 +1,936 @@
+<template menuId="0660" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="用户管理"/>
+        <direct name="会员档案管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            member_type,
+            (
+            SELECT
+            type_name
+            FROM
+            SAAS_TEST.saas_member_type dd
+            WHERE
+            dd.`id` = a.member_type
+            ) AS member_type_name,
+            price_policy,
+            member_discount,
+            qq,
+            integral_int,
+            integral_set,
+            card_no,
+            use_status,
+            CASE
+            use_status
+            WHEN '0' THEN
+            '失效'
+            WHEN '1' THEN
+            '正常'
+            END AS use_status_name,
+            distribute_name,
+            NAME,
+            card_code,
+            gender,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "memship_sex"
+            AND dd.`value` = a.gender
+            ) AS gender_name,
+            occupation,
+            tel,
+            mobile,
+            weixin_uid,
+            weixin_nickname,
+            month_income,
+            education,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` =
+            "qualification"
+            AND dd.`value` = a.education
+            ) AS education_name,
+            id_card,
+            medical_history,
+            address,
+            postcode,
+            birthday,
+            remark,
+            pinyin_code,
+            apply_time,
+            expire_time,
+            enable_time,
+            common_drug,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            delete_status,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_member a where 1=1 and delete_status=0 order by create_time desc
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${card_code}">
+                <![CDATA[ and card_code like %${card_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${mobile}">
+                <![CDATA[ and mobile = ${mobile}]]>
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                <![CDATA[ and tel = ${tel}]]>
+            </if>
+            <if method="isNoEmpty" args="${weixin_uid}">
+                <![CDATA[ and weixin_uid = ${weixin_uid}]]>
+            </if>
+            <if method="isNoEmpty" args="${qq}">
+                <![CDATA[ and qq = ${qq}]]>
+            </if>
+            <if method="isNoEmpty" args="${id_card}">
+                <![CDATA[ and id_card = ${id_card}]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}"> <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}"> <![CDATA[ and create_time <= ${endTime}]]>
+                order by create_time desc
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            SELECT
+            id,
+            member_type,
+            (
+            SELECT
+            type_name
+            FROM
+            SAAS_TEST.saas_member_type dd
+            WHERE
+            dd.`id` = member_type
+            ) AS member_type_name,
+            price_policy,
+            member_discount,
+            qq,
+            integral_int,
+            integral_set,
+            card_no,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = card_no
+            ) AS card_no_name,
+            use_status,
+            CASE
+            use_status
+            WHEN '0' THEN
+            '失效'
+            WHEN '1' THEN
+            '正常'
+            END AS use_status_name,
+            distribute_name,
+            NAME,
+            card_code,
+            gender,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "memship_sex"
+            AND dd.`value` = gender
+            ) AS gender_name,
+            occupation,
+            tel,
+            mobile,
+            weixin_uid,
+            weixin_nickname,
+            month_income,
+            education,
+            id_card,
+            education,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "qualification"
+            AND dd.`value` = a.education
+            ) AS education_name,
+            medical_history,
+            address,
+            postcode,
+            birthday,
+            remark,
+            pinyin_code,
+            apply_time,
+            expire_time,
+            enable_time,
+            common_drug,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            delete_status,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_member a where id=${key}
+        </sql>
+        <sql id="ckSql" method="query">
+            SELECT
+            id,
+            member_type,
+            (
+            SELECT
+            type_name
+            FROM
+            SAAS_TEST.saas_member_type dd
+            WHERE
+            dd.`id` = member_type
+            ) AS member_type_name,
+            price_policy,
+            member_discount,
+            qq,
+            integral_int,
+            integral_set,
+            card_no,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = card_no
+            ) AS card_no_name,
+            use_status,
+            CASE
+            use_status
+            WHEN '0' THEN
+            '失效'
+            WHEN '1' THEN
+            '正常'
+            END AS use_status_name,
+            distribute_name,
+            NAME,
+            card_code,
+            gender,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "memship_sex"
+            AND dd.`value` = gender
+            ) AS gender_name,
+            occupation,
+            tel,
+            mobile,
+            weixin_uid,
+            weixin_nickname,
+            month_income,
+            education,
+            education,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "qualification"
+            AND dd.`value` = a.education
+            ) AS education_name,
+            id_card,
+            medical_history,
+            address,
+            postcode,
+            birthday,
+            remark,
+            pinyin_code,
+            apply_time,
+            expire_time,
+            enable_time,
+            common_drug,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            delete_status,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_member a
+            where id=${key}
+        </sql>
+
+        <sql id="insertSql" method="insert">
+            insert into SAAS_TEST.saas_member(
+
+            <if method="isNoEmpty" args="${member_type}">
+                member_type,
+            </if>
+            <if method="isNoEmpty" args="${price_policy}">
+                price_policy,
+            </if>
+            <if method="isNoEmpty" args="${member_discount}">
+                member_discount,
+            </if>
+            <if method="isNoEmpty" args="${qq}">
+                qq,
+            </if>
+            <if method="isNoEmpty" args="${integral_int}">
+                integral_int,
+            </if>
+            <if method="isNoEmpty" args="${integral_set}">
+                integral_set,
+            </if>
+            <if method="isNoEmpty" args="${card_no}">
+                card_no,
+            </if>
+            <if method="isNoEmpty" args="${use_status}">
+                use_status,
+            </if>
+            <if method="isNoEmpty" args="${distribute_name}">
+                distribute_name,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${card_code}">
+                card_code,
+            </if>
+            <if method="isNoEmpty" args="${gender}">
+                gender,
+            </if>
+            <if method="isNoEmpty" args="${occupation}">
+                occupation,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${mobile}">
+                mobile,
+            </if>
+            <if method="isNoEmpty" args="${weixin_uid}">
+                weixin_uid,
+            </if>
+            <if method="isNoEmpty" args="${weixin_nickname}">
+                weixin_nickname,
+            </if>
+            <if method="isNoEmpty" args="${month_income}">
+                month_income,
+            </if>
+            <if method="isNoEmpty" args="${education}">
+                education,
+            </if>
+            <if method="isNoEmpty" args="${id_card}">
+                id_card,
+            </if>
+            <if method="isNoEmpty" args="${medical_history}">
+                medical_history,
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address,
+            </if>
+            <if method="isNoEmpty" args="${postcode}">
+                postcode,
+            </if>
+            <if method="isNoEmpty" args="${birthday}">
+                birthday,
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${apply_time}">
+                apply_time,
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${enable_time}">
+                enable_time,
+            </if>
+            <if method="isNoEmpty" args="${common_drug}">
+                common_drug,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name,
+            </if>
+            <if method="isNoEmpty" args="${delete_status}">
+                delete_status,
+            </if>
+            create_time,
+            ) values(
+            <if method="isNoEmpty" args="${member_type}">
+                ${member_type},
+            </if>
+            <if method="isNoEmpty" args="${price_policy}">
+                ${price_policy},
+            </if>
+            <if method="isNoEmpty" args="${member_discount}">
+                ${member_discount},
+            </if>
+            <if method="isNoEmpty" args="${qq}">
+                ${qq},
+            </if>
+            <if method="isNoEmpty" args="${integral_int}">
+                ${integral_int},
+            </if>
+            <if method="isNoEmpty" args="${integral_set}">
+                ${integral_set},
+            </if>
+            <if method="isNoEmpty" args="${card_no}">
+                ${card_no},
+            </if>
+            <if method="isNoEmpty" args="${use_status}">
+                ${use_status},
+            </if>
+            <if method="isNoEmpty" args="${distribute_name}">
+                ${distribute_name},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${card_code}">
+                ${card_code},
+            </if>
+            <if method="isNoEmpty" args="${gender}">
+                ${gender},
+            </if>
+            <if method="isNoEmpty" args="${occupation}">
+                ${occupation},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${mobile}">
+                ${mobile},
+            </if>
+            <if method="isNoEmpty" args="${weixin_uid}">
+                ${weixin_uid},
+            </if>
+            <if method="isNoEmpty" args="${weixin_nickname}">
+                ${weixin_nickname},
+            </if>
+            <if method="isNoEmpty" args="${month_income}">
+                ${month_income},
+            </if>
+            <if method="isNoEmpty" args="${education}">
+                ${education},
+            </if>
+            <if method="isNoEmpty" args="${id_card}">
+                ${id_card},
+            </if>
+            <if method="isNoEmpty" args="${medical_history}">
+                ${medical_history},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                ${address},
+            </if>
+            <if method="isNoEmpty" args="${postcode}">
+                ${postcode},
+            </if>
+            <if method="isNoEmpty" args="${birthday}">
+                ${birthday},
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                ${remark},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${apply_time}">
+                ${apply_time},
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                ${expire_time},
+            </if>
+            <if method="isNoEmpty" args="${enable_time}">
+                ${enable_time},
+            </if>
+            <if method="isNoEmpty" args="${common_drug}">
+                ${common_drug},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                ${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                ${modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${delete_status}">
+                ${delete_status},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_member set
+
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${member_type}">
+                member_type=${member_type},
+            </if>
+            <if method="isNoEmpty" args="${price_policy}">
+                price_policy=${price_policy},
+            </if>
+            <if method="isNoEmpty" args="${member_discount}">
+                member_discount=${member_discount},
+            </if>
+            <if method="isNoEmpty" args="${qq}">
+                qq=${qq},
+            </if>
+            <if method="isNoEmpty" args="${integral_int}">
+                integral_int=${integral_int},
+            </if>
+            <if method="isNoEmpty" args="${integral_set}">
+                integral_set=${integral_set},
+            </if>
+            <if method="isNoEmpty" args="${card_no}">
+                card_no=${card_no},
+            </if>
+            <if method="isNoEmpty" args="${use_status}">
+                use_status=${use_status},
+            </if>
+            <if method="isNoEmpty" args="${distribute_name}">
+                distribute_name=${distribute_name},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${card_code}">
+                card_code=${card_code},
+            </if>
+            <if method="isNoEmpty" args="${gender}">
+                gender=${gender},
+            </if>
+            <if method="isNoEmpty" args="${occupation}">
+                occupation=${occupation},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${mobile}">
+                mobile=${mobile},
+            </if>
+            <if method="isNoEmpty" args="${weixin_uid}">
+                weixin_uid=${weixin_uid},
+            </if>
+            <if method="isNoEmpty" args="${weixin_nickname}">
+                weixin_nickname=${weixin_nickname},
+            </if>
+            <if method="isNoEmpty" args="${month_income}">
+                month_income=${month_income},
+            </if>
+            <if method="isNoEmpty" args="${education}">
+                education=${education},
+            </if>
+            <if method="isNoEmpty" args="${id_card}">
+                id_card=${id_card},
+            </if>
+            <if method="isNoEmpty" args="${medical_history}">
+                medical_history=${medical_history},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address=${address},
+            </if>
+            <if method="isNoEmpty" args="${postcode}">
+                postcode=${postcode},
+            </if>
+            <if method="isNoEmpty" args="${birthday}">
+                birthday=${birthday},
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                remark=${remark},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code=${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${apply_time}">
+                apply_time=${apply_time},
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                expire_time=${expire_time},
+            </if>
+            <if method="isNoEmpty" args="${enable_time}">
+                enable_time=${enable_time},
+            </if>
+            <if method="isNoEmpty" args="${common_drug}">
+                common_drug=${common_drug},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id=${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name=${modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${delete_status}">
+                delete_status=${delete_status},
+            </if>
+            update_time=now(),
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from SAAS_TEST.saas_member a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                <![CDATA[ and memship_num like %${memship_num}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update SAAS_TEST.saas_member set delete_status = '1' where
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id=${id}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="card_code" sortable="false" title="会员卡号"/>
+            <clumn name="NAME" sortable="false" title="姓名"/>
+            <clumn name="mobile" sortable="false" title="手机"/>
+            <clumn name="weixin_uid" sortable="false" title="微信号"/>
+            <clumn name="qq" sortable="false" title="QQ"/>
+            <clumn name="member_type_name" sortable="false" title="会员类型"/>
+            <clumn name="price_policy" sortable="false" title="价格政策"/>
+            <clumn name="member_discount" sortable="false" title="会员折扣"/>
+            <clumn name="integral_int" sortable="false" title="积分取整"/>
+            <clumn name="integral_set" sortable="false" title="积分设置"/>
+            <clumn name="card_no_name" sortable="false" title="是否发卡"/>
+            <clumn name="use_status_name" sortable="false" title="使用状态"/>
+        </model>
+        <conditions>
+            <condition input="text" title="拼音码" name="type_name"/>
+            <condition input="text" title="会员卡号" name="card_code"/>
+            <condition input="text" title="会员姓名" name="name"/>
+            <condition input="text" title="手机号" name="mobile"/>
+            <condition input="text" title="电话" name="tel"/>
+            <condition input="text" title="微信" name="weixin_uid"/>
+            <condition input="text" title="QQ" name="qq"/>
+            <condition input="text" title="证件号" name="id_card"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <operate>
+        <button id="test3" title="查看" icon="icon-remove" channel="query_execute" width="1100">
+            <queryProcess>
+                <step channel="sql" ref="ckSql"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_member</table>
+            <conditions>
+                <condition startArea="制卡信息" name="member_type_name" input="text" size="20" title="会员类型"
+                           readonly="true"/>
+                <condition name="price_policy" input="text" size="20" title="价格政策" readonly="true"/>
+                <condition name="member_discount" input="text" size="20" title="会员折扣" readonly="true"/>
+                <condition name="card_code" input="text" size="20" title="会员卡号" readonly="true"/>
+                <condition name="create_time" input="date" title="制卡时间" readonly="true"/>
+                <condition name="integral_int" input="text" size="20" title="积分取整" readonly="true"/>
+                <condition endArea="制卡信息" name="integral_set" input="text" size="20" title="积分设置" readonly="true"/>
+
+                <condition startArea="发卡信息" name="card_no_name" input="text" size="20" title="是否发卡" readonly="true"/>
+                <condition name="use_status_name" input="text" size="20" title="使用状态" readonly="true"/>
+                <condition name="distribute_name" input="text" size="20" title="发卡人" readonly="true"/>
+                <condition name="apply_time" input="date" title="发卡时间" readonly="true"/>
+                <condition name="enable_time" input="date" title="开始时间" readonly="true"/>
+                <condition endArea="发卡信息" name="expire_time" input="date" title="失效时间" readonly="true"/>
+
+                <condition startArea="会员信息" name="NAME" input="text" size="20" title="名称" readonly="true"/>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true"/>
+                <condition name="gender_name" input="text" size="20" title="性别" readonly="true"/>
+                <condition name="occupation" input="text" size="20" title="职业" readonly="true"/>
+                <condition name="tel" input="text" size="20" title="电话" readonly="true"/>
+                <condition name="mobile" input="text" size="20" title="手机" readonly="true"/>
+                <condition name="qq" input="text" size="20" title="QQ" readonly="true"/>
+                <condition name="postcode" input="text" size="20" title="邮编" readonly="true"/>
+                <condition name="birthday" input="date" size="20" title="生日" readonly="true"/>
+                <condition name="weixin_uid" input="text" size="20" title="微信号" readonly="true"/>
+                <condition name="weixin_nickname" input="text" size="20" title="微信昵称" readonly="true"/>
+                <condition name="month_income" input="text" size="20" title="月收入" readonly="true"/>
+                <condition name="education_name" input="text" size="20" title="学历" readonly="true"/>
+                <condition name="id_card" input="text" size="20" title="身份证号" readonly="true"/>
+                <condition name="medical_history" input="textarea" size="20" title="病史" readonly="true"/>
+                <condition name="common_drug" input="textarea" size="20" title="常用药" readonly="true"/>
+                <condition name="address" input="textarea" size="20" title="住址" readonly="true"/>
+                <condition endArea="会员信息" name="remark" input="textarea" size="20" title="备注" readonly="true"/>
+            </conditions>
+        </button>
+
+
+        <button id="test2" title="修改" icon="icon-edit" channel="select_query_execute" width="1100">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <process>
+                <!-- <step channel="service" ref="saasSupplierService" method="modiReviewedData" /> -->
+                <step channel="sql" ref="updateSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_member</table>
+            <conditions>
+                <condition startArea="制卡信息" name="member_type" input="select" size="20" title="会员类型" required="true"
+                           popuplinkage="6000" popuptitle="类别选择" width="1000">
+                    <sql>
+                        select a.id id,a.type_name text from SAAS_TEST.saas_member_type a
+                    </sql>
+                </condition>
+                <condition name="price_policy" input="select" size="20" title="价格政策" readonly="true">
+                    <option id="0" text="零售价"/>
+                    <option id="1" text="会员价"/>
+                    <option id="2" text="批发价"/>
+                </condition>
+                <condition name="member_discount" input="text" size="20" title="会员折扣" readonly="true"/>
+                <condition name="card_code" input="text" size="20" title="会员卡号"/>
+                <condition name="create_time" input="date" title="制卡时间"/>
+                <condition name="integral_int" input="select" size="20" title="积分取整" readonly="true">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition endArea="制卡信息" name="integral_set" input="text" size="20" title="积分设置" readonly="true"/>
+
+                <condition startArea="发卡信息" name="card_no" input="select" size="20" title="是否发卡">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="use_status" input="select" defaultvalue="1" readonly="true" title="使用状态">
+                    <option id="0" text="失效"/>
+                    <option id="1" text="正常"/>
+                </condition>
+                <condition name="distribute_name" input="text" size="20" title="发卡人"/>
+                <condition name="apply_time" input="date" title="发卡时间"/>
+                <condition name="expire_time" input="date" title="失效时间"/>
+                <condition endArea="发卡信息" name="enable_time" input="date" title="开始时间"/>
+                <condition startArea="会员信息" name="NAME" required="true" input="text" size="20" title="名称"/>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码"/>
+                <condition name="gender" input="select" size="20" title="性别">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'memship_sex'
+                    </sql>
+                </condition>
+                <condition name="occupation" input="text" size="20" title="职业"/>
+                <condition name="tel" input="text" size="20" title="电话"/>
+                <condition name="mobile" input="text" size="20" title="手机"/>
+                <condition name="qq" input="text" size="20" title="QQ"/>
+                <condition name="postcode" input="text" size="20" title="邮编"/>
+                <condition name="birthday" input="date" size="20" title="生日"/>
+                <condition name="weixin_uid" input="text" size="20" title="微信号"/>
+                <condition name="weixin_nickname" input="text" size="20" title="微信昵称"/>
+                <condition name="month_income" input="text" size="20" title="月收入"/>
+                <condition name="education" input="select" size="20" title="学历">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'qualification'
+                    </sql>
+                </condition>
+                <condition name="id_card" input="text" size="20" title="身份证号"/>
+                <condition name="medical_history" input="textarea" size="20" title="病史"/>
+                <condition name="common_drug" input="textarea" size="20" title="常用药"/>
+                <condition name="address" input="textarea" size="20" title="住址"/>
+                <condition endArea="会员信息" name="remark" input="textarea" size="20" title="备注"/>
+
+            </conditions>
+        </button>
+    </operate>
+
+    <buttons>
+
+        <button id="test1" title="新增" icon="icon-add" channel="query_execute" width="1100">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="saasGoodsService" method="supplierCode"/>
+            </queryProcess>
+            <conditions>
+                <condition startArea="制卡信息" name="member_type" input="select" size="20" title="会员类型" required="true"
+                           popuplinkage="6000" popuptitle="类别选择" width="1000">
+                    <sql>
+                        select a.id id,a.type_name text from SAAS_TEST.saas_member_type a
+                    </sql>
+                </condition>
+                <condition name="price_policy" input="select" size="20" title="价格政策" readonly="true">
+                    <option id="0" text="零售价"/>
+                    <option id="1" text="会员价"/>
+                    <option id="2" text="批发价"/>
+                </condition>
+                <condition name="member_discount" input="text" size="20" title="会员折扣" readonly="true"/>
+                <condition name="card_code" input="text" size="20" title="会员卡号" required="true"/>
+                <condition name="create_time" input="date" title="制卡时间" required="true"
+                           defaultprocess="saasPurchaseOrderService.defaultProcess"/>
+                <condition name="integral_int" input="select" size="20" title="积分取整" readonly="true">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition endArea="制卡信息" name="integral_set" input="text" size="20" title="积分设置" readonly="true"/>
+
+
+                <condition startArea="发卡信息" name="card_no" input="select" defaultvalue="1" size="20" title="是否发卡">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="use_status" input="select" defaultvalue="1" readonly="true" title="使用状态">
+                    <option id="0" text="失效"/>
+                    <option id="1" text="正常"/>
+                </condition>
+                <condition name="distribute_name" input="text" size="20" title="发卡人"/>
+                <condition name="apply_time" input="date" title="发卡时间"
+                           defaultprocess="saasPurchaseOrderService.defaultProcess"/>
+                <condition name="enable_time" input="date" title="开始时间" required="true"
+                           defaultprocess="saasPurchaseOrderService.defaultProcess"/>
+                <condition endArea="发卡信息" name="expire_time" input="date" title="失效时间" required="true"/>
+
+                <condition startArea="会员信息" name="name" input="text" required="true" size="20" title="姓名">
+                    <event mode="change" popuplinkage="888888" width="1000" passvalue="false"/>
+                </condition>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码"/>
+                <condition name="gender" input="select" size="20" title="性别">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'memship_sex'
+                    </sql>
+                </condition>
+                <condition name="occupation" input="text" size="20" title="职业"/>
+                <condition name="tel" input="text" size="20" title="电话"/>
+                <condition name="mobile" input="text" size="20" title="手机"/>
+                <condition name="qq" input="text" size="20" title="QQ"/>
+                <condition name="postcode" input="text" size="20" title="邮编"/>
+                <condition name="birthday" input="date" size="20" title="生日"/>
+                <condition name="weixin_uid" input="text" size="20" title="微信号"/>
+                <condition name="weixin_nickname" input="text" size="20" title="微信昵称"/>
+                <condition name="month_income" input="text" size="20" title="月收入"/>
+                <condition name="education" input="select" size="20" title="学历">
+                    <sql>select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                        a where a.category = 'qualification'
+                    </sql>
+                </condition>
+                <condition name="id_card" input="text" size="20" title="身份证号"/>
+                <condition name="medical_history" input="textarea" size="20" title="病史"/>
+                <condition name="common_drug" input="textarea" size="20" title="常用药"/>
+                <condition name="address" input="textarea" size="20" title="住址"/>
+                <condition endArea="会员信息" name="remark" input="textarea" size="20" title="备注"/>
+
+
+                <!-- <condition name="allergy_drug" input="text" size="20" title="过敏药" /> <condition name="channel" input="text" size="20" title="了解渠道" /> <condition name="interest" input="text" size="20" title="兴趣爱好" /> <condition name="interest_content" input="text" size="20" title="感兴趣内容" /> <condition name="activity" input="text" size="20" title="喜欢的活动" /> <condition name="creater_id" input="text" size="20" title="创建用户ID" /> <condition name="creater_name" input="text" size="20" title="创建用户名称" /> <condition
+                    name="modifier_id" input="text" size="20" title="最后修改人ID" /> <condition name="modifier_name" input="text" size="20" title="最后修改人名称" /> <condition name="delete_status" input="text" size="20" title="删除状态，0：未删除，1：已删除" /> <condition name="update_time" input="date" title="更新时间" /> -->
+
+
+                <!-- <condition name="type_name" input="text" size="20" title="类型名称" /> <condition name="price_policy" input="select" size="20" title="价格政策"> <option id="0" text="零售价" /> <option id="1" text="会员价" /> <option id="2" text="批发价" /> </condition> <condition name="member_discount" input="text" size="20" title="会员折扣" /> <condition name="integral_set" input="text" size="20" title="积分设置" /> <condition name="integral_int" input="select" size="20" title="积分取整"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary
+                    a where a.category = 'has_seal' </sql> </condition> <condition name="remark" input="textarea" size="20" title="备注" /> -->
+
+            </conditions>
+        </button>
+        <button id="test3" title="删除" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>id</key>
+            <table>SAAS_TEST.saas_member</table>
+            <condition name="id"/>
+        </button>
+        <button id="testimport" title="导入数据" icon="icon-inboxDownload" channel="import" width="1100">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                           table="KKMY_CHANNELS"/>
+                <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+                <condition name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+                <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+                <condition name="channels_username" input="text" size="22" title="账号表用户名"/>
+                <condition name="creator" input="text" size="22" title="账号表创建人"/>
+                <condition input="select" title="渠道商地址" name="channels_addr1">
+                    <option id="1" text="aaa"/>
+                    <option id="2" text="bbb"/>
+                </condition>
+            </conditions>
+        </button>
+
+    </buttons>
+
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 <charts> <chart input="Pie2D" labels="dat" title="红包个数饼图"> <process> <step channel="service" ref="commonSearchService2" method="test" /> <step channel="sql" ref="totalSql" /> <step channel="service" ref="commonSearchService2" method="test" /> </process> <data name="rednum" title="实发个数"></data> <data name="backnum" title="退领个数"></data> </chart> <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图"> <data name="rednum" title="实发个数"></data> <data name="backnum"
+        title="退领个数"></data> </chart> <chart input="LineBasic2D" labels="dat" title="红包个数折线图"> <data name="redNum" title="实发个数"></data> <data name="backNum" title="退领个数"></data> </chart> </charts> -->
+</template>

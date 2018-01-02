@@ -1,0 +1,287 @@
+<template menuId="204" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品管理"/>
+        <direct name="供方信息添加"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+
+            CASE category_id
+            WHEN '1' THEN
+            '经营单位'
+            WHEN '2' THEN
+            '生产单位'
+            ELSE '其他' END
+            as category_name,
+
+            CASE settlement_id
+            WHEN '1' THEN
+            '现金'
+            WHEN '2' THEN
+            '月票'
+            WHEN '3' THEN
+            '支票'
+            ELSE '其他' END
+            as settlement_name,
+
+            area_code,
+            pinyin_code,
+            name,
+            address,
+            contact,
+            tel,
+            bank_code,
+            bank_name,
+            bank_account,
+            business_license_code,
+            business_license_date,
+            business_license_expire_date,
+            business_license_approval,
+            license_code,
+            license_date,
+            license_expire_date,
+            license_name,
+            consigner,
+            consign_date,
+            consign_expire_date,
+            quality_license_expire_date,
+            health_license_expire_date,
+            gsp_code,
+            gsp_date,
+            gsp_expire_date,
+            gmp_one_code,
+            gmp_one_date,
+            gmp_one_expire_date,
+            gmp_two_code,
+            gmp_two_date,
+            gmp_two_expire_date,
+            business_scope,
+            quality_head,
+            certification_scope,
+            tax_registration_code,
+            registered_capital,
+            business_pattern,
+            economic_nature,
+            legal_person,
+            has_annual_inspection,
+            has_seal,
+            has_manifest,
+            oraganization_code_expire_date,
+            annual_output_value,
+            quality_manager_count,
+            business_approval_user_id,
+            business_approval_user_name,
+
+            CASE business_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as business_approval_status,
+
+            business_approval_time,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_manager_approval_status,
+
+            quality_manager_approval_time,
+            quality_approval_user_id,
+            quality_approval_user_name,
+
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_approval_status,
+
+            quality_approval_time,
+            create_date,
+            update_date
+            FROM
+            saas_supplier where 1=1
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                <![CDATA[and a.business_license_expire_date >= ${business_license_expire_date}]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and a.pinyin_code <= ${pinyin_code}]]>
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_supplier where id=${key}
+        </sql>
+
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from saas_supplier where
+
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" key="true"/>
+
+            <clumn name="category_name" sortable="false" title="类别名称" sort="desc"/>
+
+            <clumn name="settlement_name" sortable="true" title="结算名称"/>
+            <clumn name="area_code" sortable="false" title="区号"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="contact" sortable="false" title="联系人"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="bank_code" sortable="false" title="开户行代码"/>
+            <clumn name="bank_name" sortable="true" title="开户行名称"/>
+            <clumn name="bank_account" sortable="false" title="开户行账号"/>
+            <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+            <clumn name="business_license_date" sortable="false" title="营业执照发证日期"/>
+            <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期"/>
+            <clumn name="business_license_approval" sortable="false" title="营业执照审批方"/>
+            <clumn name="license_code" sortable="false" title="许可证号"/>
+            <clumn name="license_date" sortable="false" title="许可证发证日期"/>
+            <clumn name="license_expire_date" sortable="true" title="许可证过期日期"/>
+            <clumn name="license_name" sortable="false" title="许可证名称"/>
+            <clumn name="consigner" sortable="false" title="委托人"/>
+            <clumn name="consign_date" sortable="false" title="委托日期"/>
+            <clumn name="consign_expire_date" sortable="false" title="委托过期日期"/>
+            <clumn name="quality_license_expire_date" sortable="false" title="质保到期日期"/>
+            <clumn name="health_license_expire_date" sortable="false" title="卫生许可到期日期"/>
+            <clumn name="gsp_code" sortable="false" title="GSP证书号"/>
+            <clumn name="gsp_date" sortable="false" title="GSP发证日期"/>
+            <clumn name="gsp_expire_date" sortable="false" title="GSP过期日期"/>
+            <clumn name="gmp_one_code" sortable="true" title="GMP证书编号"/>
+            <clumn name="gmp_one_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_one_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="gmp_two_code" sortable="false" title="GMP证书编号"/>
+            <clumn name="gmp_two_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_two_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="business_scope" sortable="false" title="经营范围"/>
+            <clumn name="quality_head" sortable="false" title="质量负责人"/>
+            <clumn name="certification_scope" sortable="false" title="认证范围"/>
+            <clumn name="tax_registration_code" sortable="false" title="税务登记证号"/>
+            <clumn name="registered_capital" sortable="true" title="注册资金"/>
+            <clumn name="business_pattern" sortable="false" title="经营方式"/>
+            <clumn name="economic_nature" sortable="false" title="经济性质"/>
+            <clumn name="legal_person" sortable="false" title="法人"/>
+            <clumn name="has_annual_inspection" sortable="false" title="是否年检"/>
+            <clumn name="has_seal" sortable="false" title="是否有印章印模"/>
+            <clumn name="has_manifest" sortable="false" title="是否有货单"/>
+            <clumn name="oraganization_code_expire_date" sortable="false" title="组织代码过期日期"/>
+            <clumn name="annual_output_value" sortable="false" title="年产值"/>
+            <clumn name="quality_manager_count" sortable="true" title="质管人数"/>
+            <clumn name="business_approval_user_id" sortable="false" title="业务审核用户ID"/>
+            <clumn name="business_approval_user_name" sortable="false" title="业务审核用户名称"/>
+            <clumn name="business_approval_status" sortable="false" title="业务审核状态"/>
+            <clumn name="business_approval_time" sortable="false" title="业务审核时间"/>
+            <clumn name="quality_manager_approval_user_id" sortable="false" title="质管审核用户ID"/>
+            <clumn name="quality_manager_approval_user_name" sortable="false" title="质管审核用户名称"/>
+            <clumn name="quality_manager_approval_status" sortable="false" title="质管审核状态"/>
+            <clumn name="quality_manager_approval_time" sortable="false" title="质管审核时间"/>
+            <clumn name="quality_approval_user_id" sortable="false" title="质量审核用户ID"/>
+            <clumn name="quality_approval_user_name" sortable="true" title="质量审核用户名称"/>
+            <clumn name="quality_approval_status" sortable="false" title="质量审核状态"/>
+            <clumn name="quality_approval_time" sortable="false" title="质量审核时间"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+            <clumn name="update_date" sortable="true" title="更新时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="select" title="渠道商地址" name="business_license_expire_date">
+                <option id="curdate()" text="合格"/>
+                <option id="adddate(curdate(), '-30 days')" text="差一个月到期"/>
+                <option id="3" text="不合格"/>
+            </condition>
+        </conditions>
+    </query>
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <key>channels_id</key>
+        <table>KKMY_CHANNELS</table>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+</template>

@@ -1,0 +1,95 @@
+<template menuId="7104" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购订单选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as purchase_order_detail_id,
+            g.purchase_order_id,
+            g.purchase_order_code,
+            g.goods_id,
+            g.goods_code,
+            g.goods_name,
+            g.goods_generic_name,
+            g.goods_specification,
+            g.goods_place,
+            g.preparation_id,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="preparation_id" and d.`value` =
+            g.preparation_id ) as preparation_name,
+            g.unit_id,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="unit_id" and d.`value` = g.unit_id ) as
+            unit_name,
+            g.quantity as order_quantity,
+            g.quantity as receipt_quantity,
+            g.goods_unit_price,
+            g.goods_retail_price,
+            g.amount,
+            g.consignee,
+            g.manufacturer,
+            g.registration_code,
+            g.remark
+            FROM
+            SAAS_TEST.saas_purchase_order_detail g left join SAAS_TEST.saas_purchase_order o
+            on g.purchase_order_id = o.id where 1=1 and g.status = '0' and o.supplier_id = ${supplier_id}
+            <if method="isNoEmpty" args="${purchase_order_code}">
+                <![CDATA[and g.purchase_order_code like %${purchase_order_code}%]]>
+            </if>
+            <!-- <if method="isNoEmpty"  args="${supplier_id}">
+                <![CDATA[and o.supplier_id = ${supplier_id}]]>
+            </if> -->
+            <if method="isNoEmpty" args="${purchaser_name}">
+                <![CDATA[and o.purchaser_name like %${purchaser_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and o.purchase_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and o.purchase_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime2}">
+                <![CDATA[and o.appoint_time >= ${startTime2}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime2}">
+                <![CDATA[ and o.appoint_time <= ${endTime2}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="purchase_order_code" sortable="false" title="采购订单编号"/>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="order_quantity" sortable="false" title="订单数量"/>
+            <clumn name="goods_retail_price" sortable="false" title="单价"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" hidden="true" name="supplier_id"/>
+            <condition input="text" title="订单编号" name="purchase_order_code"/>
+            <condition input="text" title="采购员" name="purchaser_name"/>
+            <condition input="date" title="订单日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="date" title="到货日期" name="startTime2" type="3"/>
+            <condition input="date" title="至" name="endTime2" type="3"/>
+        </conditions>
+    </query>
+
+
+</template>

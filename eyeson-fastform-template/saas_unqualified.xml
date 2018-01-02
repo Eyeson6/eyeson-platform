@@ -1,0 +1,322 @@
+<template menuId="404" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="不合格商品报损"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            un.id,
+            g.number,
+            g.name,
+            CASE preparation_id
+            WHEN '1' THEN
+            '针剂'
+            WHEN '2' THEN
+            '成药'
+            WHEN '3' THEN
+            '器械'
+            WHEN '4' THEN
+            '麻药'
+            WHEN '5' THEN
+            '饮片'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '基药'
+            ELSE
+            '其他'
+            END AS preparation_id,
+            g.specification,
+            CASE unit_id
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+            g.major_supplier,
+            i.batch_number,
+            i.expiry_date,
+            g.storeroom_id,
+            i.quantity,
+            un.un_num,
+            CASE un.un_type
+            WHEN '1' THEN
+            '质量问题'
+            WHEN '2' THEN
+            '停止销售'
+            ELSE
+            '其他'
+            END AS un_type,
+            un.un_bz
+            FROM
+            saas_unqualified un
+            LEFT JOIN saas_inventory i ON un.inventory_id = i.id
+            LEFT JOIN saas_goods g ON i.gds_code = g.number
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[and g.name = ${name}]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[and g.pinyin_code = ${pinyin_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[and g.number = ${number}]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                <![CDATA[and g.registration_number = ${registration_number}]]>
+            </if>
+
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_unqualified where id=${key}
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_inventory set
+            <if method="isNoEmpty" args="${un_num}">
+                quantity= (quantity-${un_num} )
+            </if>
+            where id= ${inventory_id}
+        </sql>
+        <sql id="updateSql2" method="update">
+            update saas_inventory set
+            quantity= quantity+${un_num}
+            where id= (select inventory_id from saas_unqualified where id = ${key})
+        </sql>
+        <sql id="updateSql3" method="update">
+            update saas_unqualified set
+            <if method="isNoEmpty" args="${un_num}">
+                un_num = ( un_num-${un_num})
+            </if>
+            where id= ${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+        <sql id="insertSql" method="insert">
+            insert into saas_unqualified(
+            <if method="isNoEmpty" args="${inventory_id}">
+                inventory_id,
+            </if>
+            <if method="isNoEmpty" args="${un_num}">
+                un_num,
+            </if>
+            <if method="isNoEmpty" args="${un_type}">
+                un_type,
+            </if>
+            <if method="isNoEmpty" args="${un_bz}">
+                un_bz,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${inventory_id}">
+                ${inventory_id},
+            </if>
+            <if method="isNoEmpty" args="${un_num}">
+                ${un_num},
+            </if>
+            <if method="isNoEmpty" args="un_type">
+                ${un_type},
+            </if>
+            <if method="isNoEmpty" args="${un_bz}">
+                ${un_bz},
+            </if>
+            )
+        </sql>
+        <sql id="checkNumMaxSql" method="query">
+            SELECT
+            CASE
+            WHEN ${un_num} > un_num THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            FROM
+            saas_unqualified
+            WHERE
+            id = ${key}
+        </sql>
+        <sql id="checkNumMaxSql2" method="query">
+            SELECT
+            CASE
+            WHEN ${un_num} > quantity THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            FROM
+            saas_inventory
+            WHERE
+            id = ${inventory_id}
+        </sql>
+        <sql id="deleteSql" method="delete">
+            <!--delete from  saas_supplier where -->
+            delete from saas_unqualified where id= ${key} and un_num = 0
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" key="true"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型id"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="major_supplier" sortable="false" title="生产厂商"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="batch_number" sortable="false" title="批号"/>
+            <clumn name="expiry_date" sortable="false" title="有效期"/>
+            <clumn name="storeroom_id" sortable="false" title="货位"/>
+            <clumn name="quantity" sortable="false" title="库存数量"/>
+            <clumn name="un_num" sortable="false" title="不合格数量"/>
+            <clumn name="un_type" sortable="false" title="不合格原因"/>
+            <clumn name="un_bz" sortable="false" title="备注"/>
+
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="text" title="批准文号" name="registration_number"/>
+
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_unqualified_add" title="添加" icon="icon-add" channel="query_execute" width="1000">
+            <process>
+                <step channel="sql" ref="checkNumMaxSql2">
+                    <breakMessage>输入值不得超过库存数量！</breakMessage>
+                </step>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="sql" ref="insertSql"/>
+            </process>
+
+            <conditions>
+                <condition name="name" input="text" size="50" title="商品名称" hiddenid="inventory_id" popuplinkage="405"
+                           popuptitle="商品选择" width="600"/>
+                <condition name="un_num" input="text" validate="number" title="不合格数量"/>
+                <condition name="un_type" input="select" title="不合格原因" defaultvalue="1">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'unqualified_type'
+                    </sql>
+                </condition>
+                <condition name="un_bz" input="text" title="备注"/>
+
+            </conditions>
+        </button>
+        <button id="saas_unqualified_edit" title="驳回" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="checkNumMaxSql">
+                    <breakMessage>输入值不得超过不合格数量！</breakMessage>
+                </step>
+                <step channel="sql" ref="updateSql2"/>
+                <step channel="sql" ref="updateSql3"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_unqualified</table>
+            <conditions>
+                <condition name="un_num" input="text" validate="number" title="不合格数量"/>
+                <condition name="un_type" input="select" readonly="true" title="不合格原因" defaultvalue="1">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'unqualified_type'
+                    </sql>
+                </condition>
+                <condition name="un_bz" input="text" readonly="true" title="备注"/>
+            </conditions>
+        </button>
+        <button id="saas_unqualified_delete" title="销毁" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="sql" ref="checkNumMaxSql">
+                    <breakMessage>输入值超过不合格数量！</breakMessage>
+                </step>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="updateSql3"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_unqualified</table>
+            <conditions>
+                <condition name="un_num" input="text" validate="number" title="不合格数量"/>
+                <condition name="un_type" input="select" readonly="true" title="不合格原因" defaultvalue="1">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'unqualified_type'
+                    </sql>
+                </condition>
+                <condition name="un_bz" input="text" readonly="true" title="备注"/>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>

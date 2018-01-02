@@ -1,0 +1,286 @@
+<template menuId="8093" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="中药饮片"/>
+        <direct name="药品清斗"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.registration_code,
+            i.batch_code,
+            i.purchased_price as order_price,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            s.name AS storage_id,
+            b.production_time,
+            b.expire_time,
+            sum(i.quantity) inventory_quantity
+            FROM SAAS_TEST.saas_inventory_detail i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            LEFT JOIN SAAS_TEST.saas_storage s ON s.id = i.storage_id
+            left join SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where 1=1 and s.storage_type = 2 and s.id != 1 and i.inventory_type = 9
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and i.batch_code = ${batch_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <!--  <if method="isNoEmpty"  args="${su_code}">
+                <![CDATA[ and i.su_code = ${su_code}]]>
+            </if> -->
+            group by i.goods_id ,i.batch_code,i.supplier_id,i.storage_id
+            order by i.create_time desc
+        </sql>
+        <sql id="listDetailSql" method="select">
+            SELECT
+            *
+            FROM SAAS_TEST.saas_inventory
+            where 1=2
+        </sql>
+        <sql id="insertInventory" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            order_price,
+            creater_id,
+            creater_name,
+            create_time,
+            storage_id,
+            qualified
+            ) SELECT
+            t.goods_id,
+            t.goods_code,
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            -1*${test9.inventory_quantity},
+            t.inventory_type,
+            t.order_price,
+            ${creater_id},
+            ${creater_name},
+            now(),
+            ${test9.storage_id},
+            0
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${test9.goods_id} and t.batch_code = ${test9.batch_code}
+            and t.supplier_id = ${test9.supplier_id} and t.qualified = ${test9.qualified}
+            and t.storage_id = 1
+            group by t.goods_id,t.batch_code ,t.supplier_id ,t.qualified,t.storage_id
+        </sql>
+        <sql id="insertInventoryDetail" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory_detail (
+            goods_name,
+            goods_generic_name,
+            goods_specification,
+            goods_place,
+            manufacturer,
+            preparation_id,
+            unit_id,
+            registration_code,
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            purchased_price,
+            creater_id,
+            creater_name,
+            create_time,
+            storage_id,
+            qualified
+            ) SELECT
+            g.name,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            g.unit_id,
+            g.registration_code,
+            t.goods_id,
+            t.goods_code,
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            -1*${test9.inventory_quantity},
+            9,
+            t.order_price,
+            ${creater_id},
+            ${creater_name},
+            now(),
+            ${test9.storage_id},
+            0
+            FROM
+            SAAS_TEST.saas_inventory t
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = t.goods_id
+            WHERE
+            t.goods_id = ${test9.goods_id} and t.batch_code = ${test9.batch_code}
+            and t.supplier_id = ${test9.supplier_id} and t.qualified = ${test9.qualified}
+            and t.storage_id = 1
+            group by t.goods_id,t.batch_code ,t.supplier_id ,t.qualified ,t.storage_id
+
+        </sql>
+        <sql id="checkDetailIsNull" method="query">
+            SELECT
+            CASE
+            WHEN ${test9} = '[]' THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+
+        </sql>
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="false" title="商品编号"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="商品规格"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="商品产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="有效期至"/>
+            <clumn name="inventory_quantity" sortable="false" title="库存"/>
+            <clumn name="storage_id" sortable="false" title="货位"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="批号" name="batch_code"/>
+        </conditions>
+    </query>
+
+    <buttons>
+        <!--添加节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置-->
+        <button id="test_ddd" title="清斗" icon="icon-edit" channel="query_execute" width="1200">
+            <process>
+                <step channel="sql" ref="checkDetailIsNull">
+                    <breakMessage>没有需要保存的信息，请先添加！</breakMessage>
+                </step>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="batchSql" ref="insertInventory" collection="test9" item="test9"/>
+                <step channel="batchSql" ref="insertInventoryDetail" collection="test9" item="test9"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_inventory_locking</table>
+            <conditions>
+                <condition name="creater_name" input="text" size="20" title="操作人" hiddenid="creater_id"
+                           readonly="true"/>
+            </conditions>
+
+            <querys>
+                <query id="test9" key="goods_id,batch_code,supplier_id,qualified,storage_id"
+                       channel="popupselect_removerow" pagesize="50" popupselect="8094" popuptitle="查询结果" width="900"
+                       isPage="false">
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listDetailSql"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="goods_id" sortable="false" title="商品ID" hidden="true"/>
+                        <clumn name="goods_code" sortable="false" title="商品编号"/>
+                        <clumn name="goods_name" sortable="false" title="商品名称"/>
+                        <clumn name="supplier_id" sortable="false" title="供应商ID" hidden="true"/>
+                        <clumn name="supplier_code" sortable="false" title="供应商编号"/>
+                        <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+                        <clumn name="preparation_name" sortable="false" title="剂型"/>
+                        <clumn name="unit_id" sortable="false" hidden="true" title="单位id"/>
+                        <clumn name="preparation_id" hidden="true" sortable="false" title="剂型ID"/>
+                        <clumn name="goods_specification" sortable="false" title="商品规格"/>
+                        <clumn name="unit_name" sortable="false" title="单位"/>
+                        <clumn name="manufacturer" sortable="false" title="生产企业"/>
+                        <clumn name="goods_place" sortable="false" title="商品产地"/>
+                        <clumn name="registration_code" sortable="false" title="批准文号"/>
+                        <clumn name="batch_code" sortable="false" title="批号"/>
+                        <clumn name="qualified" sortable="false" title="状态"/>
+                        <clumn name="production_time" sortable="false" title="生产时间"/>
+                        <clumn name="expire_time" sortable="false" title="有效期至"/>
+                        <clumn name="inventory_quantity" sortable="false" title="库存数量"/>
+                        <clumn name="storage_id" title="货位" sortable="false" editor="true" editortype="combobox"
+                               required="true" readonly="true">
+                            <sql>
+                                SELECT
+                                id as id,
+                                name as text
+                                FROM
+                                SAAS_TEST.saas_storage
+                                WHERE
+                                storage_type = 2 and id != 1
+                            </sql>
+                        </clumn>
+                    </model>
+                </query>
+            </querys>
+        </button>
+    </buttons>
+</template>
+
+

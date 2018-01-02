@@ -1,0 +1,245 @@
+<template menuId="8003" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="库存明细"/>
+        <direct name="实时库存（商品）"/>
+    </directions>
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            select *,sum(priceCount1) as priceCount,sum(inventory_quantity1) as inventory_quantity,
+            CAST(sum(priceCount1)/sum(inventory_quantity1) AS decimal(6,2)) as order_price_avg from (SELECT
+            i.id,
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.registration_code,
+            i.batch_code,
+            i.order_price,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            i.create_time,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            sum(i.quantity) inventory_quantity1,
+            sum(i.quantity)*i.order_price as priceCount1
+            FROM SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where 1=1 and i.qualified=0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            group by i.goods_id,i.batch_code,i.supplier_id,i.storage_id) eq
+            group by goods_id
+            HAVING inventory_quantity > 0
+            order by create_time desc
+        </sql>
+
+        <sql id="listDetailSql" method="select">
+            SELECT
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.registration_code,
+            i.batch_code,
+            i.order_price,
+            i.supplier_id,
+            i.supplier_code,
+            s.name as supplier_name,
+            i.qualified,
+            i.create_time,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            date_format(b.production_time, '%Y-%m-%d') as production_time,
+            date_format(b.expire_time, '%Y-%m-%d') as expire_time,
+            sum(i.quantity) inventory_quantity,
+            sum(i.quantity)*i.order_price as priceCount
+            FROM SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            left join SAAS_TEST.saas_supplier s on s.id= i.supplier_id
+            left join SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where i.qualified=0 and i.goods_id=(select goods_id from SAAS_TEST.saas_inventory where id = ${key})
+            group by i.goods_id,i.batch_code,i.supplier_id,i.storage_id
+            HAVING inventory_quantity > 0
+            order by create_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select
+            i.id,
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id
+            from
+            SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            where i.id = ${key}
+        </sql>
+    </sqls>
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="true" title="商品编号"/>
+            <clumn name="goods_name" sortable="true" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="true" title="通用名称"/>
+            <clumn name="goods_specification" sortable="true" title="规格"/>
+            <clumn name="preparation_id" sortable="true" title="剂型"/>
+            <clumn name="unit_id" sortable="true" title="单位"/>
+            <clumn name="goods_place" sortable="true" title="产地"/>
+            <clumn name="manufacturer" sortable="true" title="生产厂家"/>
+            <clumn name="registration_code" sortable="true" title="批准文号"/>
+            <clumn name="order_price_avg" sortable="true" title="采购单价"/>
+            <clumn name="inventory_quantity" sortable="true" title="库存数量"/>
+            <clumn name="priceCount" sortable="true" title="库存金额"/>
+        </model>
+        <conditions>
+            <!--
+                <condition input="date" title="入库日期" name="startTime" type="3" />
+                <condition input="date" title="至" name="endTime" type="3" />-->
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <!-- <condition input="text" title="批号"  name="batch_code"/>
+                <condition input="select" title="供货单位"  name="su_code">
+                <sql>
+                select code id,name text
+                from saas_supplier
+                </sql>
+            </condition>-->
+        </conditions>
+    </query>
+
+    <operate>
+        <button id="goods_id" title="查看批号详情" icon="icon" channel="select_query" width="1200">
+            <queryProcess>
+                <step channel="sql" ref="querySql"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_inventory</table>
+            <conditions>
+                <condition input="text" title="商品编号" name="goods_code" readonly="true"/>
+                <condition name="goods_name" input="text" title="商品名称" readonly="true"/>
+                <condition name="goods_generic_name" input="text" title="通用名称" readonly="true"/>
+                <condition name="goods_specification" input="text" title="规格" readonly="true"/>
+                <condition name="preparation_id" input="text" title="剂型" readonly="true"/>
+                <condition name="unit_id" input="text" title="单位" readonly="true"/>
+                <condition name="goods_place" input="text" title="产地" readonly="true"/>
+                <condition name="manufacturer" input="text" title="生产厂家" readonly="true"/>
+            </conditions>
+            <querys>
+                <query id="test9" channel="" pagesize="50" popuptitle="查询结果" width="800" isPage="true" checkbox="false">
+                    <process>
+                        <step channel="sql" ref="listDetailSql"/>
+                    </process>
+                    <model>
+                        <clumn name="supplier_name" sortable="false" title="供应商"/>
+                        <clumn name="batch_code" sortable="false" title="批号"/>
+                        <clumn name="production_time" sortable="false" title="生产日期"/>
+                        <clumn name="expire_time" sortable="false" title="有效期"/>
+                        <clumn name="storage_name" sortable="false" title="货位"/>
+                        <clumn name="order_price" sortable="true" title="采购单价"/>
+                        <clumn name="inventory_quantity" sortable="true" title="库存数量"/>
+                        <clumn name="priceCount" sortable="true" title="库存金额"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+    </operate>
+</template>

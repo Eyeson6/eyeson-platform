@@ -1,0 +1,698 @@
+<template menuId="499" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="门店管理"/>
+        <direct name="药品拆零登记"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            store,
+            store_name,
+            number,
+            name,
+            specification,
+
+            CASE preparation_id
+            WHEN '0' THEN
+            '片剂'
+            WHEN '1' THEN
+            '针剂'
+            WHEN '2' THEN
+            '成药'
+            WHEN '3' THEN
+            '器械'
+            WHEN '4' THEN
+            '麻药'
+            WHEN '5' THEN
+            '饮片'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '基药'
+            ELSE
+            '其他'
+            END AS preparation_id,
+
+            CASE unit_id
+            WHEN '0' THEN
+            '盒'
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+
+            manufacturer,
+            produc_date,
+            batch,
+            expiry_date,
+            quantity,
+            scat_quantity,
+            small_quantity,
+
+            CASE scat_unit_id
+            WHEN '0' THEN
+            '盒'
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS scat_unit_id,
+
+            scat_specification,
+            creater_id,
+            creater_name,
+            create_date,
+            delete_state
+            FROM
+            saas_goodscatregist where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(create_date,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and number like %${number}%]]>
+            </if>
+            order by create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_goodscatregist where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_goodscatregist(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${store}">
+                store,
+            </if>
+            <if method="isNoEmpty" args="${store_name}">
+                store_name,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+
+            <if method="isNoEmpty" args="${manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${produc_date}">
+                produc_date,
+            </if>
+            <if method="isNoEmpty" args="${batch}">
+                batch,
+            </if>
+            <if method="isNoEmpty" args="${expiry_date}">
+                expiry_date,
+            </if>
+            <if method="isNoEmpty" args="${quantity}">
+                quantity,
+            </if>
+
+            <if method="isNoEmpty" args="${scat_quantity}">
+                scat_quantity,
+            </if>
+            <if method="isNoEmpty" args="${small_quantity}">
+                small_quantity,
+            </if>
+            <if method="isNoEmpty" args="${scat_unit_id}">
+                scat_unit_id,
+            </if>
+            <if method="isNoEmpty" args="${scat_specification}">
+                scat_specification,
+            </if>
+
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${store}">
+                ${store},
+            </if>
+            <if method="isNoEmpty" args="${store_name}">
+                ${store_name},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                ${specification},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+
+            <if method="isNoEmpty" args="${manufacturer}">
+                ${manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${produc_date}">
+                ${produc_date},
+            </if>
+            <if method="isNoEmpty" args="${batch}">
+                ${batch},
+            </if>
+            <if method="isNoEmpty" args="${expiry_date}">
+                ${expiry_date},
+            </if>
+            <if method="isNoEmpty" args="${quantity}">
+                ${quantity},
+            </if>
+
+            <if method="isNoEmpty" args="${scat_quantity}">
+                ${scat_quantity},
+            </if>
+            <if method="isNoEmpty" args="${small_quantity}">
+                ${small_quantity},
+            </if>
+            <if method="isNoEmpty" args="${scat_unit_id}">
+                ${scat_unit_id},
+            </if>
+            <if method="isNoEmpty" args="${scat_specification}">
+                ${scat_specification},
+            </if>
+
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                ${delete_state},
+            </if>
+            now(),
+            )
+        </sql>
+
+
+        <sql id="checkNumSql" method="query">
+            select
+            CASE
+            WHEN d.quantity >= ${scat_quantity} THEN
+            'false'
+            ELSE
+            'true'
+            END AS mustBreak
+            from (
+            select quantity
+            from saas_inventory where gds_code = ${number} and batch_number = ${batch}
+            ) d
+        </sql>
+
+        <sql id="updateInventorySelf" method="update">
+            update
+            saas_inventory
+            set quantity = quantity-${scat_quantity}
+            where gds_code = ${number} and batch_number = ${batch};
+        </sql>
+
+        <sql id="updateInventory" method="update">
+            update
+            saas_inventory
+            set quantity = quantity+${small_quantity}
+            where gds_code = CONCAT(${number}, '_01') and batch_number = ${batch};
+        </sql>
+
+        <sql id="insertInventory" method="execute">
+            INSERT INTO saas_inventory (
+            shop_code,
+            gds_code,
+            batch_number,
+            su_code,
+            quantity,
+            order_price,
+            expiry_date,
+            note,
+            produce_date,
+            create_date,
+            create_user,
+            inventory_date
+            ) SELECT
+            t.shop_code,
+            CONCAT(${number}, '_01'),
+            t.batch_number,
+            t.su_code,
+            ${small_quantity},
+            t.order_price,
+            t.expiry_date,
+            t.note,
+            t.produce_date,
+            now(),
+            ${creater_name},
+            t.inventory_date
+            FROM
+            saas_inventory t
+            WHERE
+            gds_code = ${number} and batch_number = ${batch} and ${last_affected_number} = 0
+        </sql>
+
+        <sql id="insertSaasGoods" method="execute">
+            INSERT INTO saas_goods (
+            name,
+            number,
+            specification,
+            place,
+            preparation_id,
+            unit_id,
+            scat_unit_id,
+            scat_quantity,
+            scat_specification,
+            has_scat,
+            barcode,
+            packages,
+            packing_amount,
+            packing_unit,
+            generic_name,
+            registration_number,
+            registered_trademarks,
+            registration_number_expire_date,
+            registration_certificate_number,
+            indications_function,
+            overview,
+            file_number,
+            expire_date,
+            selling_price,
+            retail_price,
+            wholesale_price,
+            tax_rate,
+            lowest_price,
+            cost_price,
+            national_limited_price,
+            limit_standard,
+            pinyin_code,
+            mnemonic_code,
+            first,
+            packing_registered,
+            price_approved,
+            province_city_inspected,
+            certificated,
+            characters,
+            storeroom_id,
+            gsp_category_id,
+            storage_condition_id,
+            quality_standard_id,
+            category_id,
+            major_components,
+            registration_approval_number,
+            department_id,
+            major_supplier,
+            up_to_standard,
+            enterprise_gmp_number,
+            enterprise_gmp_expire_date,
+            refrigerate,
+            prescription_drug,
+            ephedrine,
+            celling_status,
+            business_approval_user_id,
+            business_approval_user_name,
+            business_approval_status,
+            business_approval_time,
+            business_approval_reason,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approval_user_id,
+            quality_approval_user_name,
+            quality_approval_status,
+            quality_approval_time,
+            quality_approval_reason,
+            invent_quantity,
+            monsale_quantity,
+            reminsale_quantity,
+            remaxsale_quantity,
+            creater_id,
+            creater_name,
+            create_date,
+            update_date,
+            goods_type,
+            good_state,
+            oc_id,
+            oc_name,
+            close_id,
+            close_name,
+            department,
+            open_reason,
+            close_reason,
+            open_time,
+            close_time
+            ) SELECT
+            t.name,
+            CONCAT(${number}, '_01'),
+            t.specification,
+            t.place,
+            t.preparation_id,
+            t.unit_id,
+            t.scat_unit_id,
+            t.scat_quantity,
+            t.scat_specification,
+            1,
+            t.barcode,
+            t.packages,
+            t.packing_amount,
+            t.packing_unit,
+            t.generic_name,
+            t.registration_number,
+            t.registered_trademarks,
+            t.registration_number_expire_date,
+            t.registration_certificate_number,
+            t.indications_function,
+            t.overview,
+            t.file_number,
+            t.expire_date,
+            t.selling_price,
+            t.retail_price,
+            t.wholesale_price,
+            t.tax_rate,
+            t.lowest_price,
+            t.cost_price,
+            t.national_limited_price,
+            t.limit_standard,
+            t.pinyin_code,
+            t.mnemonic_code,
+            t.first,
+            t.packing_registered,
+            t.price_approved,
+            t.province_city_inspected,
+            t.certificated,
+            t.characters,
+            t.storeroom_id,
+            t.gsp_category_id,
+            t.storage_condition_id,
+            t.quality_standard_id,
+            t.category_id,
+            t.major_components,
+            t.registration_approval_number,
+            t.department_id,
+            t.major_supplier,
+            t.up_to_standard,
+            t.enterprise_gmp_number,
+            t.enterprise_gmp_expire_date,
+            t.refrigerate,
+            t.prescription_drug,
+            t.ephedrine,
+            t.celling_status,
+            t.business_approval_user_id,
+            t.business_approval_user_name,
+            t.business_approval_status,
+            t.business_approval_time,
+            t.business_approval_reason,
+            t.quality_manager_approval_user_id,
+            t.quality_manager_approval_user_name,
+            t.quality_manager_approval_status,
+            t.quality_manager_approval_time,
+            t.quality_manager_approval_reason,
+            t.quality_approval_user_id,
+            t.quality_approval_user_name,
+            t.quality_approval_status,
+            t.quality_approval_time,
+            t.quality_approval_reason,
+            t.invent_quantity,
+            t.monsale_quantity,
+            t.reminsale_quantity,
+            t.remaxsale_quantity,
+            t.creater_id,
+            t.creater_name,
+            t.create_date,
+            t.update_date,
+            t.goods_type,
+            t.good_state,
+            t.oc_id,
+            t.oc_name,
+            t.close_id,
+            t.close_name,
+            t.department,
+            t.open_reason,
+            t.close_reason,
+            t.open_time,
+            t.close_time
+            FROM
+            saas_goods t
+            WHERE
+            number = ${number} and (select count(*) from saas_goods where number = CONCAT(${number}, '_01')) = 0
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <!--<clumn name="id" sortable="false" title="主键" />
+            <clumn name="store" sortable="false" title="门店编码" />
+            <clumn name="store_name" sortable="false" title="门店名称" />-->
+            <clumn name="number" sortable="false" title="商品编号"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产厂家"/>
+            <clumn name="produc_date" sortable="false" title="生产日期"/>
+            <clumn name="batch" sortable="false" title="生产批号"/>
+            <clumn name="expiry_date" sortable="false" title="有效日期"/>
+            <clumn name="quantity" sortable="false" title="库存数量"/>
+            <clumn name="small_quantity" sortable="false" title="拆后小包装数量"/>
+            <clumn name="scat_quantity" sortable="false" title="拆零数量"/>
+            <clumn name="scat_unit_id" sortable="false" title="拆零单位"/>
+            <clumn name="scat_specification" sortable="false" title="拆零规格"/>
+            <clumn name="creater_name" sortable="false" title="经办人名称"/>
+            <clumn name="create_date" sortable="false" title="拆零时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <buttons>
+        <button id="test1" title="添加" icon="icon-add" channel="query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <queryProcess>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+            </queryProcess>
+            <process>
+                <step channel="sql" ref="checkNumSql">
+                    <breakMessage>输入数量大于库存，请重新输入！</breakMessage>
+                </step>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="updateInventorySelf"/>
+                <step channel="sql" ref="updateInventory"/>
+                <step channel="sql" ref="insertInventory"/>
+                <step channel="sql" ref="insertSaasGoods"/>
+            </process>
+            <conditions>
+                <!--<condition name="category_id" input="text" size="20" title="类别ID" />
+                <condition name="store" input="text" size="20" title="门店编码" />
+                <condition name="store_name" input="text" size="20" title="门店名称" />-->
+                <condition name="number" input="text" size="20" title="商品编号" hiddenid="id" popuplinkage="4990"
+                           popuptitle="库存信息选择" width="1000" passvalue="false"/>
+                <condition name="name" readonly="true" input="text" size="20" title="商品名称"/>
+                <condition name="specification" readonly="true" input="text" size="20" title="规格"/>
+                <condition name="preparation_id" readonly="true" input="select" size="20" title="剂型">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'preparation_id'
+                    </sql>
+                </condition>
+                <condition name="unit_id" readonly="true" input="select" size="20" title="单位">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'unit_id'
+                    </sql>
+                </condition>
+                <condition name="manufacturer" readonly="true" input="text" size="20" title="生产厂家"/>
+                <condition name="produc_date" readonly="true" input="date" title="生产日期"/>
+                <condition name="batch" input="text" readonly="true" size="20" title="生产批号"/>
+                <condition name="expiry_date" readonly="true" input="date" title="有效日期"/>
+                <condition name="quantity" input="text" readonly="true" title="库存数量"/>
+                <condition name="scat_quantity" required="true" validate="number" hiddenid="scat_quantity_goods"
+                           input="text" size="20" title="拆零数量" popuplinkage="4991" popuptitle="拆零数量选择" width="1000"
+                           passvalue="true"/>
+                <condition name="small_quantity" input="text" required="true" readonly="true" size="20"
+                           title="拆后小包装数量"/>
+                <condition name="scat_specification" input="text" readonly="true" size="20" title="拆零规格"/>
+                <condition name="scat_unit_id" input="select" readonly="true" size="20" title="拆零单位">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'unit_id'
+                    </sql>
+                </condition>
+                <condition name="creater_name" hiddenid="creater_id" input="text" readonly="true" size="20"
+                           title="经办人"/>
+
+            </conditions>
+
+        </button>
+    </buttons>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

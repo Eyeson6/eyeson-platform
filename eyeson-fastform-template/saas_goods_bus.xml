@@ -1,0 +1,522 @@
+<template menuId="211" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购管理"/>
+        <direct name="首营药品业务审核"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            name,
+            specification,
+            place,
+            CASE preparation_id
+            WHEN '1' THEN
+            '针剂'
+            WHEN '2' THEN
+            '成药'
+            WHEN '3' THEN
+            '器械'
+            WHEN '4' THEN
+            '麻药'
+            WHEN '5' THEN
+            '饮片'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '基药'
+            ELSE
+            '其他'
+            END AS preparation_id,
+            CASE unit_id
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+            number,
+            barcode,
+            packages,
+            packing_amount,
+            packing_unit,
+            generic_name,
+            registration_number,
+            registered_trademarks,
+            registration_number_expire_date,
+            registration_certificate_number,
+            indications_function,
+            overview,
+            file_number,
+            expire_date,
+            selling_price,
+            retail_price,
+            wholesale_price,
+            tax_rate,
+            lowest_price,
+            cost_price,
+            national_limited_price,
+            limit_standard,
+            pinyin_code,
+            mnemonic_code,
+            FIRST,
+            CASE packing_registered
+            WHEN '0' THEN
+            '有'
+            WHEN '1' THEN
+            '无'
+            ELSE
+            '其他'
+            END AS packing_registered,
+            CASE price_approved
+            WHEN '0' THEN
+            '有'
+            WHEN '1' THEN
+            '无'
+            ELSE
+            '其他'
+            END AS price_approved,
+            CASE province_city_inspected
+            WHEN '0' THEN
+            '有'
+            WHEN '1' THEN
+            '无'
+            ELSE
+            '其他'
+            END AS province_city_inspected,
+            CASE certificated
+            WHEN '0' THEN
+            '有'
+            WHEN '1' THEN
+            '无'
+            ELSE
+            '其他'
+            END AS certificated,
+            characters,
+            CASE storeroom_id
+            WHEN '1' THEN
+            '常温库'
+            WHEN '2' THEN
+            '冷藏库'
+            ELSE
+            '其他'
+            END AS storeroom_id,
+            CASE gsp_category_id
+            WHEN '1' THEN
+            '中成药'
+            WHEN '2' THEN
+            '化学药制剂'
+            WHEN '3' THEN
+            '抗生素制剂'
+            WHEN '4' THEN
+            '生化药品'
+            WHEN '5' THEN
+            '生物制药'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '进口药品'
+            WHEN '8' THEN
+            '保健食品'
+            WHEN '9' THEN
+            '化妆品'
+            WHEN '10' THEN
+            '消毒产品'
+            WHEN '11' THEN
+            '非药品'
+            WHEN '12' THEN
+            '玻璃仪器'
+            WHEN '13' THEN
+            '计生用品'
+            WHEN '14' THEN
+            '医疗器械'
+            ELSE
+            '其他'
+            END AS gsp_category,
+            CASE storage_condition_id
+            WHEN '1' THEN
+            '常温'
+            WHEN '2' THEN
+            '恒温'
+            WHEN '3' THEN
+            '冷藏'
+            WHEN '4' THEN
+            '阴凉'
+            ELSE
+            '其他'
+            END AS storage_condition_id,
+            CASE quality_standard_id
+            WHEN '1' THEN
+            '中国药典'
+            WHEN '2' THEN
+            '部颁标准'
+            ELSE
+            '其他'
+            END AS quality_standar_name,
+            category_id,
+            major_components,
+            registration_approval_number,
+            department_id,
+            major_supplier,
+            CASE up_to_standard
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE
+            '其他'
+            END AS up_to_standard,
+            enterprise_gmp_number,
+            enterprise_gmp_expire_date,
+            refrigerate,
+            prescription_drug,
+            ephedrine,
+            CASE celling_status
+            WHEN '0' THEN
+            '启用'
+            WHEN '1' THEN
+            '通用'
+            ELSE
+            '其他'
+            END AS celling_status,
+            business_approval_user_id,
+            business_approval_user_name,
+            CASE business_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '审核驳回'
+            WHEN '2' THEN
+            '审核通过'
+            ELSE
+            '其它'
+            END AS business_approval_status,
+            business_approval_time,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '审核驳回'
+            WHEN '2' THEN
+            '审核通过'
+            ELSE
+            '其它'
+            END AS quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_approval_user_id,
+            quality_approval_user_name,
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '审核驳回'
+            WHEN '2' THEN
+            '审核通过'
+            ELSE
+            '其它'
+            END AS quality_approval_status,
+            quality_approval_time,
+            creater_id,
+            creater_name,
+            create_date,
+            update_date
+            FROM
+            saas_goods
+            where business_approval_status='0' or business_approval_status = '1'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                <![CDATA[ and creater_name like %${creater_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${gsp_category_id}">
+                <![CDATA[ and gsp_category_id like %${gsp_category_id}%]]>
+            </if>
+            <if method="isNoEmpty" args="${celling_status}">
+                <![CDATA[ and celling_status like %${celling_status}%]]>
+            </if>
+            order by business_approval_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_goods where id=${key}
+        </sql>
+
+
+        <sql id="updateSql" method="update">
+            update saas_goods set business_approval_time=now(),
+            <if method="isNoEmpty" args="${business_approval_user_id}">
+                business_approval_user_id=${business_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_name}">
+                business_approval_user_name=${business_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_status}">
+                business_approval_status=${business_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_reason}">
+                business_approval_reason=${business_approval_reason},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                quality_manager_approval_status=${quality_manager_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${celling_status}">
+                celling_status=${celling_status},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <!-- <clumn name="id" sortable="false" title="产品编号"  key="true"/> -->
+            <clumn name="name" sortable="false" title="产品名称"/>
+            <clumn name="specification" sortable="true" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="creater_id" sortable="false" title="添加用户ID"/>
+            <!-- <clumn name="create_user_name" sortable="false" title="添加用户姓名" /> -->
+            <clumn name="preparation_id" sortable="false" title="剂型"/><!-- 剂型ID -->
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <!-- <clumn name="business_approval_user_id" sortable="false" title="业务审核用户ID" /> -->
+            <clumn name="business_approval_user_name" sortable="false" title="业务审核用户名称"/>
+            <clumn name="business_approval_status" sortable="false" title="业务审核状态"/>
+            <clumn name="business_approval_time" sortable="false" title="业务审核时间"/>
+            <!-- <clumn name="quality_manager_approval_user_id" sortable="false" title="质管审核用户ID" /> -->
+            <clumn name="quality_manager_approval_user_name" sortable="false" title="质管审核用户名称"/>
+            <clumn name="quality_manager_approval_status" sortable="false" title="质管审核状态"/>
+            <clumn name="quality_manager_approval_time" sortable="false" title="质管审核时间"/>
+            <!-- <clumn name="quality_approval_user_id" sortable="false" title="质量审核用户ID" /> -->
+            <clumn name="quality_approval_user_name" sortable="true" title="质量审核用户名称"/>
+            <clumn name="quality_approval_status" sortable="false" title="质量审核状态"/>
+            <clumn name="quality_approval_time" sortable="false" title="质量审核时间"/>
+            <clumn name="number" sortable="false" title="编号"/>
+            <clumn name="barcode" sortable="false" title="条码"/>
+            <clumn name="packages" sortable="true" title="中包装"/>
+            <clumn name="packing_amount" sortable="false" title="包装量"/>
+            <clumn name="packing_unit" sortable="false" title="包装单位"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="registered_trademarks" sortable="true" title="注册商标"/>
+            <clumn name="registration_number_expire_date" sortable="false" title="批准文号期限" key="true"/>
+            <clumn name="registration_certificate_number" sortable="false" title="注册证号"/>
+            <clumn name="indications_function" sortable="false" title="功能主治"/>
+            <clumn name="overview" sortable="false" title="简介"/>
+            <clumn name="file_number" sortable="false" title="档案号"/>
+            <clumn name="expire_date" sortable="false" title="有效期"/>
+            <clumn name="selling_price" sortable="false" title="销售价"/>
+            <clumn name="wholesale_price" sortable="false" title="批发价"/>
+            <clumn name="retail_price" sortable="false" title="零售价"/>
+            <clumn name="tax_rate" sortable="false" title="税率"/>
+            <clumn name="lowest_price" sortable="false" title="最低价"/>
+            <clumn name="cost_price" sortable="false" title="成本价"/>
+            <clumn name="national_limited_price" sortable="false" title="国家限价" key="true"/>
+            <clumn name="limit_standard" sortable="true" title="限量"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="mnemonic_code" sortable="false" title="助记码"/>
+            <clumn name="first" sortable="false" title="是否首营"/>
+            <clumn name="packing_registered" sortable="false" title="包装备案" key="true"/>
+            <clumn name="channels_id" sortable="false" title="物价批文"/>
+            <clumn name="province_city_inspected" sortable="false" title="省检市检"/>
+            <clumn name="certificated" sortable="true" title="合格证"/>
+            <clumn name="character" sortable="false" title="性状"/>
+            <clumn name="storeroom_id" sortable="false" title="存储库房ID"/><!-- 所有部门ID -->
+            <clumn name="gsp_category_id" sortable="false" title="Gsp分类"/><!-- GSP分类ID -->
+            <clumn name="storage_condition_id" sortable="false" title="存储条件ID"/>
+            <clumn name="quality_standard_id" sortable="true" title="质量标准ID"/>
+            <clumn name="category_id" sortable="false" title="分类ID"/>
+            <clumn name="major_components" sortable="false" title="主要成分"/>
+            <clumn name="registration_approval_number" sortable="false" title="注册批件号" key="true"/>
+            <clumn name="department_id" sortable="false" title="所有部门ID"/>
+            <clumn name="major_supplier" sortable="false" title="主供应商"/>
+            <clumn name="up_to_standard" sortable="true" title="标准"/>
+            <clumn name="refrigerate" sortable="false" title="冷藏"/>
+            <clumn name="prescription_drug" sortable="true" title="处方药"/>
+            <clumn name="enterprise_gmp_number" sortable="false" title="企业GMP号"/>
+            <clumn name="enterprise_gmp_expire_date" sortable="false" title="企业GMP过期日期"/><!-- 所有部门ID -->
+
+            <clumn name="ephedrine" sortable="false" title="麻黄碱"/>
+            <clumn name="celling_status" sortable="false" title="销售状态"/>
+            <clumn name="channels_username" sortable="false" title="扫描监管码"/>
+            <clumn name="creater_name" sortable="false" title="创建人"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+            <clumn name="update_date" sortable="true" title="更新时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="创建人" name="creater_name"/>
+            <condition input="select" title="GSP分类" name="gsp_category_id">
+                <option id="0" text="中药饮片"/>
+                <option id="1" text="中成药"/>
+                <option id="2" text="化学药制剂"/>
+                <option id="3" text="抗生素制剂"/>
+                <option id="4" text="生化药品"/>
+                <option id="5" text="生物制药"/>
+                <option id="6" text="进口药品"/>
+                <option id="7" text="保健食品"/>
+                <option id="8" text="化妆品"/>
+                <option id="9" text="消毒产品"/>
+                <option id="10" text="非药品"/>
+                <option id="11" text="玻璃仪器"/>
+                <option id="12" text="计生用品"/>
+                <option id="13" text="医疗器械"/>
+            </condition>
+            <condition input="select" title="销售状态" name="celling_status">
+                <option id="0" text="提交"/>
+                <option id="1" text="一级审批"/>
+                <option id="2" text="二级审批"/>
+                <option id="3" text="启用"/>
+                <option id="4" text="停售"/>
+            </condition>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+    <buttons>
+        <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+        <button id="test2" title="审核" icon="icon-edit" channel="select_query_execute" width="900">
+            <process>
+                <step channel="service" ref="saasGoodsService" method="setReviewedBusData"/>
+                <step channel="sql" ref="updateSql"/>
+                <!--<step channel="sql" ref="updateAddrSql" />-->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="saasGoodsService" method="setBusPageData"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_goods</table>
+            <conditions>
+
+                <condition name="business_approval_user_id" input="text" title="业务审核用户ID" readonly="true"/>
+                <condition name="business_approval_user_name" input="text" title="业务审核用户名称" readonly="true"/>
+
+                <!-- <condition name="business_approval_user_id" input="text" title="业务审核用户ID"/>
+                <condition name="business_approval_user_name" input="text" size="20" title="业务审核用户名称"/> -->
+                <condition name="business_approval_status" input="select" title="业务审核状态">
+                    <option id="0" text="待审核"/>
+                    <option id="1" text="审核驳回"/>
+                    <option id="2" text="审核通过"/>
+                </condition>
+                <condition name="business_approval_reason" input="text" size="400" title="业务审核驳回原因"/>
+            </conditions>
+
+        </button>
+    </buttons>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+</template>

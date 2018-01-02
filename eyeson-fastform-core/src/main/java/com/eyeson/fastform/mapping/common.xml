@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+  版权：融贯资讯 <br/>
+ 作者：jian.mei@rogrand.com <br/>
+ 生成日期：2013-10-24 <br/>
+-->
+
+<mapper namespace="com.eyeson.fastform.dao.FastCommonMapper">
+
+    <sql id="pkSql">
+        <![CDATA[
+
+         select pk()
+
+        ]]>
+    </sql>
+
+    <!--查询一条32位主键-->
+    <select id="queryPk" resultType="java.lang.String">
+        <include refid="pkSql"/>
+    </select>
+
+    <!--查询count的SQL语句-->
+    <select id="queryCount" parameterType="java.lang.String" resultType="java.lang.Long">
+        ${sql}
+    </select>
+
+    <!--查询count的SQL语句-->
+    <select id="queryList" parameterType="java.lang.String" resultType="java.util.HashMap">
+        ${sql}
+    </select>
+
+    <!--查询SQL语句，返回ResultMap中的key，value全部都是小写-->
+    <select id="queryRecord" parameterType="java.lang.String" resultType="java.util.HashMap">
+        ${sql}
+    </select>
+
+    <!--查询一个字段的SQL语句-->
+    <select id="queryString" parameterType="java.lang.String" resultType="java.lang.String">
+        ${sql}
+    </select>
+
+
+    <insert id="insertSql" parameterType="com.eyeson.fastform.bean.CommonSearchSql" useGeneratedKeys="true"
+            keyProperty="keyProperty">
+    	${sql}
+    </insert>
+
+    <delete id="deleteSql" parameterType="java.lang.String">
+		${sql}
+	</delete>
+
+</mapper>         
+       
+           

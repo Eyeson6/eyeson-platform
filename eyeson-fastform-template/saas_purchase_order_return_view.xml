@@ -1,0 +1,152 @@
+<template menuId="7110" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="退货商品选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            a.goods_id AS goods_id,
+            a.goods_code AS goods_code,
+            a.storage_id AS storage_id,
+            (select name from SAAS_TEST.saas_storage ss where ss.`id` = a.storage_id ) as storage_name,
+            go.name AS goods_name,
+            a.batch_code AS batch_code,
+            go.specification as goods_specification,
+            d.expire_time as expire_time,
+            d.production_time as production_time,
+            go.generic_name as goods_generic_name,
+            SUM(a.quantity) AS storage_quantity,
+            d.purchase_price as purchase_price,
+            go.preparation_id as preparation_id,
+            (select name from SAAS_TEST.saas_dictionary di where di.`category`="preparation_id" and di.`value` =
+            go.preparation_id ) as preparation_name,
+            go.unit_id as unit_id,
+            (select name from SAAS_TEST.saas_dictionary di where di.`category`="unit_id" and di.`value` = go.unit_id )
+            as unit_name,
+            go.manufacturer as manufacturer,
+            go.place as goods_place,
+            go.registration_code as registration_code,
+            d.create_time as storage_time,
+            d.acceptance_id as acceptance_id,
+            d.acceptance_code as acceptance_code
+            FROM
+            (
+            SELECT
+            r.goods_id,
+            r.goods_code,
+            r.batch_code,
+            r.storage_id,
+            SUM(quantity) AS quantity
+            FROM
+            SAAS_TEST.saas_inventory r
+            WHERE
+            1 = 1
+            AND ${return_type} = 1
+            AND r.storage_id = '-1'
+            AND r.qualified != '2'
+            and r.supplier_id = ${supplier_id}
+            GROUP BY
+            goods_id,
+            batch_code,
+            storage_id
+
+            union all
+
+            SELECT
+            r.goods_id,
+            r.goods_code,
+            r.batch_code,
+            r.storage_id,
+            SUM(quantity) AS quantity
+            FROM
+            SAAS_TEST.saas_inventory r
+            WHERE
+            1 = 1
+            AND ${return_type} = 0
+            AND ${return_type} != ''
+            AND r.storage_id != '-1'
+            AND r.qualified != '2'
+            and r.supplier_id = ${supplier_id}
+            GROUP BY
+            goods_id,
+            batch_code,
+            storage_id
+
+            ) a
+            LEFT JOIN SAAS_TEST.saas_goods go ON a.goods_id = go.id
+            LEFT JOIN (select * from SAAS_TEST.saas_acceptance_detail GROUP BY goods_id, batch_code) d
+            ON a.goods_id = d.goods_id AND a.batch_code = d.batch_code
+            where 1=1
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[and go.goods_code like %${goods_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[and go.goods_name like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[and go.registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[and go.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${acceptance_code}">
+                <![CDATA[and d.acceptance_code like %${acceptance_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and d.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[and d.create_time <= ${endTime}]]>
+            </if>
+
+            GROUP BY
+            goods_id,
+            batch_code
+            HAVING
+            storage_quantity > 0
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+            <clumn name="expire_time" sortable="false" title="有效期至"/>
+            <clumn name="storage_quantity" sortable="false" title="可退数量"/>
+            <clumn name="purchase_price" sortable="false" title="单价"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="storage_time" sortable="false" title="入库日期"/>
+            <clumn name="acceptance_code" sortable="false" title="入库单单编号"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" hidden="true" name="supplier_id"/>
+            <condition input="text" title="退货类型" hidden="true" name="return_type"/>
+            <condition input="text" title="验收单编号" name="acceptance_code"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="goods_code"/>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="批准文号" name="registration_code"/>
+            <condition input="date" title="入库日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+
+</template>

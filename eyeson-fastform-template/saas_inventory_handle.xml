@@ -1,0 +1,226 @@
+<template menuId="8073" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="问题药品"/>
+        <direct name="药品处理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            b.id,
+            b.inventory_locking_code,
+            b.goods_id,
+            b.goods_code,
+            b.goods_name,
+            b.supplier_id,
+            b.supplier_code,
+            b.goods_generic_name,
+            b.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = b.preparation_id
+            ) AS preparation_name,
+            b.goods_specification,
+            b.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = b.unit_id
+            ) AS unit_name,
+            b.manufacturer,
+            b.goods_place,
+            b.registration_code,
+            b.batch_code,
+            b.production_time,
+            b.expire_time,
+            b.inventory_quantity,
+            b.practical_quantity,
+            b.locking_reason,
+            (
+            SELECT
+            name
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "locking_state"
+            AND dd.`value` = 1
+            ) AS locking_state,
+            b.remark,
+            b.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = b.storage_id
+            ) AS storage_name,
+            b.creater_id,
+            b.creater_name,
+            b.create_time,
+            b.update_time,
+            b.modifier_id,
+            b.modifier_name
+            FROM
+            SAAS_TEST.saas_inventory_locking b
+            where 1=1 and b.locking_state=2 and b.practical_quantity > 0
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and b.goods_code like %${goods_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and b.batch_code = ${batch_code}]]>
+            </if>
+            group by b.goods_id,b.batch_code ,b.supplier_id ,b.storage_id
+        </sql>
+
+        <sql id="updateSql" method="execute">
+            update SAAS_TEST.saas_inventory_locking
+            set
+            locking_state = (case when ${rows.locking_state}='不合格' then 1 else ${rows.locking_state} end)
+            ,
+            locking_reason= ${rows.locking_reason_new}
+            where id=${rows.id}
+        </sql>
+
+        <sql id="updateInventory" method="execute">
+
+            update SAAS_TEST.saas_inventory
+            set qualified = (case when ${rows.locking_state}='不合格' then 1 else ${rows.locking_state} end),
+            update_time = now(),
+            modifier_id = ${modifier_id},
+            modifier_name = ${modifier_name}
+            where goods_id = ${rows.goods_id} and batch_code = ${rows.batch_code}
+            and supplier_id = ${rows.supplier_id} and qualified = 2 and storage_id = ${rows.storage_id}
+
+        </sql>
+        <sql id="insertInventoryDetail2" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory_detail (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            purchased_price,
+            creater_id,
+            creater_name,
+            create_time,
+            storage_id,
+            qualified
+            ) SELECT
+            t.goods_id,
+            t.goods_code,
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            ${rows.practical_quantity},
+            7,
+            t.order_price,
+            ${creater_id},
+            ${creater_name},
+            now(),
+            t.storage_id,
+            (case when ${rows.locking_state}='不合格' then 1 else ${rows.locking_state} end)
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${rows.goods_id} and t.batch_code = ${rows.batch_code}
+            and t.supplier_id = ${rows.supplier_id} and t.qualified = 2
+            and t.storage_id = ${rows.storage_id}
+            group by t.goods_id,t.batch_code ,t.supplier_id ,t.qualified ,t.storage_id
+
+        </sql>
+
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" hidden="true"/>
+            <clumn name="create_time" sortable="false" title="锁定时间"/>
+            <clumn name="locking_state" sortable="false" title="处理结果" editor="true" input="select">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a
+                    where a.category = 'locking_state' and a.value != 2
+
+                </sql>
+            </clumn>
+            <clumn name="locking_reason_new" sortable="false" title="处理原因" editor="true"/>
+            <clumn name="goods_code" sortable="false" title="商品编号"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+            <clumn name="supplier_id" sortable="false" hidden="true" title="供应商ID"/>
+            <clumn name="supplier_code" sortable="false" title="供应商编号"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="unit_id" sortable="false" hidden="true" title="单位id"/>
+            <clumn name="preparation_id" hidden="true" sortable="false" title="剂型ID"/>
+            <clumn name="goods_specification" sortable="false" title="商品规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="商品产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="有效期至"/>
+            <clumn name="storage_id" sortable="false" hidden="true" title="货位ID"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+            <clumn name="inventory_quantity" sortable="false" title="库存数量"/>
+            <clumn name="practical_quantity" sortable="false" title="锁定数量"/>
+            <clumn name="locking_reason" sortable="false" title="锁定原因"/>
+
+
+            <clumn name="remark" sortable="false" title="备注"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="批号" name="batch_code"/>
+        </conditions>
+    </query>
+
+    <buttons>
+        <button id="testrowsave" title="处理" icon="icon-add" channel="fastSave" width="1200" successMessage="处理结果修改成功！">
+            <process>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="batchSql" ref="updateSql" collection="rows" item="rows"/>
+                <step channel="batchSql" ref="updateInventory" collection="rows" item="rows"/>
+                <step channel="batchSql" ref="insertInventoryDetail2" collection="rows" item="rows"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS.saas_inventory_locking</table>
+            <conditions>
+                <condition input="text" title="商品编号" name="goods_code"/>
+                <condition input="text" title="批号" name="batch_code"/>
+            </conditions>
+        </button>
+    </buttons>
+</template>
+
+

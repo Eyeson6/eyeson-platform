@@ -1,0 +1,753 @@
+<template menuId="202" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="首营企业质管审核"/>
+    </directions>
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS FIRST_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0'
+            THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '已审核'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS quality_manager_approval_status_name,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            creater_id,
+            creater_name,
+            create_time,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            where 1=1 and FIRST= '1'
+            <!-- where 1=1 and quality_approval_status = 1 -->
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                <![CDATA[ and quality_manager_approval_status = ${quality_manager_approval_status}]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            order by quality_manager_approval_time desc
+        </sql>
+
+        <sql id="listsql1" method="select">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS FIRST_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0'
+            THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '已审核'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS quality_manager_approval_status_name,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            creater_id,
+            creater_name,
+            create_time,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            where 1=1 and quality_manager_approval_status = 1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            order by quality_manager_approval_time desc
+        </sql>
+
+        <sql id="listsql2" method="select">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS FIRST_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0'
+            THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '已审核'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS quality_manager_approval_status_name,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            creater_id,
+            creater_name,
+            create_time,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            where 1=1 and quality_manager_approval_status = 2
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and quality_manager_approval_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and quality_manager_approval_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            order by quality_manager_approval_time desc
+        </sql>
+
+
+        <sql id="querySql" method="query">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS FIRST_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0'
+            THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            ''
+            ELSE quality_manager_approval_status
+            END AS quality_manager_approval_status,
+            quality_manager_approval_status,
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '未审核'
+            WHEN '1' THEN
+            '已审核'
+            WHEN '2' THEN
+            '审核驳回'
+            END AS quality_manager_approval_status_name,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            creater_id,
+            creater_name,
+            create_time,
+            remarks
+            from SAAS_TEST.saas_supplier where id=${key}
+        </sql>
+
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_supplier set quality_manager_approval_time=now(),
+            <if method="isNoEmpty" args="${quality_manager_approver_id}">
+                quality_manager_approver_id=${quality_manager_approver_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_name}">
+                quality_manager_approver_name=${quality_manager_approver_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                quality_manager_approval_status=${quality_manager_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_reason}">
+                quality_manager_approval_reason=${quality_manager_approval_reason},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status=${quality_approval_status},
+            </if>
+            where id=${key}
+        </sql>
+
+    </sqls>
+
+    <query pagesize="50">
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="CODE" sortable="false" title=" 编码 "/>
+            <clumn name="NAME" sortable="false" title=" 名称 "/>
+            <clumn name="supplier_nature_name" sortable="false" title=" 供货单位性质 "/>
+            <clumn name="legal_person" sortable="false" title=" 法定代表人 "/>
+            <clumn name="quality_head" sortable="false" title=" 质量负责人 "/>
+            <clumn name="business_person" sortable="false" title=" 业务负责人 "/>
+            <clumn name="tax_registration_code" sortable="false" title=" 税务登记证号 "/>
+            <clumn name="business_license_code" sortable="false" title=" 营业执照号 "/>
+            <clumn name="business_license_expire_date" sortable="false" title=" 营业执照有效期 "/>
+            <!-- <clumn name="business_scope" sortable="false" title=" 经营范围 " /> -->
+            <clumn name="FIRST_name" sortable="false" title=" 首营 "/>
+            <clumn name="quality_manager_approval_status_name" sortable="false" title=" 审核状态 "/>
+            <clumn name="saas_supplier_status_name" sortable="false" title=" 状态"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="code"/>
+            <condition input="select" title="审核状态" defaultvalue="0" name="quality_manager_approval_status">
+                <option id="" text="全部"/>
+                <option id="0" text="未审核"/>
+                <option id="1" text="已审核"/>
+                <option id="2" text="审核驳回"/>
+            </condition>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 	<query pagesize="50" queryId="1" queryTitle="审核通过" isPage="false">
+            <process>
+                <step channel="sql" ref="listsql1" />
+            </process>
+            <model>
+                <clumn name="CODE" sortable="false" title=" 编码 " />
+                <clumn name="NAME" sortable="false" title=" 名称 " />
+                <clumn name="supplier_nature_name" sortable="false" title=" 供货单位性质 " />
+                <clumn name="legal_person" sortable="false" title=" 法定代表人 " />
+                <clumn name="quality_head" sortable="false" title=" 质量负责人 " />
+                <clumn name="business_person" sortable="false" title=" 业务负责人 " />
+                <clumn name="tax_registration_code" sortable="false" title=" 税务登记证号 " />
+                <clumn name="business_license_code" sortable="false" title=" 营业执照号 " />
+                <clumn name="business_license_expire_date" sortable="false" title=" 营业执照有效期 " />
+                <clumn name="business_scope" sortable="false" title=" 经营范围 " />
+                <clumn name="FIRST_name" sortable="false" title=" 首营 " />
+                <clumn name="quality_manager_approval_status_name" sortable="false" title=" 审核状态 " />
+                <clumn name="saas_supplier_status_name" sortable="false" title=" 状态" />
+            </model>
+            <conditions>
+                <condition input="text" title="名称" name="name" />
+                <condition input="text" title="拼音码" name="pinyin_code" />
+                <condition input="text" title="商品编码" name="code" />
+                <condition input="date" title="创建时间" name="startTime" type="3" />
+                <condition input="date" title="至" name="endTime" type="3" />
+            </conditions>
+        </query>
+
+        <query pagesize="50" queryId="2" queryTitle="审核驳回" isPage="false">
+            <process>
+                <step channel="sql" ref="listsql2" />
+            </process>
+            <model>
+                <clumn name="CODE" sortable="false" title=" 编码 " />
+                <clumn name="NAME" sortable="false" title=" 名称 " />
+                <clumn name="supplier_nature_name" sortable="false" title=" 供货单位性质 " />
+                <clumn name="legal_person" sortable="false" title=" 法定代表人 " />
+                <clumn name="quality_head" sortable="false" title=" 质量负责人 " />
+                <clumn name="business_person" sortable="false" title=" 业务负责人 " />
+                <clumn name="tax_registration_code" sortable="false" title=" 税务登记证号 " />
+                <clumn name="business_license_code" sortable="false" title=" 营业执照号 " />
+                <clumn name="business_license_expire_date" sortable="false" title=" 营业执照有效期 " />
+                <clumn name="business_scope" sortable="false" title=" 经营范围 " />
+                <clumn name="FIRST_name" sortable="false" title=" 首营 " />
+                <clumn name="quality_manager_approval_status_name" sortable="false" title=" 审核状态 " />
+                <clumn name="saas_supplier_status_name" sortable="false" title=" 状态" />
+            </model>
+            <conditions>
+                <condition input="text" title="名称" name="name" />
+                <condition input="text" title="拼音码" name="pinyin_code" />
+                <condition input="text" title="商品编码" name="code" />
+                <condition input="date" title="创建时间" name="startTime" type="3" />
+                <condition input="date" title="至" name="endTime" type="3" />
+            </conditions>
+        </query> -->
+
+
+    <buttons>
+        <button id="test1" title="审核" icon="icon-edit" channel="select_query_execute" width="1100" height="350">
+            <process>
+                <!-- <step channel="service" ref="saasSupplierService" method="setReviewedManData" /> -->
+                <step channel="sql" ref="updateSql"/>
+            </process>
+            <queryProcess>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="saasSupplierService" method="setManPageData"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_supplier</table>
+            <conditions>
+                <condition name="quality_manager_approver_id" input="text" title="质管审核ID" required="true"
+                           readonly="true"/>
+                <!-- <condition name="quality_manager_approver_name" title="质管审核人"  hiddenid="quality_manager_approver_id" required="true" targetMenuId="777" targetButtonId="qualityManagerApprover" input="tooltip" /> -->
+                <condition name="quality_manager_approver_name" title="质管审核人" required="true" input="text"
+                           readonly="true"/>
+                <condition name="quality_manager_approval_status" defaultvalue="0" input="select" title="质管审核状态">
+                    <option id="0" text=""/>
+                    <option id="1" text="同意"/>
+                    <option id="2" text="不同意"/>
+                </condition>
+                <condition name="quality_manager_approval_reason" input="text" size="400" title="原因"/>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>

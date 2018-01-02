@@ -1,0 +1,146 @@
+<template menuId="7017" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售分析-按排行"/>
+    </directions>
+
+    <!-- saas_formula_rule的gs_type 0:按数量提成，1:按金额提成-->
+    <!-- 按 金额 gs_quantity 存的是基数，gs_price 存的 百分比 -->
+    <!-- 按 数量 gs_quantity 存的是提成数量，gs_price 存的 提成金额-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.unit_id,
+            d.goods_specification,
+            d.preparation_id,
+            (select name from SAAS_TEST.saas_dictionary ds where ds.`category`="unit_id" and ds.`value` = d.unit_id ) as
+            unit_name,
+            (select name from SAAS_TEST.saas_dictionary ds where ds.`category`="preparation_id" and ds.`value` =
+            d.preparation_id ) as preparation_name,
+            d.manufacturer,
+            sum(d.quantity) as allquantity,
+            d.retail_price,
+            sum(d.subtotal) as allsubtotal,
+            ids.purchased_price,
+            IFNULL(sum(
+            d.quantity * ids.purchased_price
+            ),0) AS allpurchased_amount,
+            IFNULL((sum(d.subtotal) - sum(d.quantity * ids.purchased_price)),0) as maoli,
+            CONCAT(IFNULL(ROUND(((sum(d.subtotal) - sum(d.quantity *
+            ids.purchased_price))/sum(d.subtotal)*100),2),0),'%') as maolilv
+            FROM
+            saas_order_detail d
+            LEFT JOIN (
+            SELECT
+            *
+            FROM
+            saas_inventory_detail id
+            GROUP BY
+            id.goods_id,
+            id.batch_code,
+            id.supplier_id
+            ) ids ON d.batch_code = ids.batch_code
+            AND d.goods_id = ids.goods_id
+            AND d.supplier_id = ids.supplier_id
+            left join saas_order o on d.order_id = o.id
+            where 1=1 and o.pay_status = '1'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and o.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(o.create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            group by goods_id
+            order by allsubtotal desc
+        </sql>
+
+        <sql id="countSql" method="list">
+            select
+            "总计" as goods_code,
+            sum(allquantity) as allquantity,
+            sum(allsubtotal) as allsubtotal,
+            sum(allpurchased_amount) as allpurchased_amount,
+            sum(maoli) as maoli
+            from(
+            SELECT
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.unit_id,
+            d.goods_specification,
+            d.preparation_id,
+            (select name from SAAS_TEST.saas_dictionary ds where ds.`category`="unit_id" and ds.`value` = d.unit_id ) as
+            unit_name,
+            (select name from SAAS_TEST.saas_dictionary ds where ds.`category`="preparation_id" and ds.`value` =
+            d.preparation_id ) as preparation_name,
+            d.manufacturer,
+            sum(d.quantity) as allquantity,
+            d.retail_price,
+            sum(d.subtotal) as allsubtotal,
+            ids.purchased_price,
+            IFNULL(sum(
+            d.quantity * ids.purchased_price
+            ),0) AS allpurchased_amount,
+            IFNULL((sum(d.subtotal) - sum(d.quantity * ids.purchased_price)),0) as maoli,
+            IFNULL(((sum(d.subtotal) - sum(d.quantity * ids.purchased_price))/sum(d.subtotal)),0) as maolilv
+            FROM
+            saas_order_detail d
+            LEFT JOIN (
+            SELECT
+            *
+            FROM
+            saas_inventory_detail id
+            GROUP BY
+            id.goods_id,
+            id.batch_code,
+            id.supplier_id
+            ) ids ON d.batch_code = ids.batch_code
+            AND d.goods_id = ids.goods_id
+            AND d.supplier_id = ids.supplier_id
+            left join saas_order o on d.order_id = o.id
+            where 1=1 and o.pay_status = '1'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and o.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(o.create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            group by goods_id
+            order by allsubtotal desc) as tab4
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="商品规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="allquantity" sortable="true" title="销售数量"/>
+            <clumn name="allsubtotal" sortable="true" title="销售金额（元）"/>
+            <clumn name="allpurchased_amount" sortable="false" title="成本金额（元）"/>
+            <clumn name="maoli" sortable="true" title="毛利（元）"/>
+            <clumn name="maolilv" sortable="false" title="毛利率"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="date" title="销售日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+</template>

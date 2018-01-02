@@ -34,9 +34,28 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '1.4.3.RELEASE'
     compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '1.1.1'
     compile group: 'mysql', name: 'mysql-connector-java'
+    compile ('org.apache.hbase:hbase-client:1.2.6')
+            {
+
+                exclude group: 'org.slf4j'
+                exclude module: 'slf4j-log4j12'
+                exclude module: 'servlet-api-2.5'
+                exclude module: 'servlet-api-2.5-6.1.14'
+                exclude module: 'servlet-api'
+
+
+            }
+    compile ('org.apache.hadoop:hadoop-hdfs:2.5.1')
+            {
+
+                exclude module: 'servlet-api'
+
+
+            }
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-redis'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
     compile 'com.corundumstudio.socketio:netty-socketio:1.7.12'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+

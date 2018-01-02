@@ -1,0 +1,154 @@
+<template menuId="7021" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售分析-按日营业额"/>
+    </directions>
+
+    <!-- saas_formula_rule的gs_type 0:按数量提成，1:按金额提成-->
+    <!-- 按 金额 gs_quantity 存的是基数，gs_price 存的 百分比 -->
+    <!-- 按 数量 gs_quantity 存的是提成数量，gs_price 存的 提成金额-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            tab1.create_time,
+            (
+            tab1.amount + IFNULL(tab2.return_amount, 0)
+            ) AS allamount,
+            (
+            tab1.quantity + IFNULL(tab2.return_quantity, 0)
+            ) AS allquantity,
+            ROUND(
+            (
+            tab1.amount + IFNULL(tab2.return_amount, 0)
+            ) / (
+            tab1.quantity + IFNULL(tab2.return_quantity, 0)
+            ),
+            2
+            ) AS pjamount,
+            tab1.quantity,
+            tab1.amount,
+            IFNULL(tab2.return_quantity, 0) as return_quantity,
+            IFNULL(tab2.return_amount, 0) as return_amount
+            FROM
+            (
+            SELECT
+            date_format(create_time, '%Y-%m-%d') AS create_time,
+            count(*) AS quantity,
+            sum(total_amount) AS amount
+            FROM
+            saas_order
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            GROUP BY
+            date_format(create_time, '%Y-%m-%d')
+            ) AS tab1
+            LEFT JOIN (
+            SELECT
+            date_format(create_time, '%Y-%m-%d') AS create_time,
+            count(*) AS return_quantity,
+            - 1 * sum(real_amount) as return_amount
+            from
+            saas_sale_return
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+
+            GROUP BY
+            date_format(create_time, '%Y-%m-%d')
+            ) as tab2 on tab1.create_time = tab2.create_time
+
+            order by tab1.create_time
+        </sql>
+
+        <sql id="countSql" method="list">
+            SELECT
+            "总计" as create_time,
+            sum(
+            tab1.amount + IFNULL(tab2.return_amount, 0)
+            ) AS allamount,
+            sum(
+            tab1.quantity + IFNULL(tab2.return_quantity, 0)
+            ) AS allquantity,
+
+            sum(tab1.quantity) as quantity,
+            sum(tab1.amount) as amount,
+            sum(IFNULL(tab2.return_quantity, 0)) as return_quantity,
+            sum(IFNULL(tab2.return_amount, 0)) as return_amount
+            FROM
+            (
+            SELECT
+            date_format(create_time, '%Y-%m-%d') AS create_time,
+            count(*) AS quantity,
+            sum(total_amount) AS amount
+            FROM
+            saas_order
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            GROUP BY
+            date_format(create_time, '%Y-%m-%d')
+            ) AS tab1
+            LEFT JOIN (
+            SELECT
+            date_format(create_time, '%Y-%m-%d') AS create_time,
+            count(*) AS return_quantity,
+            - 1 * sum(real_amount) as return_amount
+            from
+            saas_sale_return
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(create_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+
+            GROUP BY
+            date_format(create_time, '%Y-%m-%d')
+            ) as tab2 on tab1.create_time = tab2.create_time
+
+            order by tab1.create_time
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="create_time" sortable="false" title="销售日期"/>
+            <clumn name="allamount" sortable="true" title="总金额（元）"/>
+            <clumn name="allquantity" sortable="true" title="总单数"/>
+            <clumn name="pjamount" sortable="false" title="平均每单金额（元）"/>
+            <clumn name="quantity" sortable="true" title="销售单数"/>
+            <clumn name="amount" sortable="false" title="销售金额（元）"/>
+            <clumn name="return_quantity" sortable="true" title="退货单数"/>
+            <clumn name="return_amount" sortable="false" title="退货金额（元）"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="date" title="销售日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+</template>

@@ -19,7 +19,7 @@ import java.io.IOException;
 @SpringBootApplication
 @EnableScheduling
 @EnableCaching
-@MapperScan("com.eyeson.mapper")
+@MapperScan({"com.eyeson.mapper", "com.eyeson.fastform.dao"})
 public class Application {
 
     public static void main(String[] args) {

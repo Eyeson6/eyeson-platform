@@ -1,0 +1,201 @@
+<template menuId="777" version="2"><!--模板跟节点  -->
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="countSql" method="list">
+            select '数据总数：' as channels_account_id,count(1) as channels_id from KKMY_CHANNELS_ACCOUNT a
+        </sql>
+        <sql id="loginSql" method="select">
+            select
+            a.su_id as adminId,
+            a.su_name as adminName
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+        <sql id="checkLoginResultSql" method="query">
+            select
+            'true' as mustBreak
+            from dual
+            where not exists(
+            select
+            1
+            from sys_user a
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+            )
+        </sql>
+
+        <sql id="loginApproverSql" method="select">
+            select
+            a.su_id as approver_id,
+            a.su_name as approver_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+        <sql id="loginReviewerSql" method="select">
+            select
+            a.su_id as reviewer_id,
+            a.su_name as reviewer_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+        <sql id="prescribedSql" method="select">
+            select
+            a.su_id as prescribed_id,
+            a.su_name as prescribed_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+        <sql id="loginReviewerSql2" method="select">
+            select
+            a.su_id as pharmacist_id,
+            a.su_name as pharmacist_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+        <sql id="qualityApproverSql" method="select">
+            select
+            a.su_id as quality_approver_id,
+            a.su_name as quality_approver_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+        <sql id="qualityManagerApproverSql" method="select">
+            select
+            a.su_id as quality_manager_approver_id,
+            a.su_name as quality_manager_approver_name
+            from sys_user a
+            left join sys_org b on a.so_id=b.so_id
+            where a.su_status='1' and a.su_code = ${user_name}
+            and su_password=${password}
+        </sql>
+
+    </sqls>
+
+    <buttons>
+        <button id="testLogin" title="审核" icon="icon-add" channel="query_execute" width="1200" successMessage="认证成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="loginSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <button id="testApproverLogin" title="审核" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="审核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="loginApproverSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <button id="testReviewerLogin" title="复核" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="复核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="loginReviewerSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <button id="prescribedLogin" title="调剂人" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="复核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="prescribedSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <button id="testReviewerLogin2" title="复核" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="复核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="loginReviewerSql2"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <!-- 基础数据审核 -->
+
+        <button id="qualityApprover" title="复核" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="复核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="qualityApproverSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+
+        <button id="qualityManagerApprover" title="复核" icon="icon-add" channel="query_execute" width="1200"
+                successMessage="复核成功！">
+            <process>
+                <step channel="service" ref="loginService" method="md5Password"/>
+                <step channel="sql" ref="qualityManagerApproverSql"/>
+                <step channel="sql" ref="checkLoginResultSql">
+                    <breakMessage>认证失败！</breakMessage>
+                </step>
+            </process>
+            <conditions>
+                <condition name="user_name" input="text" size="10" required="true" title="用户名"/>
+                <condition name="password" input="password" size="10" required="true" title="密码"/>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>
+
+

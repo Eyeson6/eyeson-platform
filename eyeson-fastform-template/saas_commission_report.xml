@@ -1,0 +1,110 @@
+<template menuId="7007" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="财务管理"/>
+        <direct name="提成报表"/>
+    </directions>
+
+    <!-- saas_formula_rule的gs_type 0:按数量提成，1:按金额提成-->
+    <!-- 按 金额 gs_quantity 存的是基数，gs_price 存的 百分比 -->
+    <!-- 按 数量 gs_quantity 存的是提成数量，gs_price 存的 提成金额-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+
+            SELECT
+            u.su_id,
+            u.su_code,
+            u.su_name,
+            FORMAT(IFNULL(t2.amount,0),2) AS amount
+            FROM
+            SAAS_TEST.sys_user u
+            LEFT JOIN (
+            SELECT
+            t1.user_id,
+            sum(t1.amount) AS amount
+            FROM
+            (
+            SELECT
+            tab.user_id,
+            tab.goods_id,
+            tab.quantity,
+            tab.subtotal,
+            fr.gs_type,
+            fr.gs_price,
+            fr.gs_quantity,
+            CASE
+            WHEN 1 = fr.gs_type THEN
+            (
+            <!--	CASE
+                WHEN subtotal > gs_quantity THEN
+                    (subtotal - gs_quantity) * gs_price / 100
+                ELSE
+                    0
+                END  -->
+            CASE
+            WHEN subtotal > 0 THEN
+            subtotal * gs_price / 100
+            ELSE
+            0
+            END
+            )
+            ELSE
+            (
+            CASE
+            WHEN quantity > gs_quantity THEN
+            floor(quantity / gs_quantity) * gs_price
+            ELSE
+            0
+            END
+            )
+            END AS amount
+            FROM
+            (
+            SELECT
+            d.salesperson_id AS user_id,
+            d.goods_id AS goods_id,
+            sum(d.quantity) AS quantity,
+            sum(d.subtotal) AS subtotal
+            FROM
+            SAAS_TEST.saas_order_detail d left join saas_order o
+            on d.order_id = o.id where o.pay_status = '1'
+            GROUP BY
+            salesperson_id,
+            goods_id
+            ) tab
+            LEFT JOIN SAAS_TEST.saas_formula_rule_goods rg ON tab.goods_id = rg.goods_id
+            LEFT JOIN SAAS_TEST.saas_formula_rule fr ON rg.rule_id = fr.id
+            ) t1
+            GROUP BY
+            t1.user_id
+            ) t2 ON t2.user_id = u.su_id
+            where 1=1
+            <if method="isNoEmpty" args="${su_code}">
+                <![CDATA[and u.su_code like %${su_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${su_name}">
+                <![CDATA[and u.su_name like %${su_name}%]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="su_code" sortable="false" title="人员编码"/>
+            <clumn name="su_name" sortable="false" title="人员名称"/>
+            <clumn name="amount" sortable="false" title="提成金额"/>
+        </model>
+        <conditions>
+            <condition input="text" title="人员编码" name="su_code"/>
+            <condition input="text" title="人员名称" name="su_name"/>
+        </conditions>
+    </query>
+
+</template>

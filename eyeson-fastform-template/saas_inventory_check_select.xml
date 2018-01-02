@@ -1,0 +1,123 @@
+<template menuId="2801" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="2"/>
+        <direct name="2"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            g.registration_code,
+            i.batch_code,
+            i.order_price as cost_amount,
+            b.production_time,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            b.expire_time,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            sum(i.quantity) inventory_quantity
+            FROM SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            left join SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where i.qualified=0
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and i.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and i.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and i.batch_code = ${batch_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${storage_id}">
+                <![CDATA[ and i.storage_id = ${storage_id}]]>
+            </if>
+            <if method="isNoEmpty" args="${NAME}">
+                <![CDATA[ and g.NAME like %${NAME}%]]>
+            </if>
+
+            group by i.goods_id ,i.batch_code,i.supplier_id,i.storage_id
+            order by g.create_time desc
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="false" title="商品编号"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品编码" name="code"/>
+            <condition input="text" title="商品名称" name="NAME"/>
+            <condition input="text" title="批号" name="batch_code"/>
+            <condition name="storage_id" title="货位" input="select">
+                <sql>
+                    SELECT
+                    id as id,
+                    name as text
+                    FROM
+                    SAAS_TEST.saas_storage
+                    where id != -1
+                </sql>
+            </condition>
+            <condition input="date" title="入库日期" name="startTime"/>
+            <condition input="date" title="至" name="endTime"/>
+        </conditions>
+    </query>
+</template>
