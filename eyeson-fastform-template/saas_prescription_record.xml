@@ -1,0 +1,210 @@
+<template menuId="3233" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="销售管理"/>
+        <direct name="处方管理"/>
+        <direct name="处方记录"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            order_code,
+            prescription_type,
+            CASE prescription_type
+            WHEN '0' THEN
+            '处方'
+            WHEN '1'THEN
+            '麻黄碱'
+            END AS prescription_type_name,
+            patient_name,
+            id_card,
+            gender,
+            birthday,
+            mobile,
+            address,
+            patient_condition,
+            prescription_date,
+            doctor_name,
+            source,
+            pharmacist_id,
+            pharmacist_name,
+            drug_deliver_id,
+            drug_deliver_name,
+            reviewer_id,
+            reviewer_name,
+            member_id,
+            member_name,
+            file_id,
+            remark,
+            creater_id,
+            creater_name,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_prescription
+            where 1 = 1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and prescription_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and prescription_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${patient_name}">
+                <![CDATA[ and patient_name like %${patient_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_code}">
+                <![CDATA[ and order_code = ${order_code}]]>
+            </if>
+            order by create_time desc
+        </sql>
+
+        <sql id="ckSql" method="query">
+            SELECT
+            id,
+            order_code,
+            prescription_type,
+            CASE prescription_type
+            WHEN '0' THEN
+            '处方'
+            WHEN '1'THEN
+            '麻黄碱'
+            END AS prescription_type_name,
+            patient_name,
+            id_card,
+            gender,
+            birthday,
+            mobile,
+            address,
+            patient_condition,
+            prescription_date,
+            doctor_name,
+            source,
+            pharmacist_id,
+            pharmacist_name,
+            drug_deliver_id,
+            drug_deliver_name,
+            reviewer_id,
+            reviewer_name,
+            member_id,
+            member_name,
+            file_id,
+            remark,
+            creater_id,
+            creater_name,
+            create_time,
+            update_time
+            FROM
+            SAAS_TEST.saas_prescription
+            where id=${key}
+        </sql>
+
+        <sql id="querySql" method="query">
+            select * from SAAS_TEST.saas_prescription where id=${key}
+        </sql>
+
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_prescription set business_approval_time=now(),
+            <if method="isNoEmpty" args="${reviewer_name}">
+                reviewer_name=${reviewer_name},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_name}">
+                business_approval_user_name=${business_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${pharmacist_name}">
+                pharmacist_name=${pharmacist_name},
+            </if>
+            <if method="isNoEmpty" args="${drug_deliver_name}">
+                drug_deliver_name=${drug_deliver_name},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="prescription_date" sortable="false" title="处方日期"/>
+            <clumn name="order_code" sortable="false" title="处方编号"/>
+            <clumn name="prescription_type_name" sortable="false" title="处方类型"/>
+            <clumn name="patient_name" sortable="false" title="姓名"/>
+            <clumn name="id_card" sortable="false" title="身份证"/>
+            <clumn name="gender" sortable="false" title="性别"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="birthday" sortable="false" title="生日"/>
+            <clumn name="mobile" sortable="false" title="手机号"/>
+        </model>
+        <conditions>
+            <condition input="text" title="处方编号" name="order_code"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="姓名" name="patient_name"/>
+            <condition input="date" title="处方日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <!-- <condition input="text" title="调剂" name="pinyin_code" >
+                <option id="" text="全部" />
+                <option id="" text="已调剂" />
+                <option id="" text="未调剂" />
+            </condition> -->
+        </conditions>
+    </query>
+
+
+    <operate>
+        <button id="test1" title="查看" icon="icon-remove" channel="query" width="1100">
+            <queryProcess>
+                <step channel="sql" ref="ckSql"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_goods</table>
+            <conditions>
+                <condition name="order_code" input="text" size="20" title="订单编号" readonly="true"/>
+                <condition name="prescription_type" input="text" size="20" title="登记类型" readonly="true"/>
+                <condition name="patient_name" input="text" size="20" title="患者名称" readonly="true"/>
+                <condition name="id_card" input="text" size="20" title="身份证" readonly="true"/>
+                <condition name="gender" input="text" size="20" title="性别" readonly="true"/>
+                <condition name="birthday" input="date" size="20" title="生日" readonly="true"/>
+                <condition name="mobile" input="text" size="20" title="手机号" readonly="true"/>
+                <condition name="address" input="text" size="20" title="地址" readonly="true"/>
+                <condition name="patient_condition" input="text" size="20" title="患者病情" readonly="true"/>
+                <condition name="prescription_date" input="date" title="处方日期" readonly="true"/>
+                <condition name="doctor_name" input="text" size="20" title="医生名称" readonly="true"/>
+                <condition name="source" input="text" size="20" title="来源" readonly="true"/>
+                <condition name="pharmacist_name" input="text" size="20" title="执行药师名称" readonly="true"/>
+                <condition name="drug_deliver_name" input="text" size="20" title="发药人名称" readonly="true"/>
+                <condition name="reviewer_name" input="text" size="20" title="复核人名称" readonly="true"/>
+                <condition name="member_name" input="text" size="20" title="会员名称" readonly="true"/>
+                <condition name="remark" input="text" size="20" title="备注" readonly="true"/>
+                <condition name="creater_name" input="text" size="20" title="创建用户名称" readonly="true"/>
+                <condition name="create_time" input="date" title="创建时间" readonly="true"/>
+                <condition name="update_time" input="date" title="更新时间" readonly="true"/>
+            </conditions>
+        </button>
+    </operate>
+
+</template>

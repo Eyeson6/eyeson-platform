@@ -1,0 +1,143 @@
+<template menuId="8100" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="陈列检查列表"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            select * from (
+            select
+            CASE WHEN (scl.check_time is null) THEN i.create_time ELSE scl.check_time END AS FINAL_DATE,
+            5 AS spend,
+            i.create_time,
+            scl.check_time,
+            i.goods_id,
+            i.goods_code,
+            g.generic_name,
+            g.name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.specification,
+            g.manufacturer,
+            g.place,
+            g.registration_code,
+            g.pinyin_code,
+            i.batch_code,
+            i.order_price,
+            i.qualified,
+            i.supplier_id,
+            i.supplier_code,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            b.production_time,
+            b.expire_time,
+            sum(i.quantity) quantity,
+            g.curing,
+            CASE g.curing
+            WHEN '0' THEN
+            '常规'
+            WHEN '1' THEN
+            '重点'
+            ELSE
+            '其他'
+            END AS curingName
+            from SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            left join SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            left join (select cl.batch_code,cl.supplier_id,cl.storage_id,cl.goods_id,max(cl.check_time) as check_time
+            from SAAS_TEST.saas_check_log cl
+            group by cl.batch_code,cl.goods_id,cl.supplier_id,cl.storage_id) scl
+            on scl.batch_code=i.batch_code and scl.goods_id=i.goods_id and scl.supplier_id=i.supplier_id and
+            scl.storage_id=i.storage_id
+            where qualified=0
+            group by i.goods_id ,i.batch_code ,i.storage_id ,i.supplier_id) eq
+            WHERE quantity &gt; 0 and storage_id != 1
+            and ((DATE_ADD(FINAL_DATE,INTERVAL(30) DAY) &lt; NOW() and curing=1) or (DATE_ADD(FINAL_DATE,INTERVAL(90)
+            DAY) &lt; NOW() and curing=0))
+
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[and goods_code = ${goods_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and batch_code = ${batch_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and NAME like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${curing}">
+                <![CDATA[and curing = ${curing}]]>
+            </if>
+
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="true" title="商品编号"/>
+            <clumn name="name" sortable="true" title="商品名称"/>
+            <clumn name="supplier_code" sortable="true" title="供应商编号"/>
+            <clumn name="generic_name" sortable="true" title="通用名称"/>
+            <clumn name="specification" sortable="true" title="规格"/>
+            <clumn name="preparation_id" sortable="true" title="剂型"/>
+            <clumn name="unit_id" sortable="true" title="单位"/>
+            <clumn name="curingName" sortable="true" title="检查类型"/>
+            <clumn name="place" sortable="true" title="产地"/>
+            <clumn name="manufacturer" sortable="true" title="生产厂家"/>
+            <clumn name="registration_code" sortable="true" title="批准文号"/>
+            <clumn name="batch_code" sortable="true" title="批号"/>
+
+            <clumn name="production_time" sortable="true" title="生产日期 "/>
+            <clumn name="expire_time" sortable="true" title="有效日期"/>
+
+            <clumn name="order_price" sortable="true" title="采购单价"/>
+            <clumn name="storage_name" sortable="true" title="货位"/>
+
+            <clumn name="quantity" sortable="true" title="库存数量"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="批号" name="batch_code"/>
+            <condition input="select" title="检查类型" name="curing">
+                <option id="" text="全部"/>
+                <option id="0" text="常规"/>
+                <option id="1" text="重点"/>
+            </condition>
+        </conditions>
+    </query>
+</template>

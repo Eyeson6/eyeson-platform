@@ -1,0 +1,534 @@
+<template menuId="493" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="召回记录管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            number,
+            name,
+            batch,
+            purchases_number,
+            serial_number,
+            specification,
+            preparation_id,
+            packing_amount,
+            registration_number,
+            quantity,
+            re_quantity,
+            place,
+            re_id,
+            re_name,
+            unit_id,
+
+            CASE re_type
+            WHEN '0' THEN
+            '厂家主动召回'
+            WHEN '1' THEN
+            '国家责令召回'
+            WHEN '2' THEN
+            '我公司要求召回'
+            END AS re_type,
+
+            CASE category
+            WHEN '0' THEN
+            '召回'
+            WHEN '1' THEN
+            '追回'
+            END AS category,
+
+            category_date,
+
+            CASE re_level
+            WHEN '0' THEN
+            '一级召回'
+            WHEN '1' THEN
+            '二级召回'
+            WHEN '2' THEN
+            '三级召回'
+            END AS re_level,
+
+            re_reason,
+            quality_approval_user_id,
+            quality_approval_user_name,
+            quality_approval_time,
+            quality_approval_conclusion,
+            delete_state
+
+            FROM
+            saas_recallrecord where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and category_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and category_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and number like %${number}%]]>
+            </if>
+            order by category_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_recallrecord where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_recallrecord(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${batch}">
+                batch,
+            </if>
+            <if method="isNoEmpty" args="${purchases_number}">
+                purchases_number,
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                serial_number,
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${packing_amount}">
+                packing_amount,
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                registration_number,
+            </if>
+            <if method="isNoEmpty" args="${quantity}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${re_quantity}">
+                re_quantity,
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place,
+            </if>
+            <if method="isNoEmpty" args="${re_id}">
+                re_id,
+            </if>
+            <if method="isNoEmpty" args="${re_name}">
+                re_name,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${re_type}">
+                re_type,
+            </if>
+            <if method="isNoEmpty" args="${category}">
+                category,
+            </if>
+            <if method="isNoEmpty" args="${re_level}">
+                re_level,
+            </if>
+            <if method="isNoEmpty" args="${re_reason}">
+                re_reason,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                quality_approval_time,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                quality_approval_conclusion,
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state,
+            </if>
+            category_date,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${batch}">
+                ${batch},
+            </if>
+            <if method="isNoEmpty" args="${purchases_number}">
+                ${purchases_number},
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                ${serial_number},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                ${specification},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${packing_amount}">
+                ${packing_amount},
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                ${registration_number},
+            </if>
+            <if method="isNoEmpty" args="${quantity}">
+                ${quantity},
+            </if>
+            <if method="isNoEmpty" args="${re_quantity}">
+                ${re_quantity},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                ${place},
+            </if>
+            <if method="isNoEmpty" args="${re_id}">
+                ${re_id},
+            </if>
+            <if method="isNoEmpty" args="${re_name}">
+                ${re_name},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${re_type}">
+                ${re_type},
+            </if>
+            <if method="isNoEmpty" args="${category}">
+                ${category},
+            </if>
+            <if method="isNoEmpty" args="${re_level}">
+                ${re_level},
+            </if>
+            <if method="isNoEmpty" args="${re_reason}">
+                ${re_reason},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                ${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                ${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                ${quality_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                ${quality_approval_conclusion},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                ${delete_state},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_recallrecord set
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number=${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${batch}">
+                batch=${batch},
+            </if>
+            <if method="isNoEmpty" args="${purchases_number}">
+                purchases_number=${purchases_number},
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                serial_number=${serial_number},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification=${specification},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id=${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${packing_amount}">
+                packing_amount=${packing_amount},
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                registration_number=${registration_number},
+            </if>
+            <if method="isNoEmpty" args="${quantity}">
+                quantity=${quantity},
+            </if>
+            <if method="isNoEmpty" args="${re_quantity}">
+                re_quantity=${re_quantity},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place=${place},
+            </if>
+            <if method="isNoEmpty" args="${re_id}">
+                re_id=${re_id},
+            </if>
+            <if method="isNoEmpty" args="${re_name}">
+                re_name=${re_name},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id=${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${re_type}">
+                re_type=${re_type},
+            </if>
+            <if method="isNoEmpty" args="${category}">
+                category=${category},
+            </if>
+            <if method="isNoEmpty" args="${category_date}">
+                category_date=${category_date},
+            </if>
+            <if method="isNoEmpty" args="${re_level}">
+                re_level=${re_level},
+            </if>
+            <if method="isNoEmpty" args="${re_reason}">
+                re_reason=${re_reason},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id=${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name=${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                quality_approval_time=${quality_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_conclusion}">
+                quality_approval_conclusion=${quality_approval_conclusion},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state=${delete_state},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from saas_recallrecord a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and category_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and category_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and number like %${number}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update saas_recallrecord set delete_state = '1' where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="number" sortable="false" title="商品编号"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="batch" sortable="false" title="生产批号"/>
+            <clumn name="purchases_number" sortable="false" title="购货数量"/>
+            <clumn name="serial_number" sortable="false" title="产品序号"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="packing_amount" sortable="false" title="包装量"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="quantity" sortable="false" title="库存数量"/>
+            <clumn name="re_quantity" sortable="false" title="召/追回数量"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="re_id" sortable="false" title="召回人"/>
+            <clumn name="re_name" sortable="false" title="召回人名称"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="re_type" sortable="false" title="召/追回类别"/>
+            <clumn name="category" sortable="false" title="类别"/>
+            <clumn name="category_date" sortable="false" title="召回时间"/>
+            <clumn name="re_level" sortable="false" title="召/追回级别"/>
+            <clumn name="re_reason" sortable="false" title="召/追回原因"/>
+            <clumn name="quality_approval_conclusion" sortable="false" title="质量审核结论"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <insert width="1040">
+        <process>
+            <step channel="service" ref="saasRecallrecordService" method="saveReviewedData"/>
+            <step channel="sql" ref="insertSql"/>
+            <!--<step channel="sql" ref="insertAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <conditions>
+            <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+            <condition name="number" input="text" size="20" title="商品编号"/>
+            <condition name="name" input="text" size="20" title="商品名称"/>
+            <condition name="batch" input="text" size="20" title="生产批号"/>
+            <condition name="purchases_number" input="text" size="20" validate="number" title="购货数量"/>
+            <condition name="serial_number" input="text" size="20" validate="number" title="产品序号"/>
+            <condition name="specification" input="text" size="20" title="规格"/>
+            <condition name="preparation_id" input="text" size="20" validate="number" title="剂型"/>
+            <condition name="packing_amount" input="text" size="20" title="包装量"/>
+            <condition name="registration_number" input="text" size="20" title="批准文号"/>
+            <condition name="quantity" input="text" size="20" title="库存数量"/>
+            <condition name="re_quantity" input="text" size="20" title="召/追回数量"/>
+            <condition name="place" input="text" size="20" title="产地"/>
+            <condition name="re_id" input="text" size="20" title="召回人"/>
+            <condition name="re_name" input="text" size="20" title="召回人名称"/>
+            <condition name="unit_id" input="text" size="20" title="单位"/>
+            <condition name="re_type" input="select" size="20" title="召/追回类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_type'
+                </sql>
+            </condition>
+
+            <condition name="category" input="select" size="20" title="类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_category'
+                </sql>
+            </condition>
+
+            <condition name="category_date" input="date" title="召回时间"/>
+            <condition name="re_level" input="select" size="20" title="召/追回级别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_level'
+                </sql>
+            </condition>
+
+            <condition name="re_reason" input="text" size="20" title="召/追回原因"/>
+            <condition name="quality_approval_conclusion" input="text" size="20" title="质量审核结论"/>
+        </conditions>
+    </insert>
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <update width="1040">
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_recallrecord</table>
+        <conditions>
+            <condition name="number" input="text" size="20" title="商品编号"/>
+            <condition name="name" input="text" size="20" title="商品名称"/>
+            <condition name="batch" input="text" size="20" title="生产批号"/>
+            <condition name="purchases_number" input="text" size="20" title="购货数量"/>
+            <condition name="serial_number" input="text" size="20" title="产品序号"/>
+            <condition name="specification" input="text" size="20" title="规格"/>
+            <condition name="preparation_id" input="text" size="20" title="剂型"/>
+            <condition name="packing_amount" input="text" size="20" title="包装量"/>
+            <condition name="registration_number" input="text" size="20" title="批准文号"/>
+            <condition name="quantity" input="text" size="20" title="库存数量"/>
+            <condition name="re_quantity" input="text" size="20" title="召/追回数量"/>
+            <condition name="place" input="text" size="20" title="产地"/>
+            <condition name="re_id" input="text" size="20" title="召回人"/>
+            <condition name="re_name" input="text" size="20" title="召回人名称"/>
+            <condition name="unit_id" input="text" size="20" title="单位"/>
+            <condition name="re_type" input="select" size="20" title="召/追回类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_type'
+                </sql>
+            </condition>
+
+            <condition name="category" input="select" size="20" title="类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_category'
+                </sql>
+            </condition>
+
+            <condition name="category_date" input="date" title="召回时间"/>
+            <condition name="re_level" input="select" size="20" title="召/追回级别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 're_level'
+                </sql>
+            </condition>
+
+            <condition name="re_reason" input="text" size="20" title="召/追回原因"/>
+            <condition name="quality_approval_conclusion" input="text" size="20" title="质量审核结论"/>
+        </conditions>
+
+    </update>
+
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

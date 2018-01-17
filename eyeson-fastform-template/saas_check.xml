@@ -1,0 +1,188 @@
+<template menuId="401" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="例行检查计划 "/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            c.id,
+            c.check_date,
+            c.check_code,
+            CASE c.check_type
+            WHEN '1' THEN
+            '常规'
+            WHEN '2' THEN
+            '重点'
+            ELSE
+            '其他'
+            END AS check_type,
+            c.check_finish_date
+            FROM
+            saas_check c
+            WHERE
+            1 = 1
+            <if method="isNoEmpty" args="${check_code}">
+                <![CDATA[and c.check_code = ${check_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and c.check_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and c.check_date <= ${endTime}]]>
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_inventory where id=${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+        <sql id="insertSql" method="insert">
+            insert into saas_check(
+            <if method="isNoEmpty" args="${check_date}">
+                check_date,
+            </if>
+            <if method="isNoEmpty" args="${check_type}">
+                check_type,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${check_date}">
+                ${check_date},
+            </if>
+
+
+            <if method="isNoEmpty" args="${check_type}">
+                ${check_type},
+            </if>
+            now(),
+            )
+        </sql>
+        <sql id="insertAddrSql" method="execute">
+            INSERT INTO saas_check_info (
+            check_id,
+            number,
+            generic_name,
+            goods_name,
+            preparation_id,
+            specification,
+            unit_id,
+            major_supplier,
+            place,
+            registration_number,
+            batch_number,
+            produce_date,
+            expiry_date
+            ) select
+            temp.check_code,
+            temp.gds_code,
+            temp.generic_name,
+            temp.`NAME`,
+            temp.preparation_id,
+            temp.specification,
+            temp.unit_id,
+            temp.major_supplier,
+            temp.place,
+            temp.registration_number,
+            temp.batch_number,
+            temp.produce_date,
+            temp.expiry_date
+            from (
+            select
+            CASE WHEN (scl.check_date is null) THEN i.inventory_date ELSE scl.check_date END AS FINAL_DATE,
+            CASE WHEN (cc.check_type = 2) THEN 15 ELSE 30 END AS spend,
+            cc.check_code,
+
+            i.inventory_date,
+            scl.check_date,
+            i.gds_code,
+            g.generic_name,
+            g. NAME,
+            g.preparation_id,
+            g.specification,
+            g.unit_id,
+            g.major_supplier,
+            g.place,
+            g.registration_number,
+            i.batch_number,
+            i.produce_date,
+            i.expiry_date,
+            i.quantity
+            from saas_inventory i
+            LEFT JOIN saas_goods g ON i.gds_code = g.number
+            left join saas_check cc on cc.id =
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty}
+            </if>
+            left join (select cl.batch_number,cl.number,max(cl.check_date) as check_date from saas_check_log cl group by
+            cl.batch_number,cl.number) scl on scl.batch_number=i.batch_number and scl.number=i.gds_code
+            WHERE
+            i.quantity &gt; 0 and g.goods_type = cc.check_type
+            ) temp where DATE_ADD(temp.FINAL_DATE,INTERVAL(spend) DAY) &lt; NOW();
+        </sql>
+        <sql id="checkTypeSql" method="query">
+            select
+            CASE
+            WHEN d.cc > 0 THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            from (
+            select count(1) cc
+            from saas_check where check_date = ${check_date} and check_type=${check_type}
+            ) d
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" key="true"/>
+            <clumn name="check_date" sortable="true" title="计划检查时间" sort="desc"/>
+            <clumn name="check_finish_date" sortable="true" title="检查完成时间"/>
+            <clumn name="check_code" sortable="false" width="150" title="陈列检查单号"/>
+            <clumn name="check_type" sortable="false" title="检查类型"/>
+        </model>
+        <conditions>
+            <condition input="date" title="计划检查日期（从）" name="startTime" type="3"/>
+            <condition input="date" title="计划检查日期（至）" name="endTime" type="3"/>
+            <condition input="text" title="检查单号" name="check_code"/>
+        </conditions>
+    </query>
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_check_add" title="添加" icon="icon-add" channel="query_execute" width="1000">
+            <process>
+                <step channel="sql" ref="checkTypeSql">
+                    <breakMessage>当天的检查类型已存在,请重新选择！</breakMessage>
+                </step>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="service" ref="SaasCheckService" method="updateCheckCode"/>
+                <step channel="sql" ref="insertAddrSql"/>
+
+            </process>
+
+            <conditions>
+                <condition name="check_date" input="text" readonly="true" title="计划检查时间"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition input="select" name="check_type" title="检查类型" defaultvalue="1">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'goods_type'
+                    </sql>
+                </condition>
+            </conditions>
+        </button>
+    </buttons>
+</template>

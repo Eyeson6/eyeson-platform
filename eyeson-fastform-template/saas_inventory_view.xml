@@ -1,0 +1,184 @@
+<template menuId="4990" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="门店管理"/>
+        <direct name="药品拆零登记-库存选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            r.gds_code as number,
+            g.name as name,
+            g.place as manufacturer,
+            g.unit_id,
+
+            CASE unit_id
+            WHEN '0' THEN
+            '盒'
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_name,
+
+            g.specification,
+            g.preparation_id as preparation_id,
+            g.scat_unit_id as scat_unit_id,
+            g.scat_quantity as scat_quantity_goods,
+            g.scat_specification as scat_specification,
+            r.batch_number as batch,
+            r.su_code,
+            r.quantity,
+            r.order_price,
+            r.expiry_date,
+            r.note,
+            r.produce_date as produc_date,
+            r.inventory_date
+            FROM
+            saas_inventory r
+            LEFT JOIN saas_goods g on r.gds_code = g.number
+            WHERE 1=1 and g.has_scat = 0
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and g.number like %${number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and g.name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                <![CDATA[ and r.batch_number like %${batch_number}%]]>
+            </if>
+            order by r.create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_goodscatregist where id=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <!--<clumn name="id" sortable="false" title="主键" />
+            <clumn name="store" sortable="false" title="门店编码" />
+            <clumn name="store_name" sortable="false" title="门店名称" />-->
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+
+            <clumn name="batch" sortable="false" title="批号"/>
+            <clumn name="su_code" sortable="false" title="供应商编码"/>
+
+            <clumn name="manufacturer" sortable="false" title="产地"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+
+            <clumn name="quantity" sortable="false" title="库存数量"/>
+            <clumn name="order_price" sortable="false" title="进价"/>
+            <clumn name="expiry_date" sortable="false" title="有效日期"/>
+            <clumn name="note" sortable="false" title="备注"/>
+            <clumn name="produc_date" sortable="false" title="生产日期"/>
+            <!--<clumn name="create_date" sortable="false" title="创建时间" />
+            <clumn name="create_user" sortable="false" title="创建人" />
+            <clumn name="update_date" sortable="false" title="更新时间" />
+            <clumn name="update_user" sortable="false" title="更新人" />-->
+            <clumn name="inventory_date" sortable="false" title="入库日期"/>
+        </model>
+        <conditions>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="text" title="批号" name="batch_number"/>
+            <!--<condition input="text" title="单位"  name="unit_id"/>
+            <condition input="text" title="规格"  name="specification"/>-->
+        </conditions>
+    </query>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

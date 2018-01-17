@@ -1,0 +1,188 @@
+<template menuId="403" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="例行养护计划 "/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            c.id,
+            c.maintain_date,
+            c.maintain_code,
+            CASE c.maintain_type
+            WHEN '1' THEN
+            '常规'
+            WHEN '2' THEN
+            '重点'
+            ELSE
+            '其他'
+            END AS maintain_type,
+            c.maintain_finish_date
+            FROM
+            saas_maintain c
+            WHERE
+            1 = 1
+            <if method="isNoEmpty" args="${maintain_code}">
+                <![CDATA[and c.maintain_code = ${maintain_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and c.maintain_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and c.maintain_date <= ${endTime}]]>
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_inventory where id=${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+        <sql id="insertSql" method="insert">
+            insert into saas_maintain(
+            <if method="isNoEmpty" args="${maintain_date}">
+                maintain_date,
+            </if>
+            <if method="isNoEmpty" args="${maintain_type}">
+                maintain_type,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${maintain_date}">
+                ${maintain_date},
+            </if>
+
+
+            <if method="isNoEmpty" args="${maintain_type}">
+                ${maintain_type},
+            </if>
+            now(),
+            )
+        </sql>
+        <sql id="insertAddrSql" method="execute">
+            INSERT INTO saas_maintain_info (
+            maintain_id,
+            number,
+            generic_name,
+            goods_name,
+            preparation_id,
+            specification,
+            unit_id,
+            major_supplier,
+            place,
+            registration_number,
+            batch_number,
+            produce_date,
+            expiry_date
+            ) select
+            temp.maintain_code,
+            temp.gds_code,
+            temp.generic_name,
+            temp.`NAME`,
+            temp.preparation_id,
+            temp.specification,
+            temp.unit_id,
+            temp.major_supplier,
+            temp.place,
+            temp.registration_number,
+            temp.batch_number,
+            temp.produce_date,
+            temp.expiry_date
+            from (
+            select
+            CASE WHEN (scl.maintain_date is null) THEN i.inventory_date ELSE scl.maintain_date END AS FINAL_DATE,
+            CASE WHEN (cc.maintain_type = 2) THEN 15 ELSE 30 END AS spend,
+            cc.maintain_code,
+
+            i.inventory_date,
+            scl.maintain_date,
+            i.gds_code,
+            g.generic_name,
+            g. NAME,
+            g.preparation_id,
+            g.specification,
+            g.unit_id,
+            g.major_supplier,
+            g.place,
+            g.registration_number,
+            i.batch_number,
+            i.produce_date,
+            i.expiry_date,
+            i.quantity
+            from saas_inventory i
+            LEFT JOIN saas_goods g ON i.gds_code = g.number
+            left join saas_maintain cc on cc.id =
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty}
+            </if>
+            left join (select cl.batch_number,cl.number,max(cl.maintain_date) as maintain_date from saas_maintain_log cl
+            group by cl.batch_number,cl.number) scl on scl.batch_number=i.batch_number and scl.number=i.gds_code
+            WHERE
+            i.quantity &gt; 0 and g.gsp_category_id=1 and g.goods_type = cc.maintain_type
+            ) temp where DATE_ADD(temp.FINAL_DATE,INTERVAL(spend) DAY) &lt; NOW();
+        </sql>
+        <sql id="checkTypeSql" method="query">
+            select
+            CASE
+            WHEN d.cc > 0 THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            from (
+            select count(1) cc
+            from saas_maintain where maintain_date = ${maintain_date} and maintain_type=${maintain_type}
+            ) d
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="ID" key="true"/>
+            <clumn name="maintain_date" sortable="true" title="计划养护时间" sort="desc"/>
+            <clumn name="maintain_finish_date" sortable="true" title="计划养护完成时间"/>
+            <clumn name="maintain_code" sortable="false" width="150" title="计划养护单号"/>
+            <clumn name="maintain_type" sortable="false" title="养护类型"/>
+        </model>
+        <conditions>
+            <condition input="date" title="计划养护日期（从）" name="startTime" type="3"/>
+            <condition input="date" title="计划养护日期（至）" name="endTime" type="3"/>
+            <condition input="text" title="计划养护单号" name="maintain_code"/>
+        </conditions>
+    </query>
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_maintain_add" title="添加" icon="icon-add" channel="query_execute" width="1000">
+            <process>
+                <step channel="sql" ref="checkTypeSql">
+                    <breakMessage>当天的养护类型已存在,请重新选择！</breakMessage>
+                </step>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="service" ref="SaasmaintainService" method="updatemaintainCode"/>
+                <step channel="sql" ref="insertAddrSql"/>
+
+            </process>
+
+            <conditions>
+                <condition name="maintain_date" input="text" readonly="true" title="计划养护时间"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition input="select" name="maintain_type" title="养护类型" defaultvalue="1">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'goods_type'
+                    </sql>
+                </condition>
+
+            </conditions>
+        </button>
+    </buttons>
+</template>

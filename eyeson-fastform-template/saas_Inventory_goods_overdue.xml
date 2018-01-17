@@ -1,0 +1,133 @@
+<template menuId="8058" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="预警管理"/>
+        <direct name="过期药品预警"/>
+    </directions>
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as goods_id,
+            g.CODE as goods_code,
+            g.NAME as goods_name,
+            g.generic_name as goods_generic_name,
+            g.specification as goods_specification,
+            g.place as goods_place,
+            g.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_id,
+            g.registration_code,
+            i.batch_code,
+            i.order_price,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            b.production_time,
+            b.expire_time,
+            sum(i.quantity)*i.order_price as priceCount,
+            sum(i.quantity) inventory_quantity
+            FROM SAAS_TEST.saas_inventory i
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = i.goods_id
+            left join SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where 1=1 and i.qualified=0
+            and NOW() >= b.expire_time
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and g.code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                <![CDATA[ and i.batch_code = ${batch_code}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and g.NAME like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <!--  <if method="isNoEmpty"  args="${su_code}">
+                <![CDATA[ and i.su_code = ${su_code}]]>
+            </if> -->
+            group by i.goods_id ,i.batch_code,i.supplier_id,i.storage_id
+            order by g.create_time desc
+        </sql>
+    </sqls>
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="goods_code" sortable="true" title="商品编号"/>
+            <clumn name="goods_name" sortable="true" title="商品名称"/>
+            <clumn name="supplier_code" sortable="false" title="供应商编号"/>
+            <clumn name="goods_generic_name" sortable="true" title="通用名称"/>
+            <clumn name="goods_specification" sortable="true" title="规格"/>
+            <clumn name="preparation_id" sortable="true" title="剂型"/>
+            <clumn name="unit_id" sortable="true" title="单位"/>
+            <clumn name="goods_place" sortable="true" title="产地"/>
+            <clumn name="manufacturer" sortable="true" title="生产厂家"/>
+            <clumn name="registration_code" sortable="true" title="批准文号"/>
+            <clumn name="batch_code" sortable="true" title="批号"/>
+            <clumn name="production_time" sortable="true" title="生产日期 "/>
+            <clumn name="expire_time" sortable="true" title="有效日期"/>
+            <clumn name="order_price" sortable="true" title="采购单价"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+            <clumn name="inventory_quantity" sortable="true" title="库存数量"/>
+            <clumn name="priceCount" sortable="true" title="库存金额"/>
+        </model>
+        <conditions>
+            <!--
+                <condition input="date" title="入库日期" name="startTime" type="3" />
+                <condition input="date" title="至" name="endTime" type="3" />-->
+            <condition input="text" title="商品编号" name="goods_code"/>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="批号" name="batch_code"/>
+            <!-- <condition input="select" title="供货单位"  name="su_code">
+                    <sql>
+                    select code id,name text
+                    from saas_supplier
+                    </sql>
+                </condition>-->
+        </conditions>
+    </query>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="id" title="总数"/>
+        </model>
+    </total>
+</template>

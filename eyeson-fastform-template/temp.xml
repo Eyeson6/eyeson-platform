@@ -1,0 +1,145 @@
+<template menuId="277123">
+
+    <sql pageSize="20">
+        select a.channels_id,a.channels_name,a.channels_addr,a.docking_people,a.docking_phone,a.create_time
+        from SAAS.KKMY_CHANNELS a where 1=1
+        <if method="isNoEmpty" args="${startTime}">
+            <![CDATA[and a.create_time >= ${startTime}]]>
+        </if>
+        <if method="isNoEmpty" args="${endTime}">
+            <![CDATA[ and a.create_time <= ${endTime}]]>
+        </if>
+        <if method="isNoEmpty" args="${channels_name}">
+            <![CDATA[ and a.channels_name like %${channels_name}%]]>
+        </if>
+        <if method="isNoEmpty" args="${docking_people}">
+            <![CDATA[ and a.channels_id =${docking_people}]]>
+        </if>
+    </sql>
+    <model>
+        <clumn name="channels_id" sortable="false" title="编号" key="true"/>
+        <clumn name="channels_name" sortable="false" title="渠道商名称"/>
+        <clumn name="create_time" sortable="true" title="创建时间"/>
+        <clumn name="channels_addr" sortable="false" title="渠道商地址"/>
+        <clumn name="docking_people" sortable="false" title="对接人"/>
+        <clumn name="docking_phone" sortable="false" title="对接人电话"/>
+    </model>
+    <conditions>
+        <condition input="date" title="创建时间" name="startTime" type="3"/>
+        <condition input="date" title="至" name="endTime" type="3"/>
+        <condition input="text" title="渠道商名称" name="channels_name"/>
+        <condition input="province" name="province" title="省市联动"/>
+        <condition input="select" title="渠道商地址" name="channels_addr">
+            <option id="1" text="aaa"/>
+            <option id="2" text="bbb"/>
+        </condition>
+        <condition input="select" title="对接人" name="docking_people">
+            <sql>
+                select a.channels_id id,a.channels_name text
+                from SAAS.KKMY_CHANNELS a
+            </sql>
+        </condition>
+    </conditions>
+    <insert>
+        <sql>
+            insert into SAAS.KKMY_CHANNELS(
+            <if method="isNoEmpty" args="${channels_name}">
+                channels_name,
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                channels_addr,
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                docking_people,
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                docking_phone,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${channels_name}">
+                ${channels_name},
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                ${channels_addr},
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                ${docking_people},
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                ${docking_phone},
+            </if>
+            )
+        </sql>
+        <conditions>
+            <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                       table="SAAS.KKMY_CHANNELS"/>
+            <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+            <condition name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+            <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+        </conditions>
+    </insert>
+    <update>
+        <sql>
+            update SAAS.KKMY_CHANNELS set
+            <if method="isNoEmpty" args="${channels_name}">
+                channels_name=${channels_name},
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                channels_addr=${channels_addr},
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                docking_people=${docking_people},
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                docking_phone=${docking_phone},
+            </if>
+            where channels_id=${key}
+        </sql>
+        <key>channels_id</key>
+        <table>SAAS.KKMY_CHANNELS</table>
+        <conditions>
+            <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                       table="SAAS.KKMY_CHANNELS"/>
+            <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+            <condition name="docking_people" input="text" size="10" validate="email" title="对接人"/>
+            <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+        </conditions>
+    </update>
+    <delete>
+        <sql>
+            delete from SAAS.KKMY_CHANNELS where
+
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[channels_id= ${value}]]>
+            </if>
+        </sql>
+        <condition name="channels_id"/>
+    </delete>
+
+    <count>
+        <sql pagination="true" pageSize="20">
+            select count(a.channels_id) channelsid
+            from SAAS.KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <model>
+            <clumn name="channelsid" title="渠道总数"/>
+        </model>
+    </count>
+
+    <directions>
+        <direct name="位置1"/>
+        <direct name="位置2"/>
+    </directions>
+</template>

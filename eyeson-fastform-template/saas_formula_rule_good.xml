@@ -1,0 +1,331 @@
+<template menuId="8042" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="财务管理"/>
+        <direct name="药品维护 "/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            rg.id,
+            g.pinyin_code,
+            g.code,
+            g.name,
+            g.manufacturer,
+            g.specification,
+            g.generic_name,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            )AS preparation_id,
+            g.place,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = g.unit_id
+            )AS unit_id,
+            r.gs_type,
+            r.gs_price,
+            r.gs_quantity,
+            r.gs_name
+
+            FROM
+            SAAS_TEST.saas_formula_rule_goods rg
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = rg.goods_id
+            LEFT JOIN SAAS_TEST.saas_formula_rule r ON rg.rule_id = r.id
+            WHERE
+            rg.rule_id IS NOT NULL
+            <if method="isNoEmpty" args="${pinyin_code}">
+                and g.pinyin_code like %${pinyin_code}%
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                and g.code like %${code}%
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                and g.`name` like %${name}%
+            </if>
+            <if method="isNoEmpty" args="${rule_id}">
+                and r.id = ${rule_id}
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select
+            rg.id,
+            g.pinyin_code,
+            g.code,
+            g.name,
+            g.manufacturer,
+            g.specification,
+            g.generic_name,
+            g.preparation_id,
+            g.place,
+            g.unit_id,
+            r.gs_name,
+            rg.rule_id
+            from
+            SAAS_TEST.saas_formula_rule_goods rg
+            LEFT JOIN SAAS_TEST.saas_goods g ON g.id = rg.goods_id
+            LEFT JOIN SAAS_TEST.saas_formula_rule r ON rg.rule_id = r.id
+            where rg.id=${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_formula_rule_goods set
+            <if method="isNoEmpty" args="${rule_id}">
+                rule_id=${rule_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id=${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name=${modifier_name},
+            </if>
+            update_time=now(),
+            where id=${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+        <sql id="insertSql" method="insert">
+            insert into saas_formula_rule(
+            <if method="isNoEmpty" args="${gs_name}">
+                gs_name,
+            </if>
+            <if method="isNoEmpty" args="${gs_rule}">
+                gs_rule,
+            </if>
+            <if method="isNoEmpty" args="${gs_money}">
+                gs_money,
+            </if>
+            <if method="isNoEmpty" args="${gs_num}">
+                gs_num,
+            </if>
+            <if method="isNoEmpty" args="${bz}">
+                bz,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${gs_name}">
+                ${gs_name},
+            </if>
+            <if method="isNoEmpty" args="${gs_rule}">
+                ${gs_rule},
+            </if>
+            <if method="isNoEmpty" args="${gs_money}">
+                ${gs_money},
+            </if>
+            <if method="isNoEmpty" args="${gs_num}">
+                ${gs_num},
+            </if>
+            <if method="isNoEmpty" args="${bz}">
+                ${bz},
+            </if>
+            now(),
+            )
+        </sql>
+        <sql id="insertSql2" method="insert">
+            insert into SAAS_TEST.saas_formula_rule_goods(
+            <if method="isNoEmpty" args="${test8.id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${rule_id}">
+                rule_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            create_time,
+            ) values(
+            <if method="isNoEmpty" args="${test8.id}">
+                ${test8.id},
+            </if>
+            <if method="isNoEmpty" args="${rule_id}">
+                ${rule_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            now(),
+            )
+        </sql>
+        <sql id="listsqlpopup" method="select">
+            SELECT
+            *
+            FROM
+            SAAS_TEST.saas_formula_rule_goods
+            where 1=2
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from saas_formula_rule where
+
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id = ${id}]]>
+            </if>
+        </sql>
+        <sql id="checkDetailIsNull" method="query">
+            SELECT
+            CASE
+            WHEN ${test8} = '[]' THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="saasPurchaseOrderService" method="getGs_role"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="true" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="gs_name" sortable="false" title="提成公式"/>
+        </model>
+        <conditions>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="code"/>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="select" name="rule_id" title="提成公式" required="true">
+                <sql>
+                    select a.id id,a.gs_name text
+                    from SAAS_TEST.saas_formula_rule a
+                </sql>
+            </condition>
+        </conditions>
+    </query>
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <buttons>
+        <button id="saas_formula_rule_add" title="添加" icon="icon-add" channel="query_execute" width="1000">
+            <process>
+                <step channel="sql" ref="checkDetailIsNull">
+                    <breakMessage>没有需要保存的信息，请先添加！</breakMessage>
+                </step>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+                <step channel="batchSql" ref="insertSql2" collection="test8" item="test8"/>
+            </process>
+
+            <conditions>
+                <condition input="select" name="rule_id" title="提成公式" required="true">
+                    <sql>
+                        select a.id id,a.gs_name text
+                        from SAAS_TEST.saas_formula_rule a
+                    </sql>
+                </condition>
+            </conditions>
+            <querys>
+                <query id="test8" channel="popupselect_removerow" pagesize="50" popupselect="8043" popuptitle="商品选择"
+                       width="800" isPage="true">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listsqlpopup"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="id" sortable="false" title="ID"/>
+                        <clumn name="code" sortable="false" title="商品编码"/>
+                        <clumn name="name" sortable="false" title="商品名称"/>
+                        <clumn name="preparation_id" sortable="true" editortype="combobox" required="true" editor="true"
+                               readonly="true" title="剂型">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'preparation_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="specification" sortable="false" title="规格"/>
+                        <clumn name="unit_id" sortable="true" editortype="combobox" required="true" editor="true"
+                               readonly="true" title="单位">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'unit_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="manufacturer" sortable="false" title="生产企业"/>
+                        <clumn name="registration_code" sortable="false" title="批准文号"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+        <!--
+       <button id="saas_formula_rule_delete" title="删除" icon="icon-remove" channel="select_execute" width="1200">
+               <process>
+               <step channel="service" ref="commonSearchService2" method="test" />
+               <step channel="sql" ref="deleteSql" />
+               <step channel="service" ref="commonSearchService2" method="test" />
+           </process>
+           <key>id</key>
+           <condition name="id"/>
+           </button>-->
+    </buttons>
+    <operate>
+
+        <button id="saas_formula_rule_edit" title="修改" icon="icon-edit" channel="select_query_execute" width="1180">
+
+            <process>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+            </process>
+            <queryProcess>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="SaasCheckService" method="saveReviewedData"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_formula_rule_goods</table>
+            <conditions>
+                <condition name="code" input="text" required="true" title="商品编码" readonly="true"/>
+                <condition name="name" input="text" required="true" title="商品名称" readonly="true"/>
+                <condition name="unit_id" input="select" required="true" title="单位" readonly="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a
+                        WHERE a.category = "unit_id"
+                    </sql>
+                </condition>
+                <condition name="specification" input="text" required="true" title="规格" readonly="true"/>
+                <condition name="preparation_id" input="select" required="true" title="剂型" readonly="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a
+                        WHERE a.category = "preparation_id"
+                    </sql>
+                </condition>
+                <condition name="manufacturer" input="text" required="true" title="生产企业" readonly="true"/>
+                <condition input="select" name="rule_id" title="提成公式">
+                    <sql>
+                        select a.id id,a.gs_name text
+                        from SAAS_TEST.saas_formula_rule a
+                    </sql>
+                </condition>
+
+            </conditions>
+
+        </button>
+    </operate>
+</template>

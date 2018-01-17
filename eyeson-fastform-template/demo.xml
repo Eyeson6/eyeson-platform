@@ -1,0 +1,421 @@
+<template menuId="999" version="2"><!--模板跟节点  -->
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="通用查询"/>
+        <direct name="红包统计"/>
+    </directions>
+    <sqls sql="true">
+        <sql id="countSql" method="list">
+            select '数据总数：' as channels_account_id,count(1) as channels_id from SAAS.KKMY_CHANNELS_ACCOUNT a
+        </sql>
+        <sql id="listsql" method="select">
+            select a.channels_account_id,
+            a.channels_id,
+            a.channels_username,
+            a.create_time,
+            b.channels_name,
+            b.channels_addr,
+            b.docking_people,
+            c.su_id as adminId,
+            c.su_name as adminName,
+            b.docking_phone from SAAS.KKMY_CHANNELS_ACCOUNT a
+            left join SAAS.KKMY_CHANNELS b on a.channels_id=b.channels_id
+            left join sys_user c on b.admin_id=c.su_id
+            where @{commonSearchService2.testsql}
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and b.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name1}">
+                <![CDATA[ and b.channels_id =${channels_name1}]]>
+            </if>
+        </sql>
+        <sql id="querySql" method="query">
+            select a.channels_account_id,
+            a.channels_id,
+            a.channels_username,
+            a.create_time,
+            b.channels_name,
+            b.channels_addr,
+            b.docking_people,
+            c.su_id as adminId,
+            c.su_name as adminName,
+            b.docking_phone from SAAS.KKMY_CHANNELS_ACCOUNT a
+            left join SAAS.KKMY_CHANNELS b on a.channels_id=b.channels_id
+            left join sys_user c on b.admin_id=c.su_id
+            where a.channels_id=${key}
+        </sql>
+        <sql id="insertSql" method="execute">
+            insert into SAAS.KKMY_CHANNELS(
+            <set suffix=",">
+                <if method="isNoEmpty" args="${channels_name}">
+                    channels_name,
+                </if>
+                <if method="isNoEmpty" args="${channels_addr}">
+                    channels_addr,
+                </if>
+                <if method="isNoEmpty" args="${docking_people}">
+                    docking_people,
+                </if>
+                <if method="isNoEmpty" args="${docking_phone}">
+                    docking_phone,
+                </if>
+                <if method="isNoEmpty" args="${adminId}">
+                    admin_id,
+                </if>
+            </set>
+            ) values(
+            <set suffix=",">
+                <if method="isNoEmpty" args="${channels_name}">
+                    ${channels_name},
+                </if>
+                <if method="isNoEmpty" args="${channels_addr}">
+                    ${channels_addr},
+                </if>
+                <if method="isNoEmpty" args="${docking_people}">
+                    ${docking_people},
+                </if>
+                <if method="isNoEmpty" args="${docking_phone}">
+                    ${docking_phone},
+                </if>
+                <if method="isNoEmpty" args="${adminId}">
+                    ${adminId},
+                </if>
+            </set>
+            )
+        </sql>
+        <sql id="batchSql" method="insert">
+            insert into SAAS.KKMY_CHANNELS(
+            <if method="isNoEmpty" args="${dataList.channels_name}">
+                channels_name,
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                channels_addr,
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                docking_people,
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                docking_phone,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${dataList.channels_name}">
+                ${dataList.channels_name},
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                ${channels_addr},
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                ${docking_people},
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                ${docking_phone},
+            </if>
+            )
+        </sql>
+        <sql id="insertAddrSql" method="insert">
+            insert into SAAS.KKMY_CHANNELS_ACCOUNT(create_time,
+            <if method="isNoEmpty" args="${keyProperty}">
+                channels_id,
+            </if>
+            <if method="isNoEmpty" args="${channels_username}">
+                channels_username,
+            </if>
+            <if method="isNoEmpty" args="${creator}">
+                creator,
+            </if>
+            ) values(now(),
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${channels_username}">
+                ${channels_username},
+            </if>
+            <if method="isNoEmpty" args="${creator}">
+                ${creator},
+            </if>
+            )
+        </sql>
+        <sql id="insertDetailSql" method="insert">
+            insert into SAAS.KKMY_CHANNELS_DETAIL(
+            <if method="isNoEmpty" args="${keyProperty}">
+                channels_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.channels_username}">
+                channels_username,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${test8.channels_username}">
+                ${test8.channels_username},
+            </if>
+            )
+        </sql>
+        <sql id="deleteDetailSql" method="delete">
+            delete from SAAS.KKMY_CHANNELS_DETAIL
+            where
+            <if method="isNoEmpty" args="${keyProperty}">
+                <![CDATA[channels_id= ${keyProperty}]]>
+            </if>
+        </sql>
+        <sql id="updateSql" method="update">
+            update SAAS.KKMY_CHANNELS set
+            <if method="isNoEmpty" args="${channels_name}">
+                channels_name=${channels_name},
+            </if>
+            <if method="isNoEmpty" args="${channels_addr}">
+                channels_addr=${channels_addr},
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                docking_people=${docking_people},
+            </if>
+            <if method="isNoEmpty" args="${docking_phone}">
+                docking_phone=${docking_phone},
+            </if>
+            where channels_id=${key}
+        </sql>
+        <sql id="updateSqlBatch" method="update">
+            update KKMY_CHANNELS set
+            <if method="isNoEmpty" args="${rows.channels_name}">
+                channels_name=${rows.channels_name},
+            </if>
+            <if method="isNoEmpty" args="${rows.channels_addr}">
+                channels_addr=${rows.channels_addr},
+            </if>
+            <if method="isNoEmpty" args="${rows.docking_people}">
+                docking_people=${rows.docking_people},
+            </if>
+            <if method="isNoEmpty" args="${rows.docking_phone}">
+                docking_phone=${rows.docking_phone},
+            </if>
+            where channels_id=${rows.channels_id}
+        </sql>
+        <sql id="updateAddrSql" method="update">
+            update SAAS.KKMY_CHANNELS_ACCOUNT set
+            <if method="isNoEmpty" args="${channels_username}">
+                channels_username=${channels_username},
+            </if>
+            <if method="isNoEmpty" args="${creator}">
+                creator=${creator},
+            </if>
+            where channels_id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from SAAS.KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from SAAS.KKMY_CHANNELS where
+
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[channels_id= ${value}]]>
+            </if>
+        </sql>
+        <sql id="dynamicDeleteSql" method="delete">
+            delete from SAAS.KKMY_CHANNELS1 where
+
+            <if method="isNoEmpty" args="${channels_id}">
+                <![CDATA[channels_id= ${channels_id}]]>
+            </if>
+        </sql>
+        <sql id="dynamicDeleteSqlAddr" method="delete">
+            delete from SAAS.KKMY_CHANNELS_ACCOUNT where
+
+            <if method="isNoEmpty" args="${channels_id}">
+                <![CDATA[channels_id= ${channels_id}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <query pagesize="50" queryId="1" queryTitle="111" isPage="true" id="test9" singleSelect="false">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="channels_account_id" sortable="true" title="账号编号" key="true" input="text"/>
+            <clumn name="channels_id" sortable="true" title="编号" input="number"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="href" urlName="123"/>
+            <clumn name="channels_name" sortable="false" title="渠道商名称" editor="true" input="select"
+                   urlAction="/commonSearch/main.do?menuId=8001" urlType="open" urlName="456">
+            </clumn>
+            <clumn name="channels_addr" sortable="false" title="渠道商地址" editor="true" input="select">
+                <option id="1" text="aaa"/>
+                <option id="2" text="bbb"/>
+                <option id="2" text="ccc"/>
+            </clumn>
+            <clumn name="docking_people" sortable="false" title="对接人" editor="true" urlAction="test8" urlType="button"
+                   urlName="123"/>
+            <clumn name="docking_phone" sortable="false" title="对接人电话" editor="true" input="number"/>
+            <clumn name="create_time" sortable="true" title="创建时间" input="date" editor="true"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="select" title="渠道商名称" name="channels_name">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.category = 'unit_id'
+                </sql>
+            </condition>
+            <condition input="select" title="渠道商地址" name="channels_addr">
+                <option id="1" text="aaa"/>
+                <option id="2" text="bbb"/>
+            </condition>
+        </conditions>
+    </query>
+
+    <query pagesize="50" queryId="2" queryTitle="222">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="channels_account_id" sortable="true" title="账号编号" key="true"/>
+            <clumn name="channels_id" sortable="true" title="编号" editor="true"/>
+            <clumn name="channels_name" sortable="false" title="渠道商名称" editor="true"/>
+            <clumn name="create_time" sortable="true" title="创建时间" editor="true"/>
+            <clumn name="channels_addr" sortable="false" title="渠道商地址"/>
+            <clumn name="docking_people" sortable="false" title="对接人" editor="true"/>
+        </model>
+        <conditions>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="text" title="渠道商名称" name="channels_name"/>
+            <condition input="select" title="渠道商地址" name="channels_addr">
+                <option id="1" text="aaa"/>
+                <option id="2" text="bbb"/>
+            </condition>
+        </conditions>
+    </query>
+
+    <buttons>
+        <button id="test1" title="自定义添加" icon="icon-add" channel="query_execute" colNumber="4"
+                successMessage="自定义添加成功！">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="batchSql" ref="deleteDetailSql"/>
+                <step channel="batchSql" ref="insertDetailSql" collection="test8" item="test8"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition startArea="基础信息" name="channels_name" hiddenid="channels_id" popuplinkage="8910"
+                           popuptitle="选择" width="1000" passvalue="fasle" input="text" title="渠道商名称" required="true"
+                           repeat="false" table="SAAS.KKMY_CHANNELS"/>
+                <condition name="sex" passvalue="fasle" input="radio" title="性别" required="true" defaultvalue="1"
+                           readonly="true">
+                    <!--  <sql>
+                               select a.channels_id id,a.channels_name text
+                               from SAAS.KKMY_CHANNELS a
+                   </sql>-->
+                    <option id="1" text="男"/>
+                    <option id="2" text="女"/>
+                </condition>
+                <condition name="docking_phone" input="image" size="10" title="上传文件"/>
+                <condition endArea="基础信息" name="channels_addr" input="text" size="10" validate="zipcode" title="渠道商地址">
+                    <event id="creator_onfocus" mode="cursor_enter_dbclick" type="dbclick" hiddenid="channels_id1"
+                           popuplinkage="8910" popuptitle="选择" width="1000" passvalue="fasle">
+                    </event>
+                </condition>
+                <condition startArea="扩展信息" name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+                <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+                <condition name="channels_username" input="text" size="22" validate="url" title="账号表用户名"/>
+                <condition name="creator" input="text" size="22" validate="chinese" title="账号表创建人"/>
+                <condition input="select" title="渠道商地址" name="channels_addr1">
+                    <option id="1" text="aaa"/>
+                    <option id="2" text="bbb"/>
+                </condition>
+                <condition endArea="扩展信息" name="adminName" input="tooltip" title="审核人" required="true"
+                           targetMenuId="777" targetButtonId="testLogin" hiddenid="adminId"/>
+            </conditions>
+
+            <querys>
+                <query pagesize="50" channel="add" id="test8" singleSelect="false">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="sql" ref="listsql"/>
+                    </process>
+                    <model>
+                        <clumn name="channels_id" sortable="true" title="编号"/>
+                        <clumn name="channels_name" sortable="false" title="渠道商名称" editor="true"/>
+                        <clumn name="create_time" sortable="true" title="创建时间"/>
+                    </model>
+                    <conditions>
+
+                        <condition input="text" title="渠道商名称" name="channels_name"/>
+                        <condition input="select" title="渠道商名称" name="channels_name1">
+                            <sql>
+                                select a.channels_id id,a.channels_name text
+                                from SAAS.KKMY_CHANNELS a
+                            </sql>
+                        </condition>
+                    </conditions>
+                </query>
+            </querys>
+        </button>
+
+        <button id="test3" title="自定义删除" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="dynamicDeleteSql"/>
+                <step channel="sql" ref="dynamicDeleteSqlAddr"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>channels_id</key>
+            <condition name="channels_id"/>
+        </button>
+        <button id="testimport" title="自定义导入" icon="icon-inboxDownload" channel="import" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                           table="SAAS.KKMY_CHANNELS"/>
+                <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+                <condition name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+                <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+                <condition name="channels_username" input="text" size="22" title="账号表用户名"/>
+                <condition name="creator" input="text" size="22" title="账号表创建人"/>
+                <condition input="select" title="渠道商地址" name="channels_addr1">
+                    <option id="1" text="aaa"/>
+                    <option id="2" text="bbb"/>
+                </condition>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>
+
+

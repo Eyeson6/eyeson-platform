@@ -1,0 +1,443 @@
+<template menuId="3000" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="系统功能"/>
+        <direct name="预警设置"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql1" method="select">
+            SELECT
+            g.id,
+            g. CODE,
+            g. NAME,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            package_unit,
+            registration_code,
+            i.batch_code,
+            i.quantity
+            FROM
+            saas_goods g
+            LEFT JOIN saas_inventory i ON g.id = i.goods_id
+            where 1=1
+            <!-- order by g.create_time desc -->
+        </sql>
+        <sql id="listsql2" method="select">
+            SELECT
+            g.id,
+            g. CODE,
+            g. NAME,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            package_unit,
+            registration_code,
+            i.batch_code,
+            i.quantity
+            FROM
+            saas_goods g
+            LEFT JOIN saas_inventory i ON g.id = i.goods_id
+            where 1=1
+            <!-- order by g.create_time desc -->
+        </sql>
+        <sql id="listsql3" method="select">
+            SELECT
+            g.id,
+            g. CODE,
+            g. NAME,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            package_unit,
+            registration_code,
+            i.batch_code,
+            i.quantity
+            FROM
+            saas_goods g
+            LEFT JOIN saas_inventory i ON g.id = i.goods_id
+            where 1=1
+            <!-- order by g.create_time desc -->
+        </sql>
+        <sql id="listsql4" method="select">
+            SELECT
+            g.id,
+            g. CODE,
+            g. NAME,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            package_unit,
+            registration_code,
+            i.batch_code,
+            i.quantity
+            FROM
+            saas_goods g
+            LEFT JOIN saas_inventory i ON g.id = i.goods_id
+            where 1=1
+            <!-- order by g.create_time desc -->
+        </sql>
+        <sql id="listsql5" method="select">
+            SELECT
+            g.id,
+            g. CODE,
+            g. NAME,
+            g.generic_name,
+            g.specification,
+            g.place,
+            g.manufacturer,
+            g.preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "preparation_id"
+            AND dd.`value` = g.preparation_id
+            ) AS preparation_name,
+            g.unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            saas_dictionary dd
+            WHERE
+            dd.`code` = "unit_id"
+            AND dd.`value` = g.unit_id
+            ) AS unit_name,
+            package_unit,
+            registration_code,
+            i.batch_code,
+            i.quantity
+            FROM
+            saas_goods g
+            LEFT JOIN saas_inventory i ON g.id = i.goods_id
+            where 1=1
+            <!-- order by g.create_time desc -->
+        </sql>
+
+        <!-- 计算总量 -->
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+
+    <query pagesize="50" queryId="1" queryTitle="过期药品预警">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql1"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="false" title="编码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="preparation_id" sortable="false" title="剂型ID"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="过期时间"/>
+        </model>
+    </query>
+
+    <query pagesize="50" queryId="2" queryTitle="近效期预警" isPage="false">
+        <process>
+            <step channel="sql" ref="listsql2"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="false" title="编码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="preparation_id" sortable="false" title="剂型ID"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="过期时间"/>
+        </model>
+    </query>
+
+    <query pagesize="50" queryId="3" queryTitle="库存预警" isPage="false">
+        <process>
+            <step channel="sql" ref="listsql3"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="false" title="编码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="preparation_id" sortable="false" title="剂型ID"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="过期时间"/>
+        </model>
+    </query>
+
+    <query pagesize="50" queryId="4" queryTitle="滞销预警" isPage="false">
+        <process>
+            <step channel="sql" ref="listsql4"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="false" title="编码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="preparation_id" sortable="false" title="剂型ID"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="过期时间"/>
+        </model>
+    </query>
+
+    <query pagesize="50" queryId="5" queryTitle="养护/检查预警" isPage="false">
+        <process>
+            <step channel="sql" ref="listsql5"/>
+        </process>
+        <model>
+            <clumn name="code" sortable="false" title="编码"/>
+            <clumn name="name" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="preparation_id" sortable="false" title="剂型ID"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+
+            <clumn name="production_time" sortable="false" title="生产时间"/>
+            <clumn name="expire_time" sortable="false" title="过期时间"/>
+        </model>
+    </query>
+
+
+    <buttons>
+        <button id="test2" title="企业" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <!-- <step channel="sql" ref="updateSql" /> <step channel="sql" ref="updateAddrSql" /> -->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>s_id</key>
+            <table>saas_order</table>
+            <conditions>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+
+            </conditions>
+
+        </button>
+
+        <button id="test2" title="供货单位" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <!-- <step channel="sql" ref="updateSql" /> <step channel="sql" ref="updateAddrSql" /> -->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>s_id</key>
+            <table>saas_order</table>
+            <conditions>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+
+            </conditions>
+
+        </button>
+
+        <button id="test2" title="商品" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <!-- <step channel="sql" ref="updateSql" /> <step channel="sql" ref="updateAddrSql" /> -->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>s_id</key>
+            <table>saas_order</table>
+            <conditions>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+
+            </conditions>
+
+        </button>
+
+        <button id="test2" title="其他" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <!-- <step channel="sql" ref="updateSql" /> <step channel="sql" ref="updateAddrSql" /> -->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>s_id</key>
+            <table>saas_order</table>
+            <conditions>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+                <condition name="s_id" input="text" size="20" title="销售订单编号" readonly="true"/>
+            </conditions>
+
+        </button>
+    </buttons>
+
+
+</template>
+
+

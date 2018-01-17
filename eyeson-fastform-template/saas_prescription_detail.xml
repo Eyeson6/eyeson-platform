@@ -1,0 +1,196 @@
+<template menuId="8051" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="销售管理"/>
+        <direct name="药品登记记录"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            select
+            id,
+            order_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "prescription_type"
+            AND dd.`value` = prescription_type
+            ) AS prescription_type,
+            patient_name,
+            id_card,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "memship_sex"
+            AND dd.`value` = gender
+            ) AS gender,
+            birthday,
+            mobile,
+            address,
+            patient_condition,
+            prescription_date,
+            doctor_name,
+            source,
+            pharmacist_id,
+            pharmacist_name,
+            drug_deliver_id,
+            drug_deliver_name,
+            reviewer_id,
+            reviewer_name,
+            member_id,
+            member_name,
+            file_id,
+            remark
+            from SAAS_TEST.saas_prescription
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and prescription_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and prescription_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${patient_name}">
+                <![CDATA[ and patient_name like %${patient_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${order_code}">
+                <![CDATA[ and order_code like %${order_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${prescription_type}">
+                <![CDATA[ and prescription_type = ${prescription_type}]]>
+            </if>
+            order by prescription_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from SAAS_TEST.saas_prescription
+            where id = ${key}
+        </sql>
+
+        <sql id="listDetailSql" method="select">
+            select
+            d.id,
+            d.order_id,
+            d.order_code,
+            d.goods_id,
+            d.goods_code,
+            d.goods_name,
+            d.goods_generic_name,
+            d.goods_specification,
+            d.goods_place,
+            d.goods_type,
+            d.batch_code,
+            d.sequence,
+            d.manufacturer,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = d.preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = d.unit_id
+            ) AS unit_id,
+            d.expire_time,
+            d.quantity,
+            d.retail_price
+            from SAAS_TEST.saas_order_detail d
+            left join SAAS_TEST.saas_goods g
+            on d.goods_id = g.id
+            where g.prescription_drug = 1 and d.order_code = (select order_code from SAAS_TEST.saas_prescription where
+            id = ${key})
+
+        </sql>
+    </sqls>
+
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="prescription_date" sortable="false" title="处方日期"/>
+            <clumn name="order_code" sortable="false" title="处方单号"/>
+            <clumn name="prescription_type" sortable="false" title="登记类型"/>
+            <clumn name="patient_name" sortable="false" title="患者名称"/>
+            <clumn name="id_card" sortable="false" title="身份证"/>
+            <clumn name="gender" sortable="false" title="性别"/>
+            <clumn name="birthday" sortable="false" title="生日"/>
+            <clumn name="mobile" sortable="false" title="手机号"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="doctor_name" sortable="false" title="医生名称"/>
+            <clumn name="source" sortable="false" title="来源"/>
+        </model>
+        <conditions>
+            <condition input="date" title="处方日期" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+            <condition input="select" title="登记类型" name="prescription_type">
+                <sql>
+                    select a.value id,a.name text from SAAS_TEST.saas_dictionary a where category='prescription_type'
+                </sql>
+            </condition>
+            <condition input="text" title="患者名称" name="patient_name"/>
+            <condition input="text" title="订单编号" name="order_code"/>
+
+        </conditions>
+    </query>
+
+    <operate>
+        <button id="test_www" title="查看详情" icon="icon" channel="query" width="1200">
+            <process>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_order_detail</table>
+            <conditions>
+                <condition name="order_code" input="text" size="20" title="处方单号" readonly="true"/>
+                <condition name="prescription_date" input="date" title="处方日期" readonly="true"/>
+
+            </conditions>
+
+            <querys>
+                <query id="test9" channel="" pagesize="50" popuptitle="查询结果" width="800" isPage="true">
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listDetailSql"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="order_code" sortable="false" title="订单编码"/>
+                        <clumn name="goods_code" sortable="false" title="商品编码"/>
+                        <clumn name="goods_name" sortable="false" title="商品名称"/>
+                        <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+                        <clumn name="preparation_id" sortable="false" title="剂型"/>
+                        <clumn name="goods_specification" sortable="false" title="规格"/>
+                        <clumn name="unit_id" sortable="false" title="单位"/>
+                        <clumn name="manufacturer" sortable="false" title="生产企业"/>
+                        <clumn name="quantity" sortable="false" title="数量"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+    </operate>
+</template>

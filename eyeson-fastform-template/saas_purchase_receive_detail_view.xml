@@ -1,0 +1,96 @@
+<template menuId="7107" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="采购收货明细选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            g.id as receive_detail_id,
+            g.purchase_receive_id as receive_id,
+            g.purchase_receive_code as receive_code,
+            g.purchase_order_id,
+            g.purchase_order_code,
+            g.purchase_order_detail_id,
+            g.goods_id,
+            g.goods_code,
+            g.goods_name,
+            o.supplier_id,
+            o.supplier_code,
+            o.supplier_name,
+            g.goods_generic_name,
+            g.goods_specification,
+            g.preparation_id,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="preparation_id" and d.`value` =
+            g.preparation_id ) as preparation_name,
+            g.unit_id,
+            (select name from SAAS_TEST.saas_dictionary d where d.`category`="unit_id" and d.`value` = g.unit_id ) as
+            unit_name,
+            g.manufacturer,
+            g.goods_place,
+            g.registration_code,
+            g.order_quantity,
+            g.receipt_quantity as arrival_quantity,
+            g.receipt_quantity as arrival_quantity2,
+            g.goods_unit_price as purchase_price,
+            g.receipt_quantity as acceptance_quantity,
+            0 as rejected_quantity,
+            g.receipt_quantity as storage_quantity,
+            1 as sampling_quantity,
+            g.goods_unit_price * g.receipt_quantity as acceptance_amount,
+            g.goods_unit_price * g.receipt_quantity as amount,
+            g.remark,
+            sg.storage_id
+            FROM
+            SAAS_TEST.saas_purchase_receive_detail g left join SAAS_TEST.saas_purchase_receive o
+            on g.purchase_receive_id = o.id
+            left join SAAS_TEST.saas_goods sg on g.goods_id = sg.id
+            where 1=1 and g.status = '0' and o.supplier_id = ${supplier_id}
+            <if method="isNoEmpty" args="${purchase_receive_id}">
+                <![CDATA[and g.purchase_receive_id = ${purchase_receive_id}]]>
+            </if>
+            <!--<if method="isNoEmpty"  args="${supplier_id}">
+                <![CDATA[and o.supplier_id = ${supplier_id}]]>
+            </if>-->
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="purchase_order_code" sortable="false" title="采购订单号"/>
+            <clumn name="receive_code" sortable="false" title="收货单编号"/>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="产地"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="order_quantity" sortable="false" title="订单数量"/>
+            <clumn name="arrival_quantity" sortable="false" title="收货数量"/>
+            <clumn name="purchase_price" sortable="false" title="单价"/>
+
+        </model>
+        <conditions>
+            <condition input="select" title="收货单编号" name="purchase_receive_id">
+                <sql>
+                    select a.id id,a.code text
+                    from SAAS_TEST.saas_purchase_receive a where a.status = '0'
+                </sql>
+            </condition>
+            <condition input="text" title="名称" hidden="true" name="supplier_id"/>
+        </conditions>
+    </query>
+
+
+</template>

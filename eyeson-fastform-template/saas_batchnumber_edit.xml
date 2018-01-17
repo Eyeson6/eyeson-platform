@@ -1,0 +1,255 @@
+<template menuId="400" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="仓储管理"/>
+        <direct name="商品批号修改"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            i.id,
+            i.goods_id,
+            i.goods_code,
+            g.name,
+            g.specification,
+            i.batch_code,
+            i.batch_code as batch_code_old,
+            b.expire_time,
+            sum(i.quantity) quantity,
+            i.order_price,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            b.production_time
+
+            FROM
+            SAAS_TEST.saas_inventory i
+            left JOIN SAAS_TEST.saas_goods g ON i.goods_id = g.id
+            left JOIN SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where i.qualified=0
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[and g.name like %${name}%]]>
+            </if>
+            group by i.goods_id ,i.batch_code,i.supplier_id,i.storage_id
+        </sql>
+        <sql id="querySql" method="query">
+            SELECT
+            i.id,
+            i.goods_id,
+            i.goods_code,
+            i.batch_code as batch_code_old,
+            g.name,
+            g.specification,
+            i.batch_code,
+            b.expire_time,
+            sum(i.quantity) quantity,
+            i.order_price,
+            i.supplier_id,
+            i.supplier_code,
+            i.qualified,
+            i.storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = i.storage_id
+            ) AS storage_name,
+            b.production_time
+
+            FROM
+            SAAS_TEST.saas_inventory i
+            left JOIN SAAS_TEST.saas_goods g ON i.goods_id = g.id
+            left JOIN SAAS_TEST.saas_goods_batch b ON b.goods_id = i.goods_id and b.code=i.batch_code
+            where i.id=${key}
+        </sql>
+
+
+        <sql id="updateSqlBatch" method="execute">
+            update SAAS_TEST.saas_inventory set
+            <if method="isNoEmpty" args="${rows.batch_code}">
+                batch_code = ${rows.batch_code},
+            </if>
+            where batch_code = ${rows.batch_code_old} and goods_id=${rows.goods_id}
+            and supplier_id=${rows.supplier_id} and qualified=0
+        </sql>
+        <sql id="deleteSqlBatch" method="delete">
+            delete from SAAS_TEST.saas_goods_batch
+            where goods_id=${rows.goods_id} and code=${rows.batch_code}
+            and supplier_id=${rows.supplier_id} and qualified=0
+        </sql>
+        <sql id="insertSqlBatch" method="execute">
+            insert into SAAS_TEST.saas_goods_batch(
+            <if method="isNoEmpty" args="${rows.goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${rows.batch_code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${rows.production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${rows.expire_time}">
+                expire_time,
+            </if>
+            ) values (
+            <if method="isNoEmpty" args="${rows.goods_id}">
+                ${rows.goods_id} ,
+            </if>
+            <if method="isNoEmpty" args="${rows.batch_code}">
+                ${rows.batch_code},
+            </if>
+            <if method="isNoEmpty" args="${rows.production_time}">
+                ${rows.production_time},
+            </if>
+            <if method="isNoEmpty" args="${rows.expire_time}">
+                ${rows.expire_time},
+            </if>
+            )
+        </sql>
+        <sql id="updateSqlNew" method="execute">
+            update SAAS_TEST.saas_inventory set
+            batch_code = ${batch_code}
+            where batch_code = ${batch_code_old} and goods_id=${goods_id}
+            and supplier_id=${supplier_id}
+            and storage_id = ${storage_id}
+            and qualified=0
+        </sql>
+        <sql id="deleteSqlNew" method="delete">
+            delete from SAAS_TEST.saas_goods_batch
+            where goods_id=${goods_id} and code=${batch_code}
+        </sql>
+        <sql id="insertSqlNew" method="execute">
+            insert into SAAS_TEST.saas_goods_batch(
+            <if method="isNoEmpty" args="${goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                expire_time
+            </if>
+            ) values (
+            <if method="isNoEmpty" args="${goods_id}">
+                ${goods_id},
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                ${batch_code},
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                ${production_time},
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                ${expire_time}
+            </if>
+            )
+        </sql>
+        <sql id="updateSqlBatch" method="execute">
+            update saas_inventory set
+            expiry_time = ${expiry_date},
+            production_time = ${produce_date}
+            where batch_code = ${batch_code} and goods_id=( select goods_id from saas_inventory where id=${key})
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>
+             <clumn name="goods_id" sortable="false"  title="商品ID" sort="desc" hidden="true"/>-->
+            <clumn name="goods_code" sortable="false" title="商品编号" sort="desc"/>
+            <clumn name="name" sortable="true" title="商品名称"/>
+            <clumn name="supplier_code" sortable="true" title="供应商编号"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <!-- <clumn name="batch_code_old" sortable="false" title="旧批号" hidden="true"/>-->
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="expire_time" sortable="true" title="失效期"/>
+            <clumn name="production_time" sortable="true" title="生产日期"/>
+            <clumn name="quantity" sortable="false" title="库房数量"/>
+            <clumn name="order_price" sortable="false" title="进价"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+
+        </model>
+        <conditions>
+            <condition input="text" title="商品名称" name="name"/>
+        </conditions>
+    </query>
+    <!--
+        <buttons>
+         修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置
+                <button id="testrowsave" title="批量修改" icon="icon-add" channel="fastSave" width="1200" successMessage="批号修改成功！">
+                <process>
+                    <step channel="batchSql" ref="updateSqlBatch" collection="rows" item="rows"/>
+                    <step channel="batchSql" ref="deleteSqlBatch" collection="rows" item="rows"/>
+                    <step channel="batchSql" ref="insertSqlBatch" collection="rows" item="rows"/>
+                    <step channel="service" ref="commonSearchService2" method="test" />
+                </process>
+                    <queryProcess>
+                        <step channel="service" ref="commonSearchService2" method="test" />
+                        <step channel="service" ref="commonSearchService2" method="test" />
+                    </queryProcess>
+                <key>id</key>
+                <table>saas_inventory</table>
+               <conditions>
+                    <condition name="goods_code" size="50" input="text" readonly="true" title="商品编号" />
+                    <condition name="batch_code" size="50"  input="text"  validate="number" title="批号" />
+                    <condition name="production_time" size="50"  input="date"  title="生产日期" />
+                    <condition name="expire_time" size="50"  input="date" title="失效期" />
+                </conditions>
+            </button>
+        </buttons> -->
+    <operate>
+        <button id="saas_batchnumber_edit" title="修改" icon="icon-edit" channel="select_query_execute" width="600"
+                colNumber="2" height="350">
+            <process>
+                <step channel="service" ref="saasSupplierService" method="modiReviewedData"/>
+                <step channel="sql" ref="updateSqlNew"/>
+                <step channel="sql" ref="deleteSqlNew"/>
+                <step channel="sql" ref="insertSqlNew"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_inventory</table>
+            <conditions>
+                <condition name="goods_code" size="50" hiddenid="goods_id" input="text" readonly="true" title="商品编号"/>
+                <condition name="batch_code" size="50" hiddenid="batch_code_old" input="text" validate="number"
+                           title="批号"/>
+                <condition name="production_time" size="50" hiddenid="supplier_id" input="date" title="生产日期"/>
+
+                <condition name="expire_time" size="50" hiddenid="storage_id" input="date" title="失效期"/>
+                <condition name="storage_name" hiddenid="storage_id" title="货位" input="text" readonly="true"/>
+                <condition name="supplier_code" hiddenid="supplier_id" title="供应商编号" input="text" readonly="true"/>
+            </conditions>
+
+        </button>
+    </operate>
+</template>

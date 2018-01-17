@@ -1,0 +1,720 @@
+<template menuId="8021" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="门店管理"/>
+        <direct name="药品拆零登记"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            goods_id,
+            goods_code,
+            goods_name,
+            goods_specification,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_id,
+            manufacturer,
+            batch_code,
+            date_format(production_time, '%Y-%m-%d') as production_time,
+            date_format(expire_time, '%Y-%m-%d') as expire_time,
+            inventory_quantity,
+            scattere_quantity,
+            small_quantity,
+            (SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = scatter_unit_id
+            ) AS scatter_unit_id,
+            scatter_specification,
+            storage_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_storage dd
+            WHERE
+            dd.id = storage_id
+            ) AS storage_name,
+            creater_id,
+            creater_name,
+            scatter_time
+            FROM
+            SAAS_TEST.saas_goods_scatter where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and scatter_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and date_format(scatter_time,'%Y-%m-%d') <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                <![CDATA[ and goods_name like %${goods_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                <![CDATA[ and goods_code like %${goods_code}%]]>
+            </if>
+            order by scatter_time desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from SAAS_TEST.saas_goods_scatter where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into SAAS_TEST.saas_goods_scatter(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${goods_id}">
+                goods_id,
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                goods_code,
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                goods_name,
+            </if>
+            <if method="isNoEmpty" args="${goods_specification}">
+                goods_specification,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${manufacturer}">
+                manufacturer,
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                production_time,
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                batch_code,
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                expire_time,
+            </if>
+            <if method="isNoEmpty" args="${inventory_quantity}">
+                inventory_quantity,
+            </if>
+
+            <if method="isNoEmpty" args="${scattere_quantity}">
+                scattere_quantity,
+            </if>
+            <if method="isNoEmpty" args="${small_quantity}">
+                small_quantity,
+            </if>
+            <if method="isNoEmpty" args="${scatter_unit_id}">
+                scatter_unit_id,
+            </if>
+            <if method="isNoEmpty" args="${scatter_specification}">
+                scatter_specification,
+            </if>
+
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${storage_id}">
+                storage_id,
+            </if>
+            scatter_time,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${goods_id}">
+                ${goods_id},
+            </if>
+            <if method="isNoEmpty" args="${goods_code}">
+                ${goods_code},
+            </if>
+            <if method="isNoEmpty" args="${goods_name}">
+                ${goods_name},
+            </if>
+            <if method="isNoEmpty" args="${goods_specification}">
+                ${goods_specification},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${manufacturer}">
+                ${manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${production_time}">
+                ${production_time},
+            </if>
+            <if method="isNoEmpty" args="${batch_code}">
+                ${batch_code},
+            </if>
+            <if method="isNoEmpty" args="${expire_time}">
+                ${expire_time},
+            </if>
+            <if method="isNoEmpty" args="${inventory_quantity}">
+                ${inventory_quantity},
+            </if>
+
+            <if method="isNoEmpty" args="${scattere_quantity}">
+                ${scattere_quantity},
+            </if>
+            <if method="isNoEmpty" args="${small_quantity}">
+                ${small_quantity},
+            </if>
+            <if method="isNoEmpty" args="${scatter_unit_id}">
+                ${scatter_unit_id},
+            </if>
+            <if method="isNoEmpty" args="${scatter_specification}">
+                ${scatter_specification},
+            </if>
+
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${storage_id}">
+                ${storage_id},
+            </if>
+            now(),
+            )
+        </sql>
+
+
+        <sql id="checkNumSql" method="query">
+            select
+            CASE
+            WHEN d.quantity >= ${scattere_quantity} THEN
+            'false'
+            ELSE
+            'true'
+            END AS mustBreak
+            from (
+            select sum(quantity) quantity
+            from SAAS_TEST.saas_inventory
+            where goods_id = ${goods_id} and batch_code = ${batch_code}
+            and supplier_id = ${supplier_id}
+            and storage_id = ${storage_id}
+            ) d
+        </sql>
+        <!--
+        <sql id="updateInventorySelf" method="update">
+           update
+           SAAS_TEST.saas_inventory
+           set quantity = quantity-${scattere_quantity}
+           where gds_code = ${number} and batch_number = ${batch};
+        </sql>
+
+        <sql id="updateInventory" method="update">
+           update
+           saas_inventory
+           set quantity = quantity+${small_quantity}
+           where gds_code = CONCAT(${number}, '_01') and batch_number = ${batch};
+        </sql>-->
+
+        <sql id="insertInventoryOld" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            order_price,
+            qualified,
+            creater_id,
+            creater_name,
+            storage_id,
+            create_time
+            ) SELECT
+            t.goods_id,
+            t.goods_code,
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            -1*${scattere_quantity},
+            5,
+            t.order_price,
+            0,
+            ${creater_id},
+            ${creater_name},
+            t.storage_id,
+            now()
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${goods_id} and batch_code = ${batch_code}
+            and t.qualified=0
+            and t.supplier_id = ${supplier_id}
+            and t.storage_id = ${storage_id}
+            group by t.goods_id ,t.batch_code,t.supplier_id,t.storage_id
+        </sql>
+        <sql id="insertInventoryNew" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            order_price,
+            qualified,
+            creater_id,
+            creater_name,
+            storage_id,
+            create_time
+            ) SELECT
+            (select id from SAAS_TEST.saas_goods where code=CONCAT(${goods_code}, '_01')) id,
+            CONCAT(${goods_code}, '_01'),
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            ${small_quantity},
+            5,
+            CASE
+            WHEN ${small_quantity} > 0 THEN
+            t.order_price* (SELECT CAST(${scattere_quantity} AS SIGNED))/(SELECT CAST(${small_quantity} AS SIGNED))
+            ELSE
+            0
+            END as order_price,
+            0,
+            ${creater_id},
+            ${creater_name},
+            t.storage_id,
+            now()
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${goods_id} and batch_code = ${batch_code}
+            and t.qualified=0
+            and t.supplier_id = ${supplier_id}
+            and t.storage_id = ${storage_id}
+            group by t.goods_id ,t.batch_code,t.supplier_id,t.storage_id
+        </sql>
+
+        <sql id="insertGoodsBatchSql" method="execute">
+            insert into saas_goods_batch(
+            goods_id,
+            code,
+            production_time,
+            expire_time
+            )select
+            (select id from saas_goods where code = CONCAT(${goods_code}, '_01')) as id,
+            ${batch_code},
+            ${production_time},
+            ${expire_time}
+            from SAAS_TEST.saas_goods_batch
+            where (select count(*) from SAAS_TEST.saas_goods_batch
+            where code=${batch_code} and goods_id = (select id from saas_goods where code = CONCAT(${goods_code},
+            '_01')) ) = 0 limit 1
+        </sql>
+
+        <sql id="insertInventoryDetailOld" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory_detail (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            purchased_price,
+            qualified,
+            creater_id,
+            creater_name,
+            storage_id,
+            create_time
+            ) SELECT
+            t.goods_id,
+            t.goods_code,
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            -1*${scattere_quantity},
+            5,
+            t.order_price,
+            0,
+            ${creater_id},
+            ${creater_name},
+            t.storage_id,
+            now()
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${goods_id} and batch_code = ${batch_code}
+            and t.qualified=0
+            and t.supplier_id = ${supplier_id}
+            and t.storage_id = ${storage_id}
+            group by t.goods_id ,t.batch_code,t.supplier_id,t.storage_id
+        </sql>
+        <sql id="insertInventoryDetailNew" method="execute">
+            INSERT INTO SAAS_TEST.saas_inventory_detail (
+            goods_id,
+            goods_code,
+            batch_code,
+            supplier_id,
+            supplier_code,
+            quantity,
+            inventory_type,
+            purchased_price,
+            qualified,
+            creater_id,
+            creater_name,
+            storage_id,
+            create_time
+            ) SELECT
+            (select id from SAAS_TEST.saas_goods where code=CONCAT(${goods_code}, '_01')) id,
+            CONCAT(${goods_code}, '_01'),
+            t.batch_code,
+            t.supplier_id,
+            t.supplier_code,
+            ${small_quantity},
+            5,
+            CASE
+            WHEN ${small_quantity} > 0 THEN
+            t.order_price* (SELECT CAST(${scattere_quantity} AS SIGNED))/(SELECT CAST(${small_quantity} AS SIGNED))
+            ELSE
+            0
+            END as order_price,
+            0,
+            ${creater_id},
+            ${creater_name},
+            t.storage_id,
+            now()
+            FROM
+            SAAS_TEST.saas_inventory t
+            WHERE
+            t.goods_id = ${goods_id} and batch_code = ${batch_code}
+            and t.qualified=0
+            and t.supplier_id = ${supplier_id}
+            and t.storage_id = ${storage_id}
+            group by t.goods_id ,t.batch_code,t.supplier_id,t.storage_id
+        </sql>
+
+        <sql id="insertSaasGoods" method="execute">
+            INSERT INTO SAAS_TEST.saas_goods (
+            code,
+            name,
+            pinyin_code,
+            generic_name,
+            specification,
+            place,manufacturer,
+            preparation_id,
+            unit_id,
+            toxicology,
+            domestic_import,
+            registration_code,
+            registration_code_expire_date,
+            barcode,operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            category_id,
+            gsp_category_id,
+            retail_price,
+            member_price,
+            mcountry_price,
+            integral_good,
+            special_price,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            scatter_specification,
+            scattered,
+            curing,
+            prescription_drug,
+            ephedrine,
+            medical_insurance,
+            medical_insurance_code,
+            GMP,
+            GMP_code,
+            storage_condition,
+            first,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,creater_name,
+            modifier_id,
+            modifier_name,
+            sale_status,
+            enable_user_id,
+            enable_user_name,
+            disable_user_id,
+            disable_user_name,
+            department,
+            enable_reason,
+            disable_reason,
+            enable_time,
+            disable_time,
+            create_time,
+            update_time,
+            remarks,
+            storage_id,
+            attachment
+            ) SELECT
+            CONCAT(${goods_code}, '_01'),
+            CONCAT(name,'(拆零)'),
+            pinyin_code,
+            generic_name,
+            ${scatter_specification},
+            place,
+            manufacturer,
+            preparation_id,
+            ${scatter_unit_id},
+            toxicology,
+            domestic_import,
+            registration_code,
+            registration_code_expire_date,
+            barcode,operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            category_id,
+            gsp_category_id,
+            retail_price*${scattere_quantity}/${small_quantity},
+            member_price*${scattere_quantity}/${small_quantity},
+            mcountry_price*${scattere_quantity}/${small_quantity},
+            integral_good,
+            special_price,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            ${scatter_specification},
+            0,
+            curing,
+            prescription_drug,
+            ephedrine,
+            medical_insurance,
+            medical_insurance_code,
+            GMP,
+            GMP_code,
+            storage_condition,
+            first,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,creater_name,
+            modifier_id,
+            modifier_name,
+            sale_status,
+            enable_user_id,
+            enable_user_name,
+            disable_user_id,
+            disable_user_name,
+            department,
+            enable_reason,
+            disable_reason,
+            enable_time,
+            disable_time,
+            now(),
+            now(),
+            remarks,
+            storage_id,
+            attachment
+            FROM
+            SAAS_TEST.saas_goods
+            WHERE
+            id = ${goods_id} and (select count(*) from SAAS_TEST.saas_goods where code = CONCAT(${goods_code}, '_01')) =
+            0
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="goods_code" sortable="false" title="商品编号"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_specification" sortable="false" title="规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产厂家"/>
+            <clumn name="production_time" sortable="false" title="生产日期"/>
+            <clumn name="batch_code" sortable="false" title="生产批号"/>
+            <clumn name="expire_time" sortable="false" title="有效日期"/>
+            <clumn name="storage_name" sortable="false" title="货位"/>
+            <clumn name="inventory_quantity" sortable="false" title="库存数量"/>
+            <clumn name="small_quantity" sortable="false" title="拆后小包装数量"/>
+            <clumn name="scattere_quantity" sortable="false" title="拆零数量"/>
+            <clumn name="scatter_unit_id" sortable="false" title="拆零单位"/>
+            <clumn name="scatter_specification" sortable="false" title="拆零规格"/>
+            <clumn name="creater_name" sortable="false" title="经办人名称"/>
+            <clumn name="scatter_time" sortable="false" title="拆零时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品名称" name="goods_name"/>
+            <condition input="text" title="商品编码" name="goods_code"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <buttons>
+        <button id="test1" title="添加" icon="icon-add" channel="query_execute" width="900" colNumber="3" height="350">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <queryProcess>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+            </queryProcess>
+            <process>
+                <step channel="sql" ref="checkNumSql">
+                    <breakMessage>输入数量大于库存，请重新输入！</breakMessage>
+                </step>
+                <step channel="service" ref="saasGoodscatregistService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertSaasGoods"/>
+                <step channel="sql" ref="insertInventoryOld"/>
+                <step channel="sql" ref="insertInventoryNew"/>
+                <step channel="sql" ref="insertGoodsBatchSql"/>
+                <step channel="sql" ref="insertInventoryDetailOld"/>
+                <step channel="sql" ref="insertInventoryDetailNew"/>
+            </process>
+            <conditions>
+                <condition name="goods_name" required="true" input="text" size="20" title="商品名称" hiddenid="goods_id"
+                           popuplinkage="8022" popuptitle="库存信息选择" width="800" passvalue="false"/>
+                <condition name="goods_code" required="true" input="text" size="50" title="商品编号"/>
+                <condition name="goods_specification" readonly="true" input="text" size="20" title="规格"/>
+                <condition name="preparation_id" readonly="true" input="select" size="20" title="剂型">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'preparation_id'
+                    </sql>
+                </condition>
+                <condition name="unit_id" readonly="true" input="select" size="20" title="单位">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'unit_id'
+                    </sql>
+                </condition>
+                <!--
+                <condition name="supplier_id" readonly="true" input="text"  title="供应商ID" />-->
+                <condition name="supplier_code" hiddenid="supplier_id" readonly="true" input="text" title="供应商编号"/>
+                <condition name="manufacturer" readonly="true" input="text" size="20" title="生产厂家"/>
+                <condition name="production_time" readonly="true" input="date" title="生产日期"/>
+                <condition name="batch_code" input="text" readonly="true" size="20" title="生产批号"/>
+                <condition name="expire_time" readonly="true" input="date" title="有效日期"/>
+                <condition name="inventory_quantity" input="text" readonly="true" title="库存数量"/>
+                <condition name="storage_id" title="货位" readonly="true" input="select">
+                    <sql>
+                        SELECT
+                        id as id,
+                        name as text
+                        FROM
+                        SAAS_TEST.saas_storage
+                    </sql>
+                </condition>
+                <condition name="scattere_quantity" required="true" validate="number" hiddenid="scat_quantity_goods"
+                           input="text" size="20" title="拆零数量">
+                    <event mode="cursor_enter_dbclick" popuplinkage="4991" popuptitle="供方选择" width="1000"
+                           passvalue="true"/>
+                </condition>
+                <condition name="small_quantity" input="text" required="true" readonly="true" size="20"
+                           title="拆后小包装数量"/>
+                <condition name="scatter_specification" input="text" size="20" title="拆零规格"/>
+                <condition name="scatter_unit_id" input="select" readonly="true" size="20" title="拆零单位">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'unit_id'
+                    </sql>
+                </condition>
+                <condition name="creater_name" hiddenid="creater_id" input="text" readonly="true" size="20"
+                           title="经办人"/>
+
+            </conditions>
+
+        </button>
+    </buttons>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

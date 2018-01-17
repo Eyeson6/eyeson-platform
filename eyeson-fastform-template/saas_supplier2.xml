@@ -1,0 +1,1937 @@
+<template menuId="240" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="通用查询"/>
+        <direct name="红包统计"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+
+            CASE category_id
+            WHEN '0' THEN
+            '经营单位'
+            WHEN '1' THEN
+            '生产单位'
+            ELSE '其他' END
+            as category_name,
+
+            CASE settlement_id
+            WHEN '0' THEN
+            '现金'
+            WHEN '1' THEN
+            '月票'
+            WHEN '2' THEN
+            '支票'
+            ELSE '其他' END
+            as settlement_name,
+
+            area_code,
+            pinyin_code,
+            code,
+            name,
+            address,
+            contact,
+            tel,
+            bank_code,
+            bank_name,
+            bank_account,
+            business_license_code,
+            business_license_date,
+            business_license_expire_date,
+            business_license_approval,
+            license_code,
+            license_date,
+            license_expire_date,
+            license_name,
+            consigner,
+            consign_date,
+            consign_expire_date,
+            quality_license_expire_date,
+            health_license_expire_date,
+            gsp_code,
+            gsp_date,
+            gsp_expire_date,
+            gmp_one_code,
+            gmp_one_date,
+            gmp_one_expire_date,
+            gmp_two_code,
+            gmp_two_date,
+            gmp_two_expire_date,
+            business_scope,
+            business_scopename,
+            quality_head,
+            certification_scope,
+            tax_registration_code,
+            registered_capital,
+            business_pattern,
+            economic_nature,
+            legal_person,
+
+            CASE has_annual_inspection
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_annual_inspection,
+
+            CASE has_seal
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_seal,
+
+            CASE has_manifest
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_manifest,
+
+            oraganization_code_expire_date,
+            annual_output_value,
+            quality_manager_count,
+            business_approval_user_id,
+            business_approval_user_name,
+
+            CASE business_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as business_approval_status,
+
+            business_approval_time,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_manager_approval_status,
+
+            quality_manager_approval_time,
+            quality_approval_user_id,
+            quality_approval_user_name,
+
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_approval_status,
+
+            quality_approval_time,
+            creater_name,
+            modifier_name,
+            create_date,
+            update_date
+            FROM
+            saas_supplier where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${category_id}">
+                <![CDATA[ and category_id like %${category_id}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                <![CDATA[ and creater_name like %${creater_name}%]]>
+            </if>
+            order by update_date desc
+        </sql>
+
+        <sql id="listsqlpopup" method="select">
+            SELECT
+            id,
+            category_id,
+
+            CASE category_id
+            WHEN '0' THEN
+            '经营单位'
+            WHEN '1' THEN
+            '生产单位'
+            ELSE '其他' END
+            as category_name,
+
+            settlement_id,
+
+            CASE settlement_id
+            WHEN '0' THEN
+            '现金'
+            WHEN '1' THEN
+            '月票'
+            WHEN '2' THEN
+            '支票'
+            ELSE '其他' END
+            as settlement_name,
+
+            area_code,
+            pinyin_code,
+            code,
+            name,
+            address,
+            contact,
+            tel,
+            bank_code,
+            bank_name,
+            bank_account,
+            business_license_code,
+            business_license_date,
+            business_license_expire_date,
+            business_license_approval,
+            license_code,
+            license_date,
+            license_expire_date,
+            license_name,
+            consigner,
+            consign_date,
+            consign_expire_date,
+            quality_license_expire_date,
+            health_license_expire_date,
+            gsp_code,
+            gsp_date,
+            gsp_expire_date,
+            gmp_one_code,
+            gmp_one_date,
+            gmp_one_expire_date,
+            gmp_two_code,
+            gmp_two_date,
+            gmp_two_expire_date,
+            business_scope,
+            business_scopename,
+            quality_head,
+            certification_scope,
+            tax_registration_code,
+            registered_capital,
+            business_pattern,
+            economic_nature,
+            legal_person,
+
+            CASE has_annual_inspection
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_annual_inspection,
+
+            CASE has_seal
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_seal,
+
+            CASE has_manifest
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_manifest,
+
+            oraganization_code_expire_date,
+            annual_output_value,
+            quality_manager_count,
+            business_approval_user_id,
+            business_approval_user_name,
+
+            CASE business_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as business_approval_status,
+
+            business_approval_time,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_manager_approval_status,
+
+            quality_manager_approval_time,
+            quality_approval_user_id,
+            quality_approval_user_name,
+
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_approval_status,
+
+            quality_approval_time,
+            creater_name,
+            modifier_name,
+            create_date,
+            update_date
+            FROM
+            detail_test where 1=1 and su_id=${key}
+            order by update_date desc
+        </sql>
+
+        <sql id="querySql" method="query">
+            select * from saas_supplier where id=${key}
+        </sql>
+        <sql id="linkageSql" method="select">
+            select * from saas_supplier where code=${value}
+        </sql>
+        <sql id="linkageSql1" method="select">
+            select * from saas_supplier where category_id=${value}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_supplier(
+            <if method="isNoEmpty" args="${category_id}">
+                category_id,
+            </if>
+            <if method="isNoEmpty" args="${category_name}">
+                category_name,
+            </if>
+            <if method="isNoEmpty" args="${settlement_id}">
+                settlement_id,
+            </if>
+            <if method="isNoEmpty" args="${settlement_name}">
+                settlement_name,
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                area_code,
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address,
+            </if>
+            <if method="isNoEmpty" args="${contact}">
+                contact,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                bank_code,
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                bank_name,
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                bank_account,
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                business_license_code,
+            </if>
+            <if method="isNoEmpty" args="${business_license_date}">
+                business_license_date,
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                business_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${business_license_approval}">
+                business_license_approval,
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                license_code,
+            </if>
+            <if method="isNoEmpty" args="${license_date}">
+                license_date,
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${license_name}">
+                license_name,
+            </if>
+            <if method="isNoEmpty" args="${consigner}">
+                consigner,
+            </if>
+            <if method="isNoEmpty" args="${consign_date}">
+                consign_date,
+            </if>
+            <if method="isNoEmpty" args="${consign_expire_date}">
+                consign_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${quality_license_expire_date}">
+                quality_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                health_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                gsp_code,
+            </if>
+            <if method="isNoEmpty" args="${gsp_date}">
+                gsp_date,
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                gsp_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_code}">
+                gmp_one_code,
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_date}">
+                gmp_one_date,
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_expire_date}">
+                gmp_one_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_code}">
+                gmp_two_code,
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_date}">
+                gmp_two_date,
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_expire_date}">
+                gmp_two_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                business_scope,
+            </if>
+            <if method="isNoEmpty" args="${business_scopename}">
+                business_scopename,
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                quality_head,
+            </if>
+            <if method="isNoEmpty" args="${certification_scope}">
+                certification_scope,
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                tax_registration_code,
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                registered_capital,
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                business_pattern,
+            </if>
+            <if method="isNoEmpty" args="${economic_nature}">
+                economic_nature,
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                legal_person,
+            </if>
+            <if method="isNoEmpty" args="${has_annual_inspection}">
+                has_annual_inspection,
+            </if>
+            <if method="isNoEmpty" args="${has_seal}">
+                has_seal,
+            </if>
+            <if method="isNoEmpty" args="${has_manifest}">
+                has_manifest,
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                oraganization_code_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${annual_output_value}">
+                annual_output_value,
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_count}">
+                quality_manager_count,
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_id}">
+                business_approval_user_id,
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_name}">
+                business_approval_user_name,
+            </if>
+            <if method="isNoEmpty" args="${business_approval_status}">
+                business_approval_status,
+            </if>
+            <if method="isNoEmpty" args="${business_approval_time}">
+                business_approval_time,
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_id}">
+                quality_manager_approval_user_id,
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_name}">
+                quality_manager_approval_user_name,
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                quality_manager_approval_status,
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_time}">
+                quality_manager_approval_time,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status,
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                quality_approval_time,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id,
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name,
+            </if>
+            create_date,
+            update_date,
+            ) values(
+            <if method="isNoEmpty" args="${category_id}">
+                ${category_id},
+            </if>
+            <if method="isNoEmpty" args="${category_name}">
+                ${category_name},
+            </if>
+            <if method="isNoEmpty" args="${settlement_id}">
+                ${settlement_id},
+            </if>
+            <if method="isNoEmpty" args="${settlement_name}">
+                ${settlement_name},
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                ${area_code},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                ${address},
+            </if>
+            <if method="isNoEmpty" args="${contact}">
+                ${contact},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                ${bank_code},
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                ${bank_name},
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                ${bank_account},
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                ${business_license_code},
+            </if>
+            <if method="isNoEmpty" args="${business_license_date}">
+                ${business_license_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                ${business_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_approval}">
+                ${business_license_approval},
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                ${license_code},
+            </if>
+            <if method="isNoEmpty" args="${license_date}">
+                ${license_date},
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                ${license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${license_name}">
+                ${license_name},
+            </if>
+            <if method="isNoEmpty" args="${consigner}">
+                ${consigner},
+            </if>
+            <if method="isNoEmpty" args="${consign_date}">
+                ${consign_date},
+            </if>
+            <if method="isNoEmpty" args="${consign_expire_date}">
+                ${consign_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${quality_license_expire_date}">
+                ${quality_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                ${health_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                ${gsp_code},
+            </if>
+            <if method="isNoEmpty" args="${gsp_date}">
+                ${gsp_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                ${gsp_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_code}">
+                ${gmp_one_code},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_date}">
+                ${gmp_one_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_expire_date}">
+                ${gmp_one_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_code}">
+                ${gmp_two_code},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_date}">
+                ${gmp_two_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_expire_date}">
+                ${gmp_two_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                ${business_scope},
+            </if>
+            <if method="isNoEmpty" args="${business_scopename}">
+                ${business_scopename},
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                ${quality_head},
+            </if>
+            <if method="isNoEmpty" args="${certification_scope}">
+                ${certification_scope},
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                ${tax_registration_code},
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                ${registered_capital},
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                ${business_pattern},
+            </if>
+            <if method="isNoEmpty" args="${economic_nature}">
+                ${economic_nature},
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                ${legal_person},
+            </if>
+            <if method="isNoEmpty" args="${has_annual_inspection}">
+                ${has_annual_inspection},
+            </if>
+            <if method="isNoEmpty" args="${has_seal}">
+                ${has_seal},
+            </if>
+            <if method="isNoEmpty" args="${has_manifest}">
+                ${has_manifest},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                ${oraganization_code_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${annual_output_value}">
+                ${annual_output_value},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_count}">
+                ${quality_manager_count},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_id}">
+                ${business_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_name}">
+                ${business_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_status}">
+                ${business_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_time}">
+                ${business_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_id}">
+                ${quality_manager_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_name}">
+                ${quality_manager_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                ${quality_manager_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_time}">
+                ${quality_manager_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                ${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                ${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                ${quality_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                ${quality_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                ${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                ${modifier_name},
+            </if>
+            now(),
+            now(),
+            )
+        </sql>
+
+        <sql id="insertDetailSql" method="insert">
+            insert into detail_test(
+            <if method="isNoEmpty" args="${keyProperty}">
+                su_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.category_id}">
+                category_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.category_name}">
+                category_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.settlement_id}">
+                settlement_id,
+            </if>
+            <if method="isNoEmpty" args="${test8.settlement_name}">
+                settlement_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.area_code}">
+                area_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${test8.name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${test8.address}">
+                address,
+            </if>
+            <if method="isNoEmpty" args="${test8.contact}">
+                contact,
+            </if>
+            <if method="isNoEmpty" args="${test8.tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_code}">
+                bank_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_name}">
+                bank_name,
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_account}">
+                bank_account,
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_code}">
+                business_license_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_date}">
+                business_license_date,
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_expire_date}">
+                business_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_approval}">
+                business_license_approval,
+            </if>
+            <if method="isNoEmpty" args="${test8.license_code}">
+                license_code,
+            </if>
+            <if method="isNoEmpty" args="${test8.license_date}">
+                license_date,
+            </if>
+            <if method="isNoEmpty" args="${test8.license_expire_date}">
+                license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${test8.license_name}">
+                license_name,
+            </if>
+
+            ) values(
+            <if method="isNoEmpty" args="${keyProperty}">
+                ${keyProperty},
+            </if>
+            <if method="isNoEmpty" args="${test8.category_id}">
+                ${test8.category_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.category_name}">
+                ${test8.category_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.settlement_id}">
+                ${test8.settlement_id},
+            </if>
+            <if method="isNoEmpty" args="${test8.settlement_name}">
+                ${test8.settlement_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.area_code}">
+                ${test8.area_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.pinyin_code}">
+                ${test8.pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.code}">
+                ${test8.code},
+            </if>
+            <if method="isNoEmpty" args="${test8.name}">
+                ${test8.name},
+            </if>
+            <if method="isNoEmpty" args="${test8.address}">
+                ${test8.address},
+            </if>
+            <if method="isNoEmpty" args="${test8.contact}">
+                ${test8.contact},
+            </if>
+            <if method="isNoEmpty" args="${test8.tel}">
+                ${test8.tel},
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_code}">
+                ${test8.bank_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_name}">
+                ${test8.bank_name},
+            </if>
+            <if method="isNoEmpty" args="${test8.bank_account}">
+                ${test8.bank_account},
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_code}">
+                ${test8.business_license_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_date}">
+                ${test8.business_license_date},
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_expire_date}">
+                ${test8.business_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${test8.business_license_approval}">
+                ${test8.business_license_approval},
+            </if>
+            <if method="isNoEmpty" args="${test8.license_code}">
+                ${test8.license_code},
+            </if>
+            <if method="isNoEmpty" args="${test8.license_date}">
+                ${test8.license_date},
+            </if>
+            <if method="isNoEmpty" args="${test8.license_expire_date}">
+                ${test8.license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${test8.license_name}">
+                ${test8.license_name},
+            </if>
+
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_supplier set
+            <if method="isNoEmpty" args="${category_id}">
+                category_id=${category_id},
+            </if>
+            <if method="isNoEmpty" args="${category_name}">
+                category_name=${category_name},
+            </if>
+            <if method="isNoEmpty" args="${settlement_id}">
+                settlement_id=${settlement_id},
+            </if>
+            <if method="isNoEmpty" args="${settlement_name}">
+                settlement_name=${settlement_name},
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                area_code=${area_code},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code=${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code=${code},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address=${address},
+            </if>
+            <if method="isNoEmpty" args="${contact}">
+                contact=${contact},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                bank_code=${bank_code},
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                bank_name=${bank_name},
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                bank_account=${bank_account},
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                business_license_code=${business_license_code},
+            </if>
+            <if method="isNoEmpty" args="${business_license_date}">
+                business_license_date=${business_license_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                business_license_expire_date=${business_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_approval}">
+                business_license_approval=${business_license_approval},
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                license_code=${license_code},
+            </if>
+            <if method="isNoEmpty" args="${license_date}">
+                license_date=${license_date},
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                license_expire_date=${license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${license_name}">
+                license_name=${license_name},
+            </if>
+            <if method="isNoEmpty" args="${consigner}">
+                consigner=${consigner},
+            </if>
+            <if method="isNoEmpty" args="${consign_date}">
+                consign_date=${consign_date},
+            </if>
+            <if method="isNoEmpty" args="${consign_expire_date}">
+                consign_expire_date=${consign_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${quality_license_expire_date}">
+                quality_license_expire_date=${quality_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                health_license_expire_date=${health_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                gsp_code=${gsp_code},
+            </if>
+            <if method="isNoEmpty" args="${gsp_date}">
+                gsp_date=${gsp_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                gsp_expire_date=${gsp_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_code}">
+                gmp_one_code=${gmp_one_code},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_date}">
+                gmp_one_date=${gmp_one_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_one_expire_date}">
+                gmp_one_expire_date=${gmp_one_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_code}">
+                gmp_two_code=${gmp_two_code},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_date}">
+                gmp_two_date=${gmp_two_date},
+            </if>
+            <if method="isNoEmpty" args="${gmp_two_expire_date}">
+                gmp_two_expire_date=${gmp_two_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                business_scope=${business_scope},
+            </if>
+            <if method="isNoEmpty" args="${business_scopename}">
+                business_scopename=${business_scopename},
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                quality_head=${quality_head},
+            </if>
+            <if method="isNoEmpty" args="${certification_scope}">
+                certification_scope=${certification_scope},
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                tax_registration_code=${tax_registration_code},
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                registered_capital=${registered_capital},
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                business_pattern=${business_pattern},
+            </if>
+            <if method="isNoEmpty" args="${economic_nature}">
+                economic_nature=${economic_nature},
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                legal_person=${legal_person},
+            </if>
+            <if method="isNoEmpty" args="${has_annual_inspection}">
+                has_annual_inspection=${has_annual_inspection},
+            </if>
+            <if method="isNoEmpty" args="${has_seal}">
+                has_seal=${has_seal},
+            </if>
+            <if method="isNoEmpty" args="${has_manifest}">
+                has_manifest=${has_manifest},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                oraganization_code_expire_date=${oraganization_code_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${annual_output_value}">
+                annual_output_value=${annual_output_value},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_count}">
+                quality_manager_count=${quality_manager_count},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_id}">
+                business_approval_user_id=${business_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_user_name}">
+                business_approval_user_name=${business_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_status}">
+                business_approval_status=${business_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${business_approval_time}">
+                business_approval_time=${business_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_id}">
+                quality_manager_approval_user_id=${quality_manager_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_user_name}">
+                quality_manager_approval_user_name=${quality_manager_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_status}">
+                quality_manager_approval_status=${quality_manager_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_manager_approval_time}">
+                quality_manager_approval_time=${quality_manager_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_id}">
+                quality_approval_user_id=${quality_approval_user_id},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_user_name}">
+                quality_approval_user_name=${quality_approval_user_name},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_status}">
+                quality_approval_status=${quality_approval_status},
+            </if>
+            <if method="isNoEmpty" args="${quality_approval_time}">
+                quality_approval_time=${quality_approval_time},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id=${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name=${modifier_name},
+            </if>
+            update_date=now(),
+            where id=${key}
+        </sql>
+        <sql id="deleteSql" method="delete">
+            <!--delete from  saas_supplier where -->
+            update saas_supplier set delete_state = '1' where
+
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id= ${id}]]>
+            </if>
+        </sql>
+        <sql id="dynamicDeleteSql" method="delete">
+            delete from KKMY_CHANNELS where
+
+            <if method="isNoEmpty" args="${channels_id}">
+                <![CDATA[channels_id= ${channels_id}]]>
+            </if>
+        </sql>
+        <sql id="dynamicDeleteSqlAddr" method="delete">
+            delete from KKMY_CHANNELS_ACCOUNT where
+
+            <if method="isNoEmpty" args="${channels_id}">
+                <![CDATA[channels_id= ${channels_id}]]>
+            </if>
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" isPage="true">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+
+            <clumn name="category_name" sortable="false" title="类别名称" sort="desc"/>
+            <clumn name="settlement_name" sortable="true" title="结算名称"/>
+            <clumn name="area_code" sortable="false" title="区号"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="name" sortable="true" title="供方名称"/>
+            <clumn name="code" sortable="false" title="供方编码"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="contact" sortable="false" title="联系人"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="bank_code" sortable="false" title="开户行代码"/>
+            <clumn name="bank_name" sortable="false" title="开户行名称"/>
+            <clumn name="bank_account" sortable="false" title="开户行账号"/>
+            <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+            <clumn name="business_license_date" sortable="false" title="营业执照发证日期"/>
+            <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期"/>
+            <clumn name="business_license_approval" sortable="false" title="营业执照审批方"/>
+            <clumn name="license_code" sortable="false" title="许可证号"/>
+            <clumn name="license_date" sortable="false" title="许可证发证日期"/>
+            <clumn name="license_expire_date" sortable="false" title="许可证过期日期"/>
+            <clumn name="license_name" sortable="false" title="许可证名称"/>
+            <clumn name="consigner" sortable="false" title="委托人"/>
+            <clumn name="consign_date" sortable="false" title="委托日期"/>
+            <clumn name="consign_expire_date" sortable="false" title="委托过期日期"/>
+            <clumn name="quality_license_expire_date" sortable="false" title="质保到期日期"/>
+            <clumn name="health_license_expire_date" sortable="false" title="卫生许可到期日期"/>
+            <clumn name="gsp_code" sortable="false" title="GSP证书号"/>
+            <clumn name="gsp_date" sortable="false" title="GSP发证日期"/>
+            <clumn name="gsp_expire_date" sortable="false" title="GSP过期日期"/>
+            <clumn name="gmp_one_code" sortable="false" title="GMP证书编号"/>
+            <clumn name="gmp_one_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_one_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="gmp_two_code" sortable="false" title="GMP证书编号"/>
+            <clumn name="gmp_two_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_two_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="business_scopename" sortable="false" title="经营范围"/>
+            <clumn name="quality_head" sortable="false" title="质量负责人"/>
+            <clumn name="certification_scope" sortable="false" title="认证范围"/>
+            <clumn name="tax_registration_code" sortable="false" title="税务登记证号"/>
+            <clumn name="registered_capital" sortable="false" title="注册资金"/>
+            <clumn name="business_pattern" sortable="false" title="经营方式"/>
+            <clumn name="economic_nature" sortable="false" title="经济性质"/>
+            <clumn name="legal_person" sortable="false" title="法人"/>
+            <clumn name="has_annual_inspection" sortable="false" title="是否年检"/>
+            <clumn name="has_seal" sortable="false" title="是否有印章印模"/>
+            <clumn name="has_manifest" sortable="false" title="是否有货单"/>
+            <clumn name="oraganization_code_expire_date" sortable="false" title="组织代码过期日期"/>
+            <clumn name="annual_output_value" sortable="false" title="年产值"/>
+            <clumn name="quality_manager_count" sortable="false" title="质管人数"/>
+            <clumn name="business_approval_user_id" sortable="false" title="业务审核用户ID"/>
+            <clumn name="business_approval_user_name" sortable="false" title="业务审核用户名称"/>
+            <clumn name="business_approval_status" sortable="false" title="业务审核状态"/>
+            <clumn name="business_approval_time" sortable="false" title="业务审核时间"/>
+            <clumn name="quality_manager_approval_user_id" sortable="false" title="质管审核用户ID"/>
+            <clumn name="quality_manager_approval_user_name" sortable="false" title="质管审核用户名称"/>
+            <clumn name="quality_manager_approval_status" sortable="false" title="质管审核状态"/>
+            <clumn name="quality_manager_approval_time" sortable="false" title="质管审核时间"/>
+            <clumn name="quality_approval_user_id" sortable="false" title="质量审核用户ID"/>
+            <clumn name="quality_approval_user_name" sortable="false" title="质量审核用户名称"/>
+            <clumn name="quality_approval_status" sortable="false" title="质量审核状态"/>
+            <clumn name="quality_approval_time" sortable="false" title="质量审核时间"/>
+            <clumn name="creater_name" sortable="false" title="创建人"/>
+            <clumn name="modifier_name" sortable="false" title="修改人"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+            <clumn name="update_date" sortable="false" title="修改时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="创建人" name="creater_name"/>
+            <condition input="select" title="类别" name="category_id" popuplinkage="301" popuptitle="类别选择" width="1000">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'category_id'
+                </sql>
+            </condition>
+            <condition input="datetime" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <operate>
+
+        <button id="test9" title="添加" icon="icon-add" channel="query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <process>
+                <step channel="service" ref="saasSupplierService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+                <!--<step channel="sql" ref="insertAddrSql" />-->
+                <step channel="service" ref="saasSupplierService" method="setReviewedDataAfterSave"/>
+            </process>
+            <conditions>
+                <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+                <condition input="select" title="类别名称" name="category_id" popuplinkage="301" popuptitle="类别选择"
+                           width="1000">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'category_id'
+                    </sql>
+                </condition>
+                <!--<condition name="settlement_id" input="text" size="20" title="结算ID" />-->
+                <condition name="settlement_id" input="select" required="true" title="结算名称">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+
+                <condition name="area_code" input="text" size="20" validate="number" title="区号" defaultvalue="010"/>
+                <!--<condition name="pinyin_code" input="text" size="20" title="拼音码" />-->
+                <condition name="name" input="text" size="50" title="供方名称" required="true" repeat="false"
+                           table="saas_supplier" hiddenid="id" popuplinkage="301" popuptitle="供方选择" width="1000"
+                           passvalue="fasle"/>
+                <condition name="code" input="text" size="5" validate="zipcode" required="true" title="供方编码"/>
+                <condition name="pinyin_code" input="text" validate="english" title="拼音码"/>
+                <condition name="address" input="text" validate="url" title="地址"/>
+                <condition name="contact" input="text" size="50" validate="email" title="联系人"/>
+                <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+                <condition name="bank_code" input="text" size="20" title="开户行代码" validate="defined"
+                           defined="/[^\_a-zA-Z0-9]/g" definedtitle="请输入字母和数字"/>
+                <condition name="bank_name" input="text" validate="chinese" size="50" title="开户行名称"/>
+                <!--<condition name="bank_account" input="text" size="50" title="开户行账号" />-->
+                <condition name="business_license_code" input="text" validate="number" size="50" title="营业执照号"/>
+                <condition name="business_license_date" input="date" required="true" title="营业执照发证日期"/>
+                <condition name="business_license_expire_date" input="date" title="营业执照过期日期"/>
+                <condition name="business_license_approval" input="text" size="50" title="营业执照审批方"/>
+                <condition name="license_code" input="text" validate="account" size="50" title="许可证号"/>
+                <condition name="license_date" input="date" title="许可证发证日期"/>
+                <condition name="license_expire_date" input="date" title="许可证过期日期"/>
+                <condition name="license_name" input="text" size="50" title="许可证名称"/>
+                <condition name="consigner" input="text" size="20" validate="english" title="委托人"/>
+                <condition name="consign_date" input="date" title="委托日期"/>
+                <condition name="consign_expire_date" input="date" title="委托过期日期"/>
+                <condition name="quality_license_expire_date" input="date" title="质保到期日期"/>
+                <condition name="health_license_expire_date" input="date" title="卫生许可到期日期"/>
+                <condition name="gsp_code" input="text" size="50" title="GSP证书号"/>
+                <condition name="gsp_date" input="date" title="GSP发证日期"/>
+                <condition name="gsp_expire_date" input="date" title="GSP过期日期"/>
+                <condition name="gmp_one_code" input="text" size="50"
+                           validateprocess="commonSearchService2.validateProcess" title="GMP证书编号"/>
+                <condition name="gmp_one_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_one_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="gmp_two_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_two_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_two_expire_date" input="date" title="GMP过期日期"/>
+
+                <condition name="business_scopename" input="text" title="经营范围" hiddenid="business_scope"
+                           popupselect="300" popuptitle="经营范围选择" width="800"/>
+
+                <condition name="quality_head" input="text" size="20" title="质量负责人"/>
+                <condition name="certification_scope" input="text" title="认证范围"/>
+                <condition name="tax_registration_code" input="text" size="50" title="税务登记证号"/>
+                <condition name="registered_capital" input="text" size="20" title="注册资金"/>
+                <condition name="business_pattern" input="text" size="50" title="经营方式"/>
+                <condition name="economic_nature" input="text" size="50" title="经济性质"/>
+                <condition name="legal_person" input="text" size="50" title="法人"/>
+
+                <condition name="has_annual_inspection" input="select" title="是否年检">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_seal" input="select" title="是否有印章印模">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_manifest" input="select" title="是否有货单">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+
+                <condition name="oraganization_code_expire_date" input="date" title="组织代码过期日期"/>
+                <condition name="annual_output_value" input="text" size="20" title="年产值"/>
+                <condition name="quality_manager_count" input="text" size="11" title="质管人数"/>
+            </conditions>
+            <querys>
+                <query id="test88" channel="popupselect_addrow_removerow" popupselect="301" popuptitle="经营范围选择"
+                       isPage="false" width="800" pagesize="50">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listsqlpopup"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+
+                        <clumn name="category_id" sortable="false" title="类别名称" sort="desc" editor="true"
+                               required="true" editortype="combobox">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'category_id'
+                            </sql>
+                            <event mode="cursor_enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle"/>
+                        </clumn>
+                        <clumn name="settlement_id" sortable="true" editor="true" required="true" editortype="combobox"
+                               title="结算名称">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'settlement_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="area_code" sortable="false" editor="true" required="true" editortype="numberbox"
+                               title="区号"/>
+                        <clumn name="pinyin_code" sortable="false" title="拼音码" editor="true" required="true"/>
+                        <clumn name="name" sortable="true" title="供方名称" editor="true" required="true"
+                               editortype="validatebox">
+                            <event mode="cursor_enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle"/>
+                        </clumn>
+                        <clumn name="code" sortable="false" title="供方编码"/>
+                        <clumn name="address" sortable="false" title="地址"/>
+                        <clumn name="contact" sortable="false" title="联系人"/>
+                        <clumn name="tel" sortable="false" title="联系电话"/>
+                        <clumn name="bank_code" sortable="false" title="开户行代码"/>
+                        <clumn name="bank_name" sortable="false" title="开户行名称"/>
+                        <clumn name="bank_account" sortable="false" title="开户行账号"/>
+                        <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+                        <clumn name="business_license_date" sortable="false" title="营业执照发证日期" editor="true"
+                               required="true" editortype="datebox"/>
+                        <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期" editor="true"
+                               required="true" editortype="datebox"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+        <button id="test2" title="修改" icon="icon-edit" channel="query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <process>
+                <step channel="service" ref="saasSupplierService" method="modiReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+                <!--<step channel="sql" ref="updateAddrSql" />-->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_supplier</table>
+            <conditions>
+                <condition input="select" title="类别名称" name="category_id" popuplinkage="301" popuptitle="类别选择"
+                           width="1000">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'category_id'
+                    </sql>
+                </condition>
+                <!--<condition name="settlement_id" input="text" size="20" title="结算ID" />-->
+                <condition name="settlement_id" input="select" title="结算名称">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+
+                <condition name="area_code" input="text" size="20" validate="number" title="区号" defaultvalue="010"
+                           readonly="true"/>
+                <!--<condition name="pinyin_code" input="text" size="20" title="拼音码" />-->
+                <condition name="name" input="text" size="50" title="名称" required="true" repeat="false"
+                           table="saas_supplier" defaultvalue="" hiddenid="id" popuplinkage="301" popuptitle="供方选择"
+                           width="1000" passvalue="fasle"/>
+                <condition name="code" input="text" size="20" title="供方编码"/>
+                <condition name="address" input="text" size="200" title="地址"/>
+                <condition name="contact" input="text" size="50" title="联系人"/>
+                <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+                <condition name="bank_code" input="text" size="20" title="开户行代码"/>
+                <condition name="bank_name" input="text" size="50" title="开户行名称"/>
+                <condition name="bank_account" input="text" size="50" validate="number" title="开户行账号"/>
+                <condition name="business_license_code" input="text" size="50" title="营业执照号"/>
+                <condition name="business_license_date" input="date" title="营业执照发证日期"/>
+                <condition name="business_license_expire_date" input="date" title="营业执照过期日期"/>
+                <condition name="business_license_approval" input="text" size="50" title="营业执照审批方"/>
+                <condition name="license_code" input="text" size="50" title="许可证号"/>
+                <condition name="license_date" input="date" title="许可证发证日期"/>
+                <condition name="license_expire_date" input="date" title="许可证过期日期"/>
+                <condition name="license_name" input="text" size="50" title="许可证名称"/>
+                <condition name="consigner" input="text" size="20" title="委托人"/>
+                <condition name="consign_date" input="date" title="委托日期"/>
+                <condition name="consign_expire_date" input="date" title="委托过期日期"/>
+                <condition name="quality_license_expire_date" input="date" title="质保到期日期"/>
+                <condition name="health_license_expire_date" input="date" title="卫生许可到期日期"/>
+                <condition name="gsp_code" input="text" size="50" title="GSP证书号"/>
+                <condition name="gsp_date" input="date" title="GSP发证日期"/>
+                <condition name="gsp_expire_date" input="date" title="GSP过期日期"/>
+                <condition name="gmp_one_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_one_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_one_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="gmp_two_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_two_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_two_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="business_scopename" input="text" title="经营范围" hiddenid="business_scope"
+                           popupselect="300" popuptitle="经营范围选择" width="800"/>
+                <condition name="quality_head" input="text" size="20" title="质量负责人"/>
+                <condition name="certification_scope" input="text" title="认证范围"/>
+                <condition name="tax_registration_code" input="text" size="50" title="税务登记证号"/>
+                <condition name="registered_capital" input="text" size="20" title="注册资金"/>
+                <condition name="business_pattern" input="text" size="50" title="经营方式"/>
+                <condition name="economic_nature" input="text" size="50" title="经济性质"/>
+                <condition name="legal_person" input="text" size="50" title="法人"/>
+                <condition name="has_annual_inspection" input="select" title="是否年检">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_seal" input="select" title="是否有印章印模">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_manifest" input="select" title="是否有货单">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+
+                <condition name="oraganization_code_expire_date" input="date" title="组织代码过期日期"/>
+                <condition name="annual_output_value" input="text" size="20" title="年产值"/>
+                <condition name="quality_manager_count" input="text" size="11" title="质管人数"/>
+            </conditions>
+        </button>
+        <button id="test3" title="删除" icon="icon-remove" channel="execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>id</key>
+            <condition name="id"/>
+        </button>
+    </operate>
+
+    <buttons>
+        <button id="test1" title="自定义添加" icon="icon-add" channel="query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <process>
+                <step channel="service" ref="saasSupplierService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="batchSql" ref="insertDetailSql" collection="test8" item="test8"/>
+                <!--<step channel="sql" ref="insertAddrSql" />-->
+                <step channel="service" ref="saasSupplierService" method="setReviewedDataAfterSave"/>
+            </process>
+            <conditions>
+                <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+                <condition input="select" title="类别名称" name="category_id" popuplinkage="301" popuptitle="类别选择"
+                           width="1000">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'category_id'
+                    </sql>
+                </condition>
+                <!--<condition name="settlement_id" input="text" size="20" title="结算ID" />-->
+                <condition name="settlement_id" input="select" required="true" title="结算名称">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+
+                <condition name="area_code" input="text" size="20" validate="number" title="区号" defaultvalue="010"/>
+                <!--<condition name="pinyin_code" input="text" size="20" title="拼音码" />-->
+                <condition name="name" input="text" size="50" title="供方名称" required="true" repeat="false"
+                           table="saas_supplier" hiddenid="id" popuplinkage="301" popuptitle="供方选择" width="1000"
+                           passvalue="false"/>
+                <condition name="code" input="text" size="5" validate="zipcode" required="true" title="供方编码">
+                    <event mode="cursor_enter_dbclick" hiddenid="id"
+                           popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle"/>
+                </condition>
+                <condition name="pinyin_code" input="text" validate="english" title="拼音码"/>
+                <condition name="address" input="text" validate="url" title="地址"/>
+                <condition name="contact" input="text" size="50" validate="email" title="联系人"/>
+                <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+                <condition name="bank_code" input="text" size="20" title="开户行代码" validate="defined"
+                           defined="/[^\_a-zA-Z0-9]/g" definedtitle="请输入字母和数字"/>
+                <condition name="bank_name" input="text" validate="chinese" size="50" title="开户行名称"/>
+                <condition name="bank_account" input="text" size="50" title="开户行账号"/>
+                <condition name="business_license_code" input="text" validate="number" size="50" title="营业执照号"/>
+                <condition name="business_license_date" input="date" required="true" title="营业执照发证日期"/>
+                <condition name="business_license_expire_date" input="date" title="营业执照过期日期"/>
+                <condition name="business_license_approval" input="text" size="50" title="营业执照审批方"/>
+                <condition name="license_code" input="text" validate="account" size="50" title="许可证号"/>
+                <condition name="license_date" input="date" title="许可证发证日期"/>
+                <condition name="license_expire_date" input="date" title="许可证过期日期"/>
+                <condition name="license_name" input="text" size="50" title="许可证名称"/>
+                <condition name="consigner" input="text" size="20" validate="english" title="委托人"/>
+                <condition name="consign_date" input="date" title="委托日期"/>
+                <condition name="consign_expire_date" input="date" title="委托过期日期"/>
+                <condition name="quality_license_expire_date" input="date" title="质保到期日期"/>
+                <condition name="health_license_expire_date" input="date" title="卫生许可到期日期"/>
+                <condition name="gsp_code" input="text" size="50" title="GSP证书号"/>
+                <condition name="gsp_date" input="date" title="GSP发证日期"/>
+                <condition name="gsp_expire_date" input="date" title="GSP过期日期"/>
+                <condition name="gmp_one_code" input="text" size="50"
+                           validateprocess="commonSearchService2.validateProcess" title="GMP证书编号"/>
+                <condition name="gmp_one_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_one_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="gmp_two_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_two_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_two_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="quality_head" input="text" size="20" title="质量负责人"/>
+                <condition name="certification_scope" input="text" title="认证范围"/>
+                <condition name="tax_registration_code" input="text" size="50" title="税务登记证号"/>
+                <condition name="registered_capital" input="text" size="20" title="注册资金"/>
+                <condition name="business_pattern" input="text" size="50" title="经营方式"/>
+                <condition name="economic_nature" input="text" size="50" title="经济性质"/>
+                <condition name="legal_person" input="text" size="50" title="法人"/>
+
+                <condition name="has_annual_inspection" input="select" title="是否年检">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_seal" input="select" title="是否有印章印模">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_manifest" input="select" title="是否有货单">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+
+                <condition name="oraganization_code_expire_date" input="date" title="组织代码过期日期"/>
+                <condition name="annual_output_value" input="text" size="20" title="年产值"/>
+                <condition name="quality_manager_count" input="text" size="11" title="质管人数"/>
+                <condition name="business_scopename1" input="checkbox" hiddenid="business_scope" title="经营范围">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+                <!--<condition name="business_scopename" input="textarea" title="经营范围" hiddenid="business_scope" popupselect="300" popuptitle="经营范围选择" width="800"/>
+                <condition name="business_approval_user_id" input="text" size="20" title="业务审核用户ID" />
+                <condition name="update_date " input="date" title="更新时间" />-->
+            </conditions>
+
+            <querys>
+                <query id="test8" key="id" channel="popupselect_addrow_removerow" pagesize="50" popupselect="301"
+                       popuptitle="经营范围选择" width="800" isPage="false">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listsqlpopup"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="category_id" sortable="false" title="类别名称" sort="desc" editor="true"
+                               required="true" editortype="combobox">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'category_id'
+                            </sql>
+                            <event mode="cursor_enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle"/>
+                        </clumn>
+                        <clumn name="settlement_id" sortable="true" editor="true" required="true" readonly="true"
+                               editortype="combobox" title="结算名称">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'settlement_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="area_code" sortable="false" editor="true" required="true" editortype="numberbox"
+                               validate="zipcode" title="区号"/>
+                        <clumn name="pinyin_code" sortable="false" title="拼音码" editor="true" editortype="numberbox"
+                               validateprocess="commonSearchService2.validateProcess" required="true"/>
+                        <clumn name="name" sortable="true" title="供方名称" editor="true" required="true"
+                               editortype="validatebox">
+                            <event mode="cursor_enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="true"/>
+                        </clumn>
+                        <clumn name="code" sortable="false" title="供方编码"/>
+                        <clumn name="address" sortable="false" title="地址"/>
+                        <clumn name="contact" sortable="false" title="联系人"/>
+                        <clumn name="tel" sortable="false" title="联系电话"/>
+                        <clumn name="bank_code" sortable="false" title="开户行代码"/>
+                        <clumn name="bank_name" sortable="false" title="开户行名称"/>
+                        <clumn name="bank_account" sortable="false" title="开户行账号"/>
+                        <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+                        <clumn name="business_license_date" sortable="false" title="营业执照发证日期" editor="true"
+                               required="true" editortype="datebox"/>
+                        <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期" editor="true"
+                               required="true" editortype="datebox"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+
+        <button id="test2" title="自定义修改" icon="icon-edit" channel="select_query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <process>
+                <step channel="service" ref="saasSupplierService" method="modiReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+                <!--<step channel="sql" ref="updateAddrSql" />-->
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>saas_supplier</table>
+            <conditions>
+                <condition input="select" title="类别名称" name="category_id" popuplinkage="301" popuptitle="类别选择"
+                           width="1000">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'category_id'
+                    </sql>
+                </condition>
+                <!--<condition name="settlement_id" input="text" size="20" title="结算ID" />-->
+                <condition name="settlement_id" input="select" title="结算名称">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+
+                <condition name="area_code" input="text" size="20" validate="number" title="区号" defaultvalue="010"
+                           readonly="true"/>
+                <!--<condition name="pinyin_code" input="text" size="20" title="拼音码" />-->
+                <condition name="name" input="text" size="50" title="名称" required="true" repeat="false"
+                           table="saas_supplier" defaultvalue="" hiddenid="id" popuplinkage="301" popuptitle="供方选择"
+                           width="1000"/>
+                <condition name="code" input="text" size="20" title="供方编码"/>
+                <condition name="pinyin_code" input="text" validate="english" title="拼音码"/>
+                <condition name="address" input="text" size="200" title="地址"/>
+                <condition name="contact" input="text" size="50" title="联系人"/>
+                <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+                <condition name="bank_code" input="text" size="20" title="开户行代码"/>
+                <condition name="bank_name" input="text" size="50" title="开户行名称"/>
+                <condition name="bank_account" input="text" size="50" validate="number" title="开户行账号"/>
+                <condition name="business_license_code" input="text" size="50" title="营业执照号"/>
+                <condition name="business_license_date" input="date" title="营业执照发证日期"/>
+                <condition name="business_license_expire_date" input="date" title="营业执照过期日期"/>
+                <condition name="business_license_approval" input="text" size="50" title="营业执照审批方"/>
+                <condition name="license_code" input="text" size="50" title="许可证号"/>
+                <condition name="license_date" input="date" title="许可证发证日期"/>
+                <condition name="license_expire_date" input="date" title="许可证过期日期"/>
+                <condition name="license_name" input="text" size="50" title="许可证名称"/>
+                <condition name="consigner" input="text" size="20" title="委托人"/>
+                <condition name="consign_date" input="date" title="委托日期"/>
+                <condition name="consign_expire_date" input="date" title="委托过期日期"/>
+                <condition name="quality_license_expire_date" input="date" title="质保到期日期"/>
+                <condition name="health_license_expire_date" input="date" title="卫生许可到期日期"/>
+                <condition name="gsp_code" input="text" size="50" title="GSP证书号"/>
+                <condition name="gsp_date" input="date" title="GSP发证日期"/>
+                <condition name="gsp_expire_date" input="date" title="GSP过期日期"/>
+                <condition name="gmp_one_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_one_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_one_expire_date" input="date" title="GMP过期日期"/>
+                <condition name="gmp_two_code" input="text" size="50" title="GMP证书编号"/>
+                <condition name="gmp_two_date" input="date" title="GMP发证日期"/>
+                <condition name="gmp_two_expire_date" input="date" title="GMP过期日期"/>
+
+                <condition name="quality_head" input="text" size="20" title="质量负责人"/>
+                <condition name="certification_scope" input="text" title="认证范围"/>
+                <condition name="tax_registration_code" input="text" size="50" title="税务登记证号"/>
+                <condition name="registered_capital" input="text" size="20" title="注册资金"/>
+                <condition name="business_pattern" input="text" size="50" title="经营方式"/>
+                <condition name="economic_nature" input="text" size="50" title="经济性质"/>
+                <condition name="legal_person" input="text" size="50" title="法人"/>
+
+                <condition name="has_annual_inspection" input="select" title="是否年检">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_seal" input="select" title="是否有印章印模">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="has_manifest" input="select" title="是否有货单">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'has_seal'
+                    </sql>
+                </condition>
+
+                <condition name="oraganization_code_expire_date" input="date" title="组织代码过期日期"/>
+                <condition name="annual_output_value" input="text" size="20" title="年产值"/>
+                <condition name="quality_manager_count" input="text" size="11" title="质管人数"/>
+                <condition name="business_scopename1" input="checkbox" hiddenid="business_scope" title="经营范围">
+                    <sql>
+                        select a.value id,a.name text
+                        from saas_dictionary a where a.code = 'settlement_id'
+                    </sql>
+                </condition>
+                <!--<condition name="business_scopename" input="textarea" title="经营范围" hiddenid="business_scope" popupselect="300" popuptitle="经营范围选择" width="800"/>-->
+            </conditions>
+            <querys>
+                <query id="test89" key="id" channel="popupselect_addrow_removerow" pagesize="50" popupselect="301"
+                       popuptitle="经营范围选择" width="800" isPage="false">
+                    <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+                    <process>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                        <step channel="sql" ref="listsqlpopup"/>
+                        <step channel="service" ref="commonSearchService2" method="test"/>
+                    </process>
+                    <model>
+                        <clumn name="category_id" sortable="false" title="类别名称" sort="desc" editor="true"
+                               required="true" editortype="combobox" hiddenid="id" popuplinkage="301" popuptitle="供方选择"
+                               width="100" passvalue="fasle">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'category_id'
+                            </sql>
+                            <event mode="cursor_enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="fasle"/>
+                        </clumn>
+                        <clumn name="settlement_id" sortable="true" editor="true" required="true" readonly="true"
+                               editortype="combobox" title="结算名称">
+                            <sql>
+                                select a.value id,a.name text
+                                from saas_dictionary a where a.code = 'settlement_id'
+                            </sql>
+                        </clumn>
+                        <clumn name="area_code" sortable="false" editor="true" required="true" editortype="numberbox"
+                               validate="zipcode" title="区号"/>
+                        <clumn name="pinyin_code" sortable="false" title="拼音码" editor="true" editortype="numberbox"
+                               validateprocess="commonSearchService2.validateProcess" required="true"/>
+                        <clumn name="name" sortable="true" title="供方名称" editor="true" required="true"
+                               editortype="validatebox">
+                            <event mode="enter_dbclick" hiddenid="id"
+                                   popuplinkage="301" popuptitle="供方选择" width="1000" passvalue="true"/>
+                        </clumn>
+                        <clumn name="code" sortable="false" title="供方编码"/>
+                        <clumn name="address" sortable="false" title="地址"/>
+                        <clumn name="contact" sortable="false" title="联系人"/>
+                        <clumn name="tel" sortable="false" title="联系电话"/>
+                        <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+                        <clumn name="business_license_date" sortable="false" title="营业执照发证日期" editor="true"
+                               required="true" editortype="datebox"/>
+                        <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期" editor="true"
+                               required="true" editortype="datebox"/>
+                    </model>
+                </query>
+            </querys>
+        </button>
+        <button id="test3" title="自定义删除" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>id</key>
+            <condition name="id"/>
+        </button>
+    </buttons>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+    <update width="1200">
+        <preprocess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </preprocess>
+        <process>
+            <step channel="service" ref="saasSupplierService" method="modiReviewedData"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_supplier</table>
+        <conditions>
+            <condition input="select" title="类别名称" name="category_id" popuplinkage="301" popuptitle="类别选择" width="1000">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'category_id'
+                </sql>
+            </condition>
+            <!--<condition name="settlement_id" input="text" size="20" title="结算ID" />-->
+            <condition name="settlement_id" input="select" title="结算名称">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'settlement_id'
+                </sql>
+            </condition>
+
+            <condition name="area_code" input="text" size="20" validate="number" title="区号" defaultvalue="010"
+                       readonly="true"/>
+            <!--<condition name="pinyin_code" input="text" size="20" title="拼音码" />-->
+            <condition name="name" input="text" size="50" title="名称" required="true" repeat="false"
+                       table="saas_supplier" defaultvalue="" hiddenid="id" popuplinkage="301" popuptitle="供方选择"
+                       width="1000"/>
+            <condition name="code" input="text" size="20" title="供方编码"/>
+            <condition name="address" input="text" size="200" title="地址"/>
+            <condition name="contact" input="text" size="50" title="联系人"/>
+            <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+            <condition name="bank_code" input="text" size="20" title="开户行代码"/>
+            <condition name="bank_name" input="text" size="50" title="开户行名称"/>
+            <condition name="bank_account" input="text" size="50" validate="number" title="开户行账号"/>
+            <condition name="business_license_code" input="text" size="50" title="营业执照号"/>
+            <condition name="business_license_date" input="date" title="营业执照发证日期"/>
+            <condition name="business_license_expire_date" input="date" title="营业执照过期日期"/>
+            <condition name="business_license_approval" input="text" size="50" title="营业执照审批方"/>
+            <condition name="license_code" input="text" size="50" title="许可证号"/>
+            <condition name="license_date" input="date" title="许可证发证日期"/>
+            <condition name="license_expire_date" input="date" title="许可证过期日期"/>
+            <condition name="license_name" input="text" size="50" title="许可证名称"/>
+            <condition name="consigner" input="text" size="20" title="委托人"/>
+            <condition name="consign_date" input="date" title="委托日期"/>
+            <condition name="consign_expire_date" input="date" title="委托过期日期"/>
+            <condition name="quality_license_expire_date" input="date" title="质保到期日期"/>
+            <condition name="health_license_expire_date" input="date" title="卫生许可到期日期"/>
+            <condition name="gsp_code" input="text" size="50" title="GSP证书号"/>
+            <condition name="gsp_date" input="date" title="GSP发证日期"/>
+            <condition name="gsp_expire_date" input="date" title="GSP过期日期"/>
+            <condition name="gmp_one_code" input="text" size="50" title="GMP证书编号"/>
+            <condition name="gmp_one_date" input="date" title="GMP发证日期"/>
+            <condition name="gmp_one_expire_date" input="date" title="GMP过期日期"/>
+            <condition name="gmp_two_code" input="text" size="50" title="GMP证书编号"/>
+            <condition name="gmp_two_date" input="date" title="GMP发证日期"/>
+            <condition name="gmp_two_expire_date" input="date" title="GMP过期日期"/>
+            <condition name="business_scopename" input="text" title="经营范围" hiddenid="business_scope" popupselect="300"
+                       popuptitle="经营范围选择" width="800"/>
+            <condition name="quality_head" input="text" size="20" title="质量负责人"/>
+            <condition name="certification_scope" input="text" title="认证范围"/>
+            <condition name="tax_registration_code" input="text" size="50" title="税务登记证号"/>
+            <condition name="registered_capital" input="text" size="20" title="注册资金"/>
+            <condition name="business_pattern" input="text" size="50" title="经营方式"/>
+            <condition name="economic_nature" input="text" size="50" title="经济性质"/>
+            <condition name="legal_person" input="text" size="50" title="法人"/>
+
+            <condition name="has_annual_inspection" input="select" title="是否年检">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'has_seal'
+                </sql>
+            </condition>
+            <condition name="has_seal" input="select" title="是否有印章印模">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'has_seal'
+                </sql>
+            </condition>
+            <condition name="has_manifest" input="select" title="是否有货单">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'has_seal'
+                </sql>
+            </condition>
+
+            <condition name="oraganization_code_expire_date" input="date" title="组织代码过期日期"/>
+            <condition name="annual_output_value" input="text" size="20" title="年产值"/>
+            <condition name="quality_manager_count" input="text" size="11" title="质管人数"/>
+        </conditions>
+    </update>
+
+</template>
+
+

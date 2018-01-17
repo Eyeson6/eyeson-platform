@@ -1,0 +1,1472 @@
+<template menuId="200" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="基础数据"/>
+        <direct name="供货商管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            standard_library_id,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS
+            FIRST_name,
+            creater_id,
+            creater_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            create_time,
+            update_time,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            WHERE
+            1 = 1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+
+            <if method="isNoEmpty" args="${saas_supplier_status_name}">
+                <![CDATA[ and saas_supplier_status = ${saas_supplier_status_name}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                <![CDATA[ and creater_name like %${creater_name}%]]>
+            </if>
+            order by create_time desc
+        </sql>
+
+
+        <sql id="querySql" method="query">
+
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            NAME,
+            standard_library_id,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS
+            FIRST_name,
+            creater_id,
+            creater_name,
+            saas_supplier_status,
+            create_time,
+            update_time,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            where id=${key}
+        </sql>
+        <sql id="ckSql" method="query">
+            SELECT
+            id,
+            pinyin_code,
+            CODE,
+            standard_library_id,
+            NAME,
+            supplier_nature,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "supplier_nature"
+            AND dd.`value` = supplier_nature
+            ) AS supplier_nature_name,
+            registered_capital,
+            legal_person,
+            quality_head,
+            address,
+            area_code,
+            tel,
+            fax,
+            email,
+            business_person,
+            business_person_tel,
+            business_person_email,
+            business_person_fax,
+            business_pattern,
+            business_variety,
+            settlement_pattern,
+            business_scope,
+            bank_code,
+            bank_name,
+            bank_account,
+            tax_registration_code,
+            oraganization_code,
+            oraganization_code_expire_date,
+            business_license_code,
+            business_license_expire_date,
+            license_code,
+            license_expire_date,
+            gsp_code,
+            gsp_expire_date,
+            quality_deal,
+            quality_deal_expire_date,
+            medical_licence,
+            medical_licence_expire_date,
+            food_circulate,
+            food_circulate_expire_date,
+            health_care_licence,
+            health_care__expire_date,
+            cosmetics_licence,
+            cosmetics_expire_date,
+            cosmetics_health_code,
+            cosmetics_health_expire_date,
+            health_license,
+            health_license_expire_date,
+            annual_survey_prove,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = supplier_nature
+            ) AS annual_survey_prove_name,
+            about_seal,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = about_seal
+            ) AS about_seal_name,
+            peer_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "have_not"
+            AND dd.`value` = peer_code
+            ) AS peer_code_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS
+            FIRST_name,
+            creater_id,
+            creater_name,
+            saas_supplier_status,
+            CASE
+            saas_supplier_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS saas_supplier_status_name,
+            create_time,
+            update_time,
+            proposer,
+            proposer_time,
+            quality_manage_evaluation,
+            drug_business_person,
+            drug_business_person_advice,
+            remarks
+            FROM
+            SAAS_TEST.saas_supplier
+            where id=${key}
+        </sql>
+
+
+        <sql id="insertSql" method="insert">
+            insert into SAAS_TEST.saas_supplier(
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                code,
+            </if>
+            <if method="isNoEmpty" args="${standard_library_id}">
+                standard_library_id,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${supplier_nature}">
+                supplier_nature,
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                registered_capital,
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                legal_person,
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                quality_head,
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address,
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                area_code,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${fax}">
+                fax,
+            </if>
+            <if method="isNoEmpty" args="${email}">
+                email,
+            </if>
+            <if method="isNoEmpty" args="${business_person}">
+                business_person,
+            </if>
+            <if method="isNoEmpty" args="${business_person_tel}">
+                business_person_tel,
+            </if>
+            <if method="isNoEmpty" args="${business_person_email}">
+                business_person_email,
+            </if>
+            <if method="isNoEmpty" args="${business_person_fax}">
+                business_person_fax,
+            </if>
+            <if method="isNoEmpty" args="${retrun_address}">
+                retrun_address,
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                business_pattern,
+            </if>
+            <if method="isNoEmpty" args="${business_variety}">
+                business_variety,
+            </if>
+            <if method="isNoEmpty" args="${settlement_pattern}">
+                settlement_pattern,
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                business_scope,
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                bank_code,
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                bank_name,
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                bank_account,
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                tax_registration_code,
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code}">
+                oraganization_code,
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                oraganization_code_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                business_license_code,
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                business_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                license_code,
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                gsp_code,
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                gsp_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${quality_deal}">
+                quality_deal,
+            </if>
+            <if method="isNoEmpty" args="${quality_deal_expire_date}">
+                quality_deal_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${medical_licence}">
+                medical_licence,
+            </if>
+            <if method="isNoEmpty" args="${medical_licence_expire_date}">
+                medical_licence_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${food_circulate}">
+                food_circulate,
+            </if>
+            <if method="isNoEmpty" args="${food_circulate_expire_date}">
+                food_circulate_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${health_care_licence}">
+                health_care_licence,
+            </if>
+            <if method="isNoEmpty" args="${health_care__expire_date}">
+                health_care__expire_date,
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_licence}">
+                cosmetics_licence,
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_expire_date}">
+                cosmetics_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_code}">
+                cosmetics_health_code,
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_expire_date}">
+                cosmetics_health_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${health_license}">
+                health_license,
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                health_license_expire_date,
+            </if>
+            <if method="isNoEmpty" args="${annual_survey_prove}">
+                annual_survey_prove,
+            </if>
+            <if method="isNoEmpty" args="${about_seal}">
+                about_seal,
+            </if>
+            <if method="isNoEmpty" args="${peer_code}">
+                peer_code,
+            </if>
+            <if method="isNoEmpty" args="${first}">
+                first,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${saas_supplier_status}">
+                saas_supplier_status,
+            </if>
+            <if method="isNoEmpty" args="${proposer}">
+                proposer,
+            </if>
+            <if method="isNoEmpty" args="${proposer_time}">
+                proposer_time,
+            </if>
+            <if method="isNoEmpty" args="${quality_manage_evaluation}">
+                quality_manage_evaluation,
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person}">
+                drug_business_person,
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person_advice}">
+                drug_business_person_advice,
+            </if>
+            <if method="isNoEmpty" args="${remarks}">
+                remarks,
+            </if>
+            create_time,
+            ) values(
+            <if method="isNoEmpty" args="${pinyin_code}">
+                ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${code}">
+                ${code},
+            </if>
+            <if method="isNoEmpty" args="${standard_library_id}">
+                ${standard_library_id},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${supplier_nature}">
+                ${supplier_nature},
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                ${registered_capital},
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                ${legal_person},
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                ${quality_head},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                ${address},
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                ${area_code},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${fax}">
+                ${fax},
+            </if>
+            <if method="isNoEmpty" args="${email}">
+                ${email},
+            </if>
+            <if method="isNoEmpty" args="${business_person}">
+                ${business_person},
+            </if>
+            <if method="isNoEmpty" args="${business_person_tel}">
+                ${business_person_tel},
+            </if>
+            <if method="isNoEmpty" args="${business_person_email}">
+                ${business_person_email},
+            </if>
+            <if method="isNoEmpty" args="${business_person_fax}">
+                ${business_person_fax},
+            </if>
+            <if method="isNoEmpty" args="${retrun_address}">
+                ${retrun_address},
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                ${business_pattern},
+            </if>
+            <if method="isNoEmpty" args="${business_variety}">
+                ${business_variety},
+            </if>
+            <if method="isNoEmpty" args="${settlement_pattern}">
+                ${settlement_pattern},
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                ${business_scope},
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                ${bank_code},
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                ${bank_name},
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                ${bank_account},
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                ${tax_registration_code},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code}">
+                ${oraganization_code},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                ${oraganization_code_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                ${business_license_code},
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                ${business_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                ${license_code},
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                ${license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                ${gsp_code},
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                ${gsp_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${quality_deal}">
+                ${quality_deal},
+            </if>
+            <if method="isNoEmpty" args="${quality_deal_expire_date}">
+                ${quality_deal_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${medical_licence}">
+                ${medical_licence},
+            </if>
+            <if method="isNoEmpty" args="${medical_licence_expire_date}">
+                ${medical_licence_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${food_circulate}">
+                ${food_circulate},
+            </if>
+            <if method="isNoEmpty" args="${food_circulate_expire_date}">
+                ${food_circulate_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_care_licence}">
+                ${health_care_licence},
+            </if>
+            <if method="isNoEmpty" args="${health_care__expire_date}">
+                ${health_care__expire_date},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_licence}">
+                ${cosmetics_licence},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_expire_date}">
+                ${cosmetics_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_code}">
+                ${cosmetics_health_code},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_expire_date}">
+                ${cosmetics_health_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_license}">
+                ${health_license},
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                ${health_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${annual_survey_prove}">
+                ${annual_survey_prove},
+            </if>
+            <if method="isNoEmpty" args="${about_seal}">
+                ${about_seal},
+            </if>
+            <if method="isNoEmpty" args="${peer_code}">
+                ${peer_code},
+            </if>
+            <if method="isNoEmpty" args="${first}">
+                ${first},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${saas_supplier_status}">
+                ${saas_supplier_status},
+            </if>
+            <if method="isNoEmpty" args="${proposer}">
+                ${proposer},
+            </if>
+            <if method="isNoEmpty" args="${proposer_time}">
+                ${proposer_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_manage_evaluation}">
+                ${quality_manage_evaluation},
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person}">
+                ${drug_business_person},
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person_advice}">
+                ${drug_business_person_advice},
+            </if>
+            <if method="isNoEmpty" args="${remarks}">
+                ${remarks},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_supplier set
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code=${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${standard_library_id}">
+                standard_library_id=${standard_library_id},
+            </if>
+            <if method="isNoEmpty" args="${NAME}">
+                name=${NAME},
+            </if>
+            <if method="isNoEmpty" args="${supplier_nature}">
+                supplier_nature=${supplier_nature},
+            </if>
+            <if method="isNoEmpty" args="${registered_capital}">
+                registered_capital=${registered_capital},
+            </if>
+            <if method="isNoEmpty" args="${legal_person}">
+                legal_person=${legal_person},
+            </if>
+            <if method="isNoEmpty" args="${quality_head}">
+                quality_head=${quality_head},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address=${address},
+            </if>
+            <if method="isNoEmpty" args="${area_code}">
+                area_code=${area_code},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${fax}">
+                fax=${fax},
+            </if>
+            <if method="isNoEmpty" args="${email}">
+                email=${email},
+            </if>
+            <if method="isNoEmpty" args="${business_person}">
+                business_person=${business_person},
+            </if>
+            <if method="isNoEmpty" args="${business_person_tel}">
+                business_person_tel=${business_person_tel},
+            </if>
+            <if method="isNoEmpty" args="${business_person_email}">
+                business_person_email=${business_person_email},
+            </if>
+            <if method="isNoEmpty" args="${business_person_fax}">
+                business_person_fax=${business_person_fax},
+            </if>
+            <if method="isNoEmpty" args="${retrun_address}">
+                retrun_address=${retrun_address},
+            </if>
+            <if method="isNoEmpty" args="${business_pattern}">
+                business_pattern=${business_pattern},
+            </if>
+            <if method="isNoEmpty" args="${business_variety}">
+                business_variety=${business_variety},
+            </if>
+            <if method="isNoEmpty" args="${settlement_pattern}">
+                settlement_pattern=${settlement_pattern},
+            </if>
+            <if method="isNoEmpty" args="${business_scope}">
+                business_scope=${business_scope},
+            </if>
+            <if method="isNoEmpty" args="${bank_code}">
+                bank_code=${bank_code},
+            </if>
+            <if method="isNoEmpty" args="${bank_name}">
+                bank_name=${bank_name},
+            </if>
+            <if method="isNoEmpty" args="${bank_account}">
+                bank_account=${bank_account},
+            </if>
+            <if method="isNoEmpty" args="${tax_registration_code}">
+                tax_registration_code=${tax_registration_code},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code}">
+                oraganization_code=${oraganization_code},
+            </if>
+            <if method="isNoEmpty" args="${oraganization_code_expire_date}">
+                oraganization_code_expire_date=${oraganization_code_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${business_license_code}">
+                business_license_code=${business_license_code},
+            </if>
+            <if method="isNoEmpty" args="${business_license_expire_date}">
+                business_license_expire_date=${business_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${license_code}">
+                license_code=${license_code},
+            </if>
+            <if method="isNoEmpty" args="${license_expire_date}">
+                license_expire_date=${license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${gsp_code}">
+                gsp_code=${gsp_code},
+            </if>
+            <if method="isNoEmpty" args="${gsp_expire_date}">
+                gsp_expire_date=${gsp_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${quality_deal}">
+                quality_deal=${quality_deal},
+            </if>
+            <if method="isNoEmpty" args="${quality_deal_expire_date}">
+                quality_deal_expire_date=${quality_deal_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${medical_licence}">
+                medical_licence=${medical_licence},
+            </if>
+            <if method="isNoEmpty" args="${medical_licence_expire_date}">
+                medical_licence_expire_date=${medical_licence_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${food_circulate}">
+                food_circulate=${food_circulate},
+            </if>
+            <if method="isNoEmpty" args="${food_circulate_expire_date}">
+                food_circulate_expire_date=${food_circulate_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_care_licence}">
+                health_care_licence=${health_care_licence},
+            </if>
+            <if method="isNoEmpty" args="${health_care__expire_date}">
+                health_care__expire_date=${health_care__expire_date},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_licence}">
+                cosmetics_licence=${cosmetics_licence},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_expire_date}">
+                cosmetics_expire_date=${cosmetics_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_code}">
+                cosmetics_health_code=${cosmetics_health_code},
+            </if>
+            <if method="isNoEmpty" args="${cosmetics_health_expire_date}">
+                cosmetics_health_expire_date=${cosmetics_health_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${health_license}">
+                health_license=${health_license},
+            </if>
+            <if method="isNoEmpty" args="${health_license_expire_date}">
+                health_license_expire_date=${health_license_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${annual_survey_prove}">
+                annual_survey_prove=${annual_survey_prove},
+            </if>
+            <if method="isNoEmpty" args="${about_seal}">
+                about_seal=${about_seal},
+            </if>
+            <if method="isNoEmpty" args="${peer_code}">
+                peer_code=${peer_code},
+            </if>
+            <if method="isNoEmpty" args="${first}">
+                first=${first},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id=${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${modifier_id}">
+                modifier_id=${modifier_id},
+            </if>
+            <if method="isNoEmpty" args="${modifier_name}">
+                modifier_name=${modifier_name},
+            </if>
+            <if method="isNoEmpty" args="${saas_supplier_status}">
+                saas_supplier_status=${saas_supplier_status},
+            </if>
+            <if method="isNoEmpty" args="${proposer}">
+                proposer=${proposer},
+            </if>
+            <if method="isNoEmpty" args="${proposer_time}">
+                proposer_time=${proposer_time},
+            </if>
+            <if method="isNoEmpty" args="${quality_manage_evaluation}">
+                quality_manage_evaluation=${quality_manage_evaluation},
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person}">
+                drug_business_person=${drug_business_person},
+            </if>
+            <if method="isNoEmpty" args="${drug_business_person_advice}">
+                drug_business_person_advice=${drug_business_person_advice},
+            </if>
+            <if method="isNoEmpty" args="${remarks}">
+                remarks=${remarks},
+            </if>
+            update_time=now(),
+            where id=${key}
+        </sql>
+
+        <sql id="stopSql" method="update">
+            update SAAS_TEST.saas_supplier set saas_supplier_status = '0' where
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id= ${id}]]>
+            </if>
+        </sql>
+        <sql id="startSql" method="delete">
+            update SAAS_TEST.saas_supplier set saas_supplier_status = '1' where
+            <if method="isNoEmpty" args="${id}">
+                <![CDATA[id= ${id}]]>
+            </if>
+        </sql>
+
+
+        <sql id="checkSSql" method="query">
+            SELECT
+            CASE
+            WHEN '0' = saas_supplier_status THEN
+            'false'
+            ELSE
+            'true'
+            END AS mustBreak
+            FROM
+            SAAS_TEST.saas_supplier
+            WHERE
+            id = ${id}
+        </sql>
+
+        <sql id="checkSSSql" method="query">
+            SELECT
+            CASE
+            WHEN '0' = saas_supplier_status THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+            FROM
+            SAAS_TEST.saas_supplier
+            WHERE
+            id = ${id}
+        </sql>
+
+        <sql id="insertSerialNumberSql" method="execute">
+            insert into saas_serial_number(type, date, num )
+            select
+            'supplier_num',
+            now(),
+            IFNULL((select num FROM
+            SAAS_TEST.saas_serial_number
+            WHERE
+            type = 'supplier_num' order by num desc LIMIT 0,1),0)+1 as num;
+        </sql>
+
+        <sql id="selectSerialNumberSql" method="query">
+            SELECT
+            CASE WHEN ${supplier_nature}=0 THEN
+            CONCAT('P',LPAD(num,4,'0'))
+            WHEN ${supplier_nature}=1 THEN
+            CONCAT('S',LPAD(num,4,'0'))
+            END AS code
+            FROM
+            SAAS_TEST.saas_serial_number
+            WHERE
+            type = 'supplier_num' order by num desc LIMIT 0,1;
+        </sql>
+
+
+    </sqls>
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!-- <clumn name="id" sortable="false" title=" ID " /> -->
+            <clumn name="NAME" sortable="false" title=" 供货单位名称 "/>
+            <clumn name="CODE" sortable="false" title=" 编码 "/>
+            <clumn name="pinyin_code" sortable="false" title=" 拼音码 "/>
+            <clumn name="supplier_nature_name" sortable="false" title=" 供货单位性质 "/>
+            <clumn name="legal_person" sortable="false" title=" 法定代表人 "/>
+            <clumn name="business_person" sortable="false" title=" 业务负责人 "/>
+            <clumn name="area_code" sortable="false" title=" 邮编 "/>
+            <clumn name="tel" sortable="false" title=" 电话 "/>
+            <clumn name="fax" sortable="false" title=" 传真 "/>
+            <clumn name="email" sortable="false" title=" 邮箱 "/>
+            <clumn name="business_pattern" sortable="false" title=" 经营方式 "/>
+            <clumn name="saas_supplier_status_name" sortable="false" title="状态"/>
+            <clumn name="FIRST_name" sortable="false" title="首营"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name" defaultprocess=""/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="select" title="供货状态" name="saas_supplier_status_name">
+                <!-- <option id="0" text="提交" /> <option id="1" text="一级审批" /> <option id="2" text="二级审批" /> -->
+                <option id="" text="全部"/>
+                <option id="1" text="启用"/>
+                <option id="0" text="停用"/>
+            </condition>
+            <condition input="text" title="编码" name="code"/>
+
+            <condition input="date" title="创建时间" name="startTime"/>
+            <condition input="date" title="至" name="endTime"/>
+        </conditions>
+    </query>
+    <operate>
+        <button id="test1" title="查看供货商" icon="icon-remove" colNumber="4" channel="query" width="1200">
+            <queryProcess>
+                <step channel="sql" ref="ckSql"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_supplier</table>
+            <conditions>
+                <condition startArea="基础信息" name="CODE" input="text" size="50" title=" 编码 " readonly="true"/>
+                <condition name="NAME" input="text" size="20" title=" 名称 " readonly="true"/>
+                <condition name="standard_library_id" input="text" size="20" title="标准库ID" readonly="true"/>
+                <condition name="pinyin_code" input="text" size="20" title=" 拼音码 " readonly="true"/>
+                <condition name="supplier_nature_name" input="text" size="20" title=" 供货单位性质 " readonly="true"/>
+                <condition name="registered_capital" input="text" size="20" validate="number" title="注册资金"
+                           readonly="true"/>
+                <condition name="legal_person" input="text" size="20" title=" 法定代表人" readonly="true"/>
+                <condition name="quality_head" input="text" size="20" title=" 质量负责人" readonly="true"/>
+                <condition name="address" input="text" size="200" title="注册地址 " readonly="true"/>
+                <condition name="area_code" input="text" size="20" title="区号" readonly="true"/>
+                <condition name="tel" input="text" size="20" validate="mobile" title="电话" readonly="true"/>
+                <condition name="fax" input="text" size="20" title="传真" readonly="true"/>
+                <condition name="email" input="text" size="20" validate="email" title="邮箱" readonly="true"/>
+                <condition name="business_person" input="text" size="20" title=" 业务负责人 " readonly="true"/>
+                <condition name="business_person_tel" input="text" size="20" title=" 业务负责人电话 " readonly="true"/>
+                <condition name="business_person_email" input="text" size="20" title=" 业务负责人邮箱 " readonly="true"/>
+                <condition name="business_person_fax" input="text" size="20" title=" 业务负责人传真 " readonly="true"/>
+                <condition name="retrun_address" input="text" size="20" validate="url" title="退货地址" readonly="true"/>
+                <condition name="business_pattern" input="text" size="20" title=" 经营方式 " readonly="true"/>
+                <condition endArea="基础信息" name="settlement_pattern" input="text" size="20" title=" 结算方式 "
+                           readonly="true"/>
+
+                <condition startArea="资质信息" name="bank_code" input="text" size="20" title=" 开户行代码 " readonly="true"/>
+                <condition name="bank_name" input="text" size="20" title=" 开户行名称 " readonly="true"/>
+                <condition name="bank_account" input="text" size="20" title=" 开户行账号 " readonly="true"/>
+                <condition name="tax_registration_code" input="text" size="20" title=" 税务登记号 " readonly="true"/>
+                <condition name="business_license_code" input="text" size="20" title=" 营业执照号 " readonly="true"/>
+                <condition name="business_license_expire_date" input="date" title=" 营业执照期限 " readonly="true"/>
+                <condition name="oraganization_code" input="text" size="20" title=" 组织机构代码号 " readonly="true"/>
+                <condition name="oraganization_code_expire_date" input="date" title=" 组织代码效期 " readonly="true"/>
+                <condition name="gsp_code" input="text" size="20" title=" GSP证书号 " readonly="true"/>
+                <condition name="gsp_expire_date" input="date" title=" GSP期限 " readonly="true"/>
+                <condition name="license_code" input="text" size="20" title=" 药品经营许可号 " readonly="true"/>
+                <condition name="license_expire_date" input="date" title=" 药品经营许可号效期 " readonly="true"/>
+                <condition name="quality_deal" input="text" size="20" title=" 质量协议书号 " readonly="true"/>
+                <condition name="quality_deal_expire_date" input="date" title=" 质量协议书效期 " readonly="true"/>
+                <condition name="medical_licence" input="text" size="20" title=" 医疗器械经营许可 " readonly="true"/>
+                <condition name="medical_licence_expire_date" input="date" title=" 有效期 " readonly="true"/>
+                <condition name="food_circulate" input="text" size="20" title=" 食品流通许可号 " readonly="true"/>
+                <condition name="food_circulate_expire_date" input="date" title=" 有效期 " readonly="true"/>
+                <condition name="health_care_licence" input="text" size="20" title=" 保健品卫生许可 " readonly="true"/>
+                <condition name="health_care__expire_date" input="date" title=" 有效期 " readonly="true"/>
+                <condition name="cosmetics_licence" input="text" size="20" title=" 化妆品经营许可号 " readonly="true"/>
+                <condition name="cosmetics_expire_date" input="date" title=" 有效期 " readonly="true"/>
+                <condition name="cosmetics_health_code" input="text" size="20" title=" 化妆品卫生许可号 " readonly="true"/>
+                <condition name="cosmetics_health_expire_date" input="date" title=" 有效期 " readonly="true"/>
+                <condition name="health_license" input="text" size="20" title=" 食品卫生许可证号 " readonly="true"/>
+                <condition name="health_license_expire_date" input="date" title=" 卫生许可到期日期 " readonly="true"/>
+                <condition name="annual_survey_prove_name" input="text" size="20" title=" 年检证明 " readonly="true"/>
+                <condition name="about_seal_name" input="text" size="20" title=" 相关印章 " readonly="true"/>
+                <condition name="peer_code_name" input="text" size="20" title=" 随货同行单样式 " readonly="true"/>
+                <condition name="business_variety_name" input="checkbox" hiddenid="business_variety" size="20"
+                           title=" 经营品种 " readonly="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_variety'
+                    </sql>
+                </condition>
+                <condition endArea="资质信息" name="business_scope_name" input="checkbox" hiddenid="business_scope"
+                           size="20" title=" 经营范围 " readonly="true">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_scope'
+                    </sql>
+                </condition>
+                <condition startArea="首营信息" name="FIRST_name" input="text" size="20" title="首营" readonly="true"/>
+                <condition name="proposer" input="text" size="20" title=" 申请人 " readonly="true"/>
+                <condition name="proposer_time" input="date" title=" 申请日期 " readonly="true"/>
+                <condition name="drug_business_person" input="text" size="20" title=" 业务负责人 " readonly="true"/>
+                <condition name="drug_business_person_advice" input="text" size="20" title=" 药店业务负责人意见 "
+                           readonly="true"/>
+                <condition name="saas_supplier_status_name" input="text" size="20" title="状态" readonly="true"/>
+                <condition name="remarks" input="textarea" size="20" title=" 备注 " readonly="true"/>
+                <condition endArea="首营信息" name="quality_manage_evaluation" input="textarea" size="20" title=" 质量管理体系评价 "
+                           readonly="true"/>
+            </conditions>
+        </button>
+
+        <button id="test2" title="修改供货商" icon="icon-edit" channel="select_query_execute" width="1200">
+            <preprocess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </preprocess>
+            <process>
+                <step channel="service" ref="saasSupplierService" method="modiReviewedData"/>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_supplier</table>
+            <conditions>
+                <condition startArea="基础信息" name="NAME" input="text" size="20" title="名称" required="true">
+                    <event mode="cursor" popuplinkage="888888" width="1000" passvalue="true"/>
+                    <event mode="dbclick" hiddenid="id"
+                           popuplinkage="222222" popuptitle="从标准库检索" width="1000" passvalue="true"/>
+                </condition>
+                <condition name="standard_library_id" input="text" size="20" title="标准库ID"/>
+                <condition name="pinyin_code" input="text" size="20" title=" 拼音码 " readonly="true"/>
+
+                <condition name="supplier_nature" input="select" size="20" title=" 供货单位性质 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'supplier_nature'
+                    </sql>
+                </condition>
+                <condition name="registered_capital" input="text" size="20" validate="number" title="注册资金"/>
+                <condition name="legal_person" input="text" size="20" title=" 法定代表人"/>
+                <condition name="quality_head" input="text" size="20" title=" 质量负责人"/>
+                <condition name="address" input="text" size="200" title="注册地址 "/>
+                <condition name="area_code" input="text" size="20" title="区号"/>
+                <condition name="tel" input="text" size="20" validate="mobile" title="电话"/>
+                <condition name="fax" input="text" size="20" title="传真"/>
+                <condition name="email" input="text" size="20" validate="email" title="邮箱"/>
+                <condition name="business_person" input="text" size="20" title=" 业务负责人 "/>
+                <condition name="business_person_tel" input="text" size="20" title=" 业务负责人电话 "/>
+                <condition name="business_person_email" input="text" size="20" title=" 业务负责人邮箱 "/>
+                <condition name="business_person_fax" input="text" size="20" title=" 业务负责人传真 "/>
+                <condition name="retrun_address" input="text" size="20" validate="url" title="退货地址"/>
+                <condition name="business_pattern" input="text" size="20" title=" 经营方式 "/>
+                <condition endArea="基础信息" name="settlement_pattern" input="select" size="20" title=" 结算方式 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'settlement_pattern'
+                    </sql>
+                </condition>
+
+                <condition startArea="资质信息" name="bank_code" input="text" size="20" title=" 开户行代码 "/>
+                <condition name="bank_name" input="text" size="20" title=" 开户行名称 "/>
+                <condition name="bank_account" input="text" size="20" title=" 开户行账号 "/>
+                <condition name="tax_registration_code" input="text" size="20" title=" 税务登记证号 "/>
+                <condition name="business_license_code" input="text" size="20" title=" 营业执照号 "/>
+                <condition name="business_license_expire_date" input="date" title=" 营业执照期限 "/>
+                <condition name="oraganization_code" input="text" size="20" title=" 组织机构代码号 "/>
+                <condition name="oraganization_code_expire_date" input="date" title=" 组织代码期限 "/>
+                <condition name="gsp_code" input="text" size="20" title=" GSP证书号 "/>
+                <condition name="gsp_expire_date" input="date" title=" GSP期限 "/>
+                <condition name="license_code" input="text" size="20" title=" 药品经营许可号 "/>
+                <condition name="license_expire_date" input="date" title=" 药品经营许可效期 "/>
+                <condition name="quality_deal" input="text" size="20" title=" 质量协议书号 "/>
+                <condition name="quality_deal_expire_date" input="date" title=" 质量协议书期限 "/>
+                <condition name="medical_licence" input="text" size="20" title=" 医疗器械经营许可 "/>
+                <condition name="medical_licence_expire_date" input="date" title=" 有效期 "/>
+                <condition name="food_circulate" input="text" size="20" title=" 食品流通许可号 "/>
+                <condition name="food_circulate_expire_date" input="date" title=" 有效期  "/>
+                <condition name="health_care_licence" input="text" size="20" title=" 保健品卫生许可 "/>
+                <condition name="health_care__expire_date" input="date" title=" 有效期  "/>
+                <condition name="cosmetics_licence" input="text" size="20" title=" 化妆品经营许可号 "/>
+                <condition name="cosmetics_expire_date" input="date" title=" 有效期  "/>
+                <condition name="cosmetics_health_code" input="text" size="20" title=" 化妆品卫生许可号 "/>
+                <condition name="cosmetics_health_expire_date" input="date" title=" 有效期 "/>
+                <condition name="health_license" input="text" size="20" title=" 食品卫生许可号 "/>
+                <condition name="health_license_expire_date" input="date" title=" 卫生许可到期日 "/>
+                <condition name="annual_survey_prove" input="radio" size="20" title=" 年检证明 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="about_seal" input="radio" size="20" title=" 相关印章 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="peer_code" input="radio" size="20" title=" 随货同行单样式 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="business_variety_name" input="checkbox" hiddenid="business_variety" size="20"
+                           title=" 经营品种 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_variety'
+                    </sql>
+                </condition>
+                <condition endArea="资质信息" name="business_scope_name" input="checkbox" hiddenid="business_scope"
+                           size="50" title=" 经营范围 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_scope'
+                    </sql>
+                </condition>
+
+                <condition startArea="首营信息" name="FIRST" input="radio" size="20" title="首营">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="proposer" input="text" size="20" title=" 申请人 "/>
+                <condition name="proposer_time" input="date" title=" 申请日期 "/>
+                <condition name="drug_business_person" input="text" size="20" title=" 业务负责人 "/>
+                <condition name="drug_business_person_advice" input="text" size="20" title=" 药店业务负责人意见 "/>
+                <condition name="saas_supplier_status" input="radio" size="20" title="状态">
+                    <option id="0" text="禁用"/>
+                    <option id="1" text="启用"/>
+                </condition>
+                <condition name="remarks" input="textarea" size="20" title=" 备注 "/>
+                <condition endArea="首营信息" name="quality_manage_evaluation" input="textarea" size="20"
+                           title=" 质量管理体系评价 "/>
+            </conditions>
+        </button>
+    </operate>
+
+
+    <buttons>
+        <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+        <button id="test1" title="新增供货商" colNumber="4" icon="icon-add" channel="query_execute" width="1300">
+            <process>
+                <step channel="service" ref="saasSupplierService" method="saveReviewedData"/>
+                <step channel="sql" ref="insertSerialNumberSql"/>
+                <step channel="sql" ref="selectSerialNumberSql"/>
+                <step channel="sql" ref="insertSql"/>
+                <!-- <step channel="service" ref="saasGoodsService" method="supplierCode" /> -->
+            </process>
+            <!-- <queryProcess> <step channel="service" ref="saasGoodsService" method="supplierCode" /> </queryProcess> -->
+            <conditions>
+                <!-- <condition name="code" input="text" size="50" title=" 编码 " readonly="true" /> -->
+                <condition startArea="基础信息" name="name" input="text" size="20" title="名称" required="true">
+                    <event mode="cursor" popuplinkage="888888" width="1000" passvalue="true"/>
+                    <event mode="dbclick" hiddenid="id"
+                           popuplinkage="333333" popuptitle="从标准库检索" width="1000" passvalue="true"/>
+                </condition>
+                <condition name="standard_library_id" input="text" size="20" title="标准库ID"/>
+                <condition name="pinyin_code" input="text" size="20" title=" 拼音码 " readonly="true"/>
+
+                <condition name="supplier_nature" input="select" size="20" title=" 供货单位性质 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'supplier_nature'
+                    </sql>
+                </condition>
+                <condition name="registered_capital" input="text" size="20" validate="number" title="注册资金"/>
+                <condition name="legal_person" input="text" size="20" title=" 法定代表人"/>
+                <condition name="quality_head" input="text" size="20" title=" 质量负责人"/>
+                <condition name="address" input="text" size="200" title="注册地址 "/>
+                <condition name="area_code" input="text" size="20" title="区号"/>
+                <condition name="tel" input="text" size="20" validate="mobile" title="电话"/>
+                <condition name="fax" input="text" size="20" title="传真"/>
+                <condition name="email" input="text" size="20" validate="email" title="邮箱"/>
+                <condition name="business_person" input="text" size="20" title=" 业务负责人 "/>
+                <condition name="business_person_tel" input="text" size="20" title=" 业务负责人电话 "/>
+                <condition name="business_person_email" input="text" size="20" title=" 业务负责人邮箱 "/>
+                <condition name="business_person_fax" input="text" size="20" title=" 业务负责人传真 "/>
+                <condition name="retrun_address" input="text" size="20" validate="url" title="退货地址"/>
+                <condition name="business_pattern" input="text" size="20" title=" 经营方式 "/>
+                <condition endArea="基础信息" name="settlement_pattern" input="select" size="20" title=" 结算方式 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'settlement_pattern'
+                    </sql>
+                </condition>
+
+                <condition startArea="资质信息" name="bank_code" input="text" size="20" title=" 开户行代码 "/>
+                <condition name="bank_name" input="text" size="20" title=" 开户行名称 "/>
+                <condition name="bank_account" input="text" size="20" title=" 开户行账号 "/>
+                <condition name="tax_registration_code" input="text" size="20" title=" 税务登记证号 "/>
+                <condition name="business_license_code" input="text" size="20" title=" 营业执照号 "/>
+                <condition name="business_license_expire_date" input="date" title=" 营业执照期限 "/>
+                <condition name="oraganization_code" input="text" size="20" title=" 组织机构代码号 "/>
+                <condition name="oraganization_code_expire_date" input="date" title=" 组织代码期限 "/>
+                <condition name="gsp_code" input="text" size="20" title=" GSP证书号 "/>
+                <condition name="gsp_expire_date" input="date" title=" GSP期限 "/>
+                <condition name="license_code" input="text" size="20" title=" 药品经营许可号 "/>
+                <condition name="license_expire_date" input="date" title=" 药品经营许可效期 "/>
+                <condition name="quality_deal" input="text" size="20" title=" 质量协议书号 "/>
+                <condition name="quality_deal_expire_date" input="date" title=" 质量协议书期限 "/>
+                <condition name="medical_licence" input="text" size="20" title=" 医疗器械经营许可 "/>
+                <condition name="medical_licence_expire_date" input="date" title=" 有效期 "/>
+                <condition name="food_circulate" input="text" size="20" title=" 食品流通许可号 "/>
+                <condition name="food_circulate_expire_date" input="date" title=" 有效期  "/>
+                <condition name="health_care_licence" input="text" size="20" title=" 保健品卫生许可 "/>
+                <condition name="health_care__expire_date" input="date" title=" 有效期  "/>
+                <condition name="cosmetics_licence" input="text" size="20" title=" 化妆品经营许可号 "/>
+                <condition name="cosmetics_expire_date" input="date" title=" 有效期  "/>
+                <condition name="cosmetics_health_code" input="text" size="20" title=" 化妆品卫生许可号 "/>
+                <condition name="cosmetics_health_expire_date" input="date" title=" 有效期 "/>
+                <condition name="health_license" input="text" size="20" title=" 食品卫生许可号 "/>
+                <condition name="health_license_expire_date" input="date" title=" 卫生许可到期日 "/>
+                <condition name="annual_survey_prove" defaultvalue="1" input="radio" size="20" title=" 年检证明 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="about_seal" defaultvalue="1" input="radio" size="20" title=" 相关印章 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="peer_code" defaultvalue="1" input="radio" size="20" title=" 随货同行单样式 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'have_not'
+                    </sql>
+                </condition>
+                <condition name="business_variety_name" input="checkbox" hiddenid="business_variety" size="20"
+                           title=" 经营品种 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_variety'
+                    </sql>
+                </condition>
+                <condition endArea="资质信息" name="business_scope_name" input="checkbox" hiddenid="business_scope"
+                           size="50" title=" 经营范围 ">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'business_scope'
+                    </sql>
+                </condition>
+
+                <condition startArea="首营信息" name="first" input="radio" size="20" defaultvalue="1" title="首营">
+                    <sql>
+                        select a.value id,a.name text
+                        from SAAS_TEST.saas_dictionary a where a.category = 'has_seal'
+                    </sql>
+                </condition>
+                <condition name="proposer" input="text" size="20" title=" 申请人 "/>
+                <condition name="proposer_time" input="date" title=" 申请日期 "/>
+                <condition name="drug_business_person" input="text" size="20" title=" 业务负责人 "/>
+                <condition name="drug_business_person_advice" input="text" size="20" title=" 药店业务负责人意见 "/>
+                <condition name="saas_supplier_status" defaultvalue="1" input="radio" size="20" title="状态">
+                    <option id="0" text="禁用"/>
+                    <option id="1" text="启用"/>
+                </condition>
+                <condition name="remarks" input="textarea" size="20" title=" 备注 "/>
+                <condition endArea="首营信息" name="quality_manage_evaluation" input="textarea" size="20"
+                           title=" 质量管理体系评价 "/>
+            </conditions>
+        </button>
+
+        <button id="test2" title="停用供货商" icon="icon-cancel" channel="select_execute" width="1100">
+            <process>
+                <step channel="sql" ref="checkSSSql">
+                    <breakMessage>此供货商已停用</breakMessage>
+                </step>
+                <step channel="sql" ref="stopSql"/>
+            </process>
+            <key>id</key>
+            <table>SAAS_TEST.saas_supplier</table>
+            <condition name="id"/>
+        </button>
+
+        <button id="test3" title="启用供货商" icon="icon-ok" channel="select_execute" width="1200">
+            <process>
+                <step channel="sql" ref="checkSSql">
+                    <breakMessage>此供货商已启用</breakMessage>
+                </step>
+                <step channel="sql" ref="startSql"/>
+            </process>
+
+            <key>id</key>
+            <table>SAAS_TEST.saas_supplier</table>
+            <condition name="id"/>
+        </button>
+
+        <!-- <button id="test2" title="停用" icon="icon-cancel" channel="select_query_execute" width="900"> <process> <step channel="service" ref="saasGoodsService" method="setReviewedBusData1" /> <step channel="sql" ref="disableSql" /> <step channel="service" ref="commonSearchService2" method="test" /> </process> <queryProcess> <step channel="service" ref="commonSearchService2" method="test" /> <step channel="sql" ref="querySql" /> <step channel="service" ref="saasGoodsService" method="setBusPageData1"
+            /> </queryProcess> <key>id</key> <table>SAAS_TEST.saas_supplier</table> <conditions> <condition name="disable_user_id" input="text" title="停用人ID" readonly="true" /> <condition name="disable_user_name" input="text" title="停用人" readonly="true" /> <condition name="disable_time" input="date" size="10" title="停用时间" /> <condition name="disable_reason_name" input="textarea" hiddenid="disable_reason" size="11" title="停用原因" /> </conditions> </button> <button id="test3" title="启用" icon="icon-ok" channel="select_query_execute"
+            width="900"> <process> <step channel="service" ref="saasGoodsService" method="setReviewedBusData1" /> <step channel="sql" ref="enableSql" /> <step channel="service" ref="commonSearchService2" method="test" /> </process> <queryProcess> <step channel="service" ref="commonSearchService2" method="test" /> <step channel="sql" ref="querySql" /> <step channel="service" ref="saasGoodsService" method="setBusPageData1" /> </queryProcess> <key>id</key> <table>SAAS_TEST.saas_supplier</table> <conditions> <condition
+            name="enable_user_id" input="text" title="启用人ID" readonly="true" /> <condition name="enable_user_name" input="text" title="启用人" readonly="true" /> <condition name="enable_time" input="date" size="10" title="启用时间" /> <condition name="enable_reason_name" input="textarea" hiddenid="enable_reason" size="11" title="启用原因" /> </conditions> </button> -->
+
+
+        <button id="testimport" title="导入供货商" icon="icon-inboxDownload" channel="import" width="1100">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                           table="KKMY_CHANNELS"/>
+                <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+                <condition name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+                <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+                <condition name="channels_username" input="text" size="22" title="账号表用户名"/>
+                <condition name="creator" input="text" size="22" title="账号表创建人"/>
+                <condition input="select" title="渠道商地址" name="channels_addr1">
+                    <option id="1" text="aaa"/>
+                    <option id="2" text="bbb"/>
+                </condition>
+            </conditions>
+        </button>
+    </buttons>
+
+</template>

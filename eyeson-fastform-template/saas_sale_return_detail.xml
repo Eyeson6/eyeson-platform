@@ -1,0 +1,105 @@
+<template menuId="8057" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="质量管理"/>
+        <direct name="售后管理"/>
+        <direct name="退货记录详细"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="countSql" method="list">
+            select
+            '退货数量：' as sale_return_code,sum(quantity) as goods_code,
+            '总计金额：' as goods_name,sum(subtotal) as goods_generic_name
+            from saas_sale_return_detail
+            where 1=1
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[and sale_return_code = ${code}]]>
+            </if>
+        </sql>
+        <sql id="listsql" method="select">
+            select
+            id,
+            sale_return_id,
+            sale_return_code,
+            goods_id,
+            goods_code,
+            goods_name,
+            goods_generic_name,
+            goods_specification,
+            goods_place,
+            goods_type,
+            batch_code,
+            sequence,
+            manufacturer,
+            supplier_id,
+            supplier_code,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_id,
+            expire_time,
+            quantity,
+            retail_price,
+            subtotal,
+            salesperson_id,
+            salesperson_code,
+            salesperson_name
+            from saas_sale_return_detail
+            where 1=1
+            <if method="isNoEmpty" args="${code}">
+                <![CDATA[and sale_return_code = ${code}]]>
+            </if>
+        </sql>
+    </sqls>
+
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" queryId="1" queryTitle="销售流水汇总">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="sale_return_code" sortable="false" title="销售退货单号"/>
+            <clumn name="goods_code" sortable="false" title="商品编码"/>
+            <clumn name="goods_name" sortable="false" title="商品名称"/>
+            <clumn name="goods_generic_name" sortable="false" title="商品通用名称"/>
+            <clumn name="goods_specification" sortable="false" title="商品规格"/>
+            <clumn name="preparation_id" sortable="false" title="剂型"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="goods_place" sortable="false" title="商品产地"/>
+            <clumn name="batch_code" sortable="false" title="批号"/>
+            <clumn name="expire_time" sortable="false" title="有效期至"/>
+            <clumn name="supplier_code" sortable="false" title="供应商编码"/>
+            <clumn name="quantity" sortable="false" title="数量"/>
+            <clumn name="retail_price" sortable="false" title="单价"/>
+            <clumn name="subtotal" sortable="false" title="金额"/>
+            <clumn name="salesperson_name" sortable="false" title="销售员名称"/>
+        </model>
+        <footerProcess>
+            <step channel="sql" ref="countSql"/>
+        </footerProcess>
+        <conditions>
+            <condition input="text" title="退货单号" name="code"/>
+        </conditions>
+    </query>
+</template>

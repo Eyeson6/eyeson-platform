@@ -1,0 +1,57 @@
+<template menuId="418" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="财务管理"/>
+        <direct name="应付账款总账"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            IFNULL(SUM(cd.amount_of_money), 0) as cg_sum,
+            IFNULL(SUM(bd.amount_of_money), 0) as th_sum,
+            s.`name` as s_name,
+            s.`code` as s_code
+            FROM
+            saas_supplier s
+            LEFT JOIN saas_in_check c ON s.`code` = c.supplier_number
+            LEFT JOIN saas_in_check_details cd ON c.pi_number = cd.order_number
+            LEFT JOIN saas_purchase_order_back b ON s.`code` = b.supplier_number
+            LEFT JOIN saas_purchase_order_back_details bd ON b.pr_number = bd.order_number
+            where 1=1
+            <if method="isNoEmpty" args="${s_name}">
+                <![CDATA[ and s.name like %${s_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${s_code}">
+                <![CDATA[ and s.code like %${s_code}%]]>
+            </if>
+            GROUP BY
+            s.`code`
+        </sql>
+
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="s_code" sortable="false" title="供方商编码"/>
+            <clumn name="s_name" sortable="false" title="供应商名称" key="true"/>
+            <clumn name="cg_sum" sortable="false" title="采购金额"/>
+            <clumn name="th_sum" sortable="false" title="退货金额"/>
+            <!-- 	<clumn name="zd_user_id" sortable="false" title="已付金额" />
+                <clumn name="fk_user_id" sortable="false" title="欠款金额" /> -->
+        </model>
+        <conditions>
+            <condition input="text" title="供货供方编码" name="s_code"/>
+            <condition input="text" title="供货单位名称" name="s_name"/>
+        </conditions>
+    </query>
+
+</template>

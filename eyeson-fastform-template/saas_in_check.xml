@@ -1,0 +1,883 @@
+<template menuId="2200" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="入库审核"/>
+        <direct name="添加待入库商品"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <!-- 查询SQL语句 -->
+        <sql id="listsql" method="select">
+            SELECT
+            a.id,
+            supplier_number,
+            supplier_name,
+            pr_number,
+            pi_number,
+            check_name,
+            put_name,
+            reviewer,
+            CASE STATUS
+            WHEN '0' THEN
+            '未清'
+            WHEN '1' THEN
+            '已清'
+            END AS state,
+            money,
+            check_time,
+            put_time,
+            b.number,
+            NAME,
+            common_name,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "preparation_id"
+            AND c.`value` = b.preparation_id
+            ) AS preparation_name,
+            preparation_id,
+            specification,
+            (
+            SELECT
+            `name`
+            FROM
+            saas_dictionary c
+            WHERE
+            c.`code` = "unit_id"
+            AND c.`value` = b.unit_id
+            ) AS unit_name,
+            unit_id,
+            place,
+            registration_number,
+            batch_number,
+            production_date,
+            valid_period_to,
+            place_of_origin,
+            sterilization_batch,
+            arrival_quantity,
+            sampling_quantity,
+            number_of_qualified_acceptance,
+            quantity_rejected,
+            storage_quantity,
+            purchase_price,
+            amount_of_money,
+            inspection_report,
+            product_quality,
+            reasons_of_rejection,
+            acceptance_conclusion
+            FROM
+            saas_in_check a
+            JOIN saas_in_check_details b ON a.pi_number = b.order_number
+            where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and check_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and check_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_name like %${supplier_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                <![CDATA[ and supplier_number = ${supplier_number}]]>
+            </if>
+            order by check_time desc
+        </sql>
+
+        <sql id="querySql" method="query">
+            SELECT
+            a.id,
+            supplier_number,
+            supplier_name,
+            pr_number,
+            pi_number,
+            check_name,
+            put_name,
+            reviewer,
+            CASE
+            STATUS
+            WHEN '0' THEN
+            '未清'
+            WHEN '2' THEN
+            '已清'
+            END AS state,
+            money,
+            check_time,
+            put_time,
+            b.number,
+            NAME,
+            common_name,
+            preparation_id,
+            CASE
+            preparation_id
+            WHEN '1' THEN
+            '针剂'
+            WHEN '2' THEN
+            '成药'
+            WHEN '3' THEN
+            '器械'
+            WHEN '4' THEN
+            '麻药'
+            WHEN '5' THEN
+            '饮片'
+            WHEN '6' THEN
+            '生物制品'
+            WHEN '7' THEN
+            '基药'
+            ELSE
+            '其他'
+            END AS preparation_name,
+            specification,
+            unit_id,
+            CASE
+            unit_id
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS
+            unit_name,
+            place,
+            registration_number,
+            batch_number,
+            production_date,
+            valid_period_to,
+            place_of_origin,
+            sterilization_batch,
+            arrival_quantity,
+            sampling_quantity,
+            number_of_qualified_acceptance,
+            quantity_rejected,
+            storage_quantity,
+            purchase_price,
+            amount_of_money,
+            inspection_report,
+            product_quality,
+            reasons_of_rejection,
+            acceptance_conclusion
+            FROM
+            saas_in_check a
+            JOIN saas_in_check_details b
+            ON a.pi_number = b.order_number
+            where
+            pi_number=${key}
+        </sql>
+
+        <!-- 插入SQL语句 -->
+        <sql id="insertSql" method="insert">
+            insert into saas_in_check(
+
+            <if method="isNoEmpty" args="${supplier_number}">
+                supplier_number,
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                supplier_name,
+            </if>
+            <if method="isNoEmpty" args="${pr_number}">
+                pr_number,
+            </if>
+            <if method="isNoEmpty" args="${pi_number}">
+                pi_number,
+            </if>
+            <if method="isNoEmpty" args="${check_name}">
+                check_name,
+            </if>
+            <if method="isNoEmpty" args="${put_name}">
+                put_name,
+            </if>
+            <if method="isNoEmpty" args="${reviewer}">
+                reviewer,
+            </if>
+            <if method="isNoEmpty" args="${state}">
+                status,
+            </if>
+            <if method="isNoEmpty" args="${money}">
+                money,
+            </if>
+            <if method="isNoEmpty" args="${check_time}">
+                check_time,
+            </if>
+            <if method="isNoEmpty" args="${put_time}">
+                put_time,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${supplier_number}">
+                ${supplier_number},
+            </if>
+            <if method="isNoEmpty" args="${supplier_name}">
+                ${supplier_name},
+            </if>
+            <if method="isNoEmpty" args="${pr_number}">
+                ${pr_number},
+            </if>
+            <if method="isNoEmpty" args="${pi_number}">
+                ${pi_number},
+            </if>
+            <if method="isNoEmpty" args="${check_name}">
+                ${check_name},
+            </if>
+            <if method="isNoEmpty" args="${put_name}">
+                ${put_name},
+            </if>
+            <if method="isNoEmpty" args="${reviewer}">
+                ${reviewer},
+            </if>
+            <if method="isNoEmpty" args="${state}">
+                ${state},
+            </if>
+            <if method="isNoEmpty" args="${money}">
+                ${money},
+            </if>
+            <if method="isNoEmpty" args="${check_time}">
+                ${check_time},
+            </if>
+            <if method="isNoEmpty" args="${put_time}">
+                ${put_time},
+            </if>
+            )
+        </sql>
+
+        <sql id="insertAddrSql" method="insert">
+            insert into saas_in_check_details(
+
+            <if method="isNoEmpty" args="${pi_number}">
+                order_number,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${common_name}">
+                common_name,
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id,
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place,
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                registration_number,
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                batch_number,
+            </if>
+            <if method="isNoEmpty" args="${production_date}">
+                production_date,
+            </if>
+            <if method="isNoEmpty" args="${valid_period_to}">
+                valid_period_to,
+            </if>
+            <if method="isNoEmpty" args="${place_of_origin}">
+                place_of_origin,
+            </if>
+            <if method="isNoEmpty" args="${sterilization_batch}">
+                sterilization_batch,
+            </if>
+            <if method="isNoEmpty" args="${arrival_quantity}">
+                arrival_quantity,
+            </if>
+            <if method="isNoEmpty" args="${sampling_quantity}">
+                sampling_quantity,
+            </if>
+            <if method="isNoEmpty" args="${number_of_qualified_acceptance}">
+                number_of_qualified_acceptance,
+            </if>
+            quantity_rejected,
+            <if method="isNoEmpty" args="${storage_quantity}">
+                storage_quantity,
+            </if>
+            <if method="isNoEmpty" args="${purchase_price}">
+                purchase_price,
+            </if>
+            <if method="isNoEmpty" args="${amount_of_money}">
+                amount_of_money,
+            </if>
+            <if method="isNoEmpty" args="${inspection_report}">
+                inspection_report,
+            </if>
+            <if method="isNoEmpty" args="${product_quality}">
+                product_quality,
+            </if>
+            <if method="isNoEmpty" args="${reasons_of_rejection}">
+                reasons_of_rejection,
+            </if>
+            <if method="isNoEmpty" args="${acceptance_conclusion}">
+                acceptance_conclusion,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${pi_number}">
+                ${pi_number},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${common_name}">
+                ${common_name},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                ${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                ${specification},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                ${place},
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                ${registration_number},
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                ${batch_number},
+            </if>
+            <if method="isNoEmpty" args="${production_date}">
+                ${production_date},
+            </if>
+            <if method="isNoEmpty" args="${valid_period_to}">
+                ${valid_period_to},
+            </if>
+            <if method="isNoEmpty" args="${place_of_origin}">
+                ${place_of_origin},
+            </if>
+            <if method="isNoEmpty" args="${sterilization_batch}">
+                ${sterilization_batch},
+            </if>
+            <if method="isNoEmpty" args="${arrival_quantity}">
+                ${arrival_quantity},
+            </if>
+            <if method="isNoEmpty" args="${sampling_quantity}">
+                ${sampling_quantity},
+            </if>
+            <if method="isNoEmpty" args="${number_of_qualified_acceptance}">
+                ${number_of_qualified_acceptance},
+            </if>
+            arrival_quantity - number_of_qualified_acceptance,
+            <if method="isNoEmpty" args="${storage_quantity}">
+                ${storage_quantity},
+            </if>
+            <if method="isNoEmpty" args="${purchase_price}">
+                ${purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${amount_of_money}">
+                ${amount_of_money},
+            </if>
+            <if method="isNoEmpty" args="${inspection_report}">
+                ${inspection_report},
+            </if>
+            <if method="isNoEmpty" args="${product_quality}">
+                ${product_quality},
+            </if>
+            <if method="isNoEmpty" args="${reasons_of_rejection}">
+                ${reasons_of_rejection},
+            </if>
+            <if method="isNoEmpty" args="${acceptance_conclusion}">
+                ${acceptance_conclusion},
+            </if>
+            )
+        </sql>
+
+        <sql id="insertAddInventorySql" method="insert">
+            insert into saas_inventory(
+            <if method="isNoEmpty" args="${supplier_number}">
+                su_code,
+            </if>
+            <if method="isNoEmpty" args="${purchase_price}">
+                order_price,
+            </if>
+            <if method="isNoEmpty" args="${number_of_qualified_acceptance}">
+                quantity,
+            </if>
+            <if method="isNoEmpty" args="${valid_period_to}">
+                expiry_date,
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                batch_number,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                gds_code,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${supplier_number}">
+                ${supplier_number},
+            </if>
+            <if method="isNoEmpty" args="${purchase_price}">
+                ${purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${number_of_qualified_acceptance">
+                ${number_of_qualified_acceptance},
+            </if>
+            <if method="isNoEmpty" args="${valid_period_to}">
+                ${valid_period_to},
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                ${batch_number},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            )
+        </sql>
+
+
+        <sql id="updateStatusSql" method="update">
+            update saas_takeback_order set
+            order_states=1,
+            where takeback_order_code=${pr_number}
+        </sql>
+
+        <!-- 更新SQL语句 -->
+        <sql id="updateSql" method="update">
+            update saas_in_check set
+
+            <if method="isNoEmpty" args="${supplier_number}">
+                supplier_number=${supplier_number},
+            </if>
+            <if method="isNoEmpty" args="${pr_number}">
+                pr_number=${pr_number},
+            </if>
+            <if method="isNoEmpty" args="${pi_number}">
+                pi_number=${pi_number},
+            </if>
+            <if method="isNoEmpty" args="${check_name}">
+                check_name=${check_name},
+            </if>
+            <if method="isNoEmpty" args="${put_name}">
+                put_name=${put_name},
+            </if>
+            <if method="isNoEmpty" args="${	reviewer}">
+                reviewer=${ reviewer},
+            </if>
+            <if method="isNoEmpty" args="${state}">
+                status=${state},
+            </if>
+            <if method="isNoEmpty" args="${money}">
+                money=${money},
+            </if>
+            <if method="isNoEmpty" args="${check_time}">
+                check_time=${check_time},
+            </if>
+            <if method="isNoEmpty" args="${put_time}">
+                put_time=${put_time},
+            </if>
+            <!-- update_date=now(), -->
+            where pi_number=${pi_number}
+        </sql>
+
+        <sql id="updateAddrSql" method="update">
+            update saas_in_check_details set
+            <if method="isNoEmpty" args="${order_number}">
+                order_number=${order_number},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number=${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${common_name}">
+                common_name=${common_name},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id=${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification=${specification},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id=${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place=${place},
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                registration_number=${registration_number},
+            </if>
+            <if method="isNoEmpty" args="${batch_number}">
+                batch_number=${batch_number},
+            </if>
+            <if method="isNoEmpty" args="${production_date}">
+                production_date=${production_date},
+            </if>
+            <if method="isNoEmpty" args="${valid_period_to}">
+                valid_period_to=${valid_period_to},
+            </if>
+            <if method="isNoEmpty" args="${place_of_origin}">
+                place_of_origin=${place_of_origin},
+            </if>
+            <if method="isNoEmpty" args="${sterilization_batch}">
+                sterilization_batch=${sterilization_batch},
+            </if>
+            <if method="isNoEmpty" args="${arrival_quantity}">
+                arrival_quantity=${arrival_quantity},
+            </if>
+            <if method="isNoEmpty" args="${sampling_quantity}">
+                sampling_quantity=${sampling_quantity},
+            </if>
+            <if method="isNoEmpty" args="${number_of_qualified_acceptance}">
+                number_of_qualified_acceptance=${number_of_qualified_acceptance},
+            </if>
+            quantity_rejected=${arrival_quantity} -
+            ${number_of_qualified_acceptance},
+            <if method="isNoEmpty" args="${storage_quantity}">
+                storage_quantity=${storage_quantity},
+            </if>
+            <if method="isNoEmpty" args="${purchase_price}">
+                purchase_price=${purchase_price},
+            </if>
+            <if method="isNoEmpty" args="${amount_of_money}">
+                amount_of_money=${amount_of_money},
+            </if>
+            <if method="isNoEmpty" args="${inspection_report}">
+                inspection_report=${inspection_report},
+            </if>
+            <if method="isNoEmpty" args="${product_quality}">
+                product_quality=${product_quality},
+            </if>
+            <if method="isNoEmpty" args="${reasons_of_rejection}">
+                reasons_of_rejection=${reasons_of_rejection},
+            </if>
+            <if method="isNoEmpty" args="${acceptance_conclusion}">
+                acceptance_conclusion=${acceptance_conclusion},
+            </if>
+            where order_number=${pi_number}
+        </sql>
+
+        <!-- 计算总量 -->
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+
+        <!-- 删除SQL语句 -->
+        <sql id="deleteSql" method="delete">
+            delete from saas_in_check where
+            pi_number=${pi_number}
+        </sql>
+        <!-- 删除SQL语句 -->
+        <sql id="deleteAddSql" method="delete">
+            delete from saas_in_check_details
+            where order_number=${pi_number}
+        </sql>
+    </sqls>
+
+    <!-- =========================================页面显示节点=========================================== -->
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="supplier_number" sortable="false" title="供应商编号"/>
+            <clumn name="supplier_name" sortable="false" title="供应商名称"/>
+            <clumn name="pr_number" sortable="false" title="采购收货单号"/>
+            <clumn name="pi_number" sortable="false" title="采购验收单号"/>
+            <clumn name="check_name" sortable="false" title="验收人"/>
+            <clumn name="put_name" sortable="false" title="入库人员名字"/>
+            <clumn name="reviewer" sortable="false" title="审核人员"/>
+            <clumn name="state" sortable="false" title="状态"/>
+            <!-- <clumn name="money" sortable="false" title="采购订单总金额" /> -->
+            <clumn name="check_time" sortable="false" title="验收时间"/>
+            <clumn name="put_time" sortable="false" title="入库时间"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="common_name" sortable="false" title="通用名称"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="place" sortable="false" title="生产企业"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="batch_number" sortable="false" title="批号"/>
+            <clumn name="production_date" sortable="false" title="生产日期"/>
+            <clumn name="valid_period_to" sortable="false" title="有效期至"/>
+            <clumn name="place_of_origin" sortable="false" title="产地"/>
+            <clumn name="sterilization_batch" sortable="false" title="灭菌批次"/>
+            <clumn name="arrival_quantity" sortable="false" title="到货数量"/>
+            <clumn name="sampling_quantity" sortable="false" title="抽样数量"/>
+            <clumn name="number_of_qualified_acceptance" sortable="false" title="验收合格数量"/>
+            <clumn name="quantity_rejected" sortable="false" title="拒收数量"/>
+            <!-- <clumn name="storage_quantity" sortable="false" title="入库数量" /> -->
+            <clumn name="purchase_price" sortable="false" title="进货单价"/>
+            <clumn name="amount_of_money" sortable="false" title=" 金额	"/>
+            <clumn name="inspection_report" sortable="false" title="检验报告"/>
+            <clumn name="product_quality" sortable="false" title="产品质量"/>
+            <clumn name="reasons_of_rejection" sortable="false" title="拒收原因"/>
+            <clumn name="acceptance_conclusion" sortable="false" title="验收结论"/>
+        </model>
+        <!-- 查询条件 -->
+        <conditions>
+            <condition input="text" title="供应商编号" name="supplier_number"/>
+            <condition input="text" title="供应商名称" name="supplier_name"/>
+            <condition input="date" title="验收时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <buttons>
+        <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+        <button id="test1" title="添加|审核" icon="icon-add" channel="query_execute" width="1200">
+            <process>
+                <step channel="service" ref="saasGoodsService" method="saveReviewedData2"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="sql" ref="insertAddInventorySql"/>
+                <step channel="sql" ref="updateStatusSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="saasGoodsService" method="saveReviewedData4"/>
+            </queryProcess>
+
+            <conditions>
+                <condition name="supplier_number" input="text" size="20" title="供应商编号" popuplinkage="2210"
+                           popuptitle="供方选择" width="1000"/>
+                <condition name="supplier_name" input="text" size="20" title="供应商名称" readonly="true"/>
+                <condition name="pr_number" input="text" size="20" title="采购收货单号" readonly="true"/>
+                <!-- <condition name="pi_number" input="text" size="20" title="采购验收单号" readonly="true"/> -->
+                <condition name="check_name" input="text" size="20" title="验收人员" popuplinkage="2411" popuptitle="选择用户"
+                           width="600"/>
+                <condition name="put_name" input="text" size="20" title="入库人员" popuplinkage="2410" popuptitle="选择用户"
+                           width="600"/>
+                <condition name="reviewer" input="text" size="20" title="审核人员"/>
+                <!-- <condition name="state" input="text" size="20" title="状态" /> -->
+                <!-- <condition name="money" input="text" size="20" title="采购订单金额" /> -->
+                <condition name="check_time" input="date" title="验收时间"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition name="put_time" input="date" title="入库时间"
+                           defaultprocess="SaasmaintainService.defaultProcess"/>
+                <condition name="number" input="text" size="20" title="商品编码" readonly="true"/>
+                <condition name="name" input="text" size="20" title="商品名称" readonly="true"/>
+                <condition name="common_name" input="text" size="20" title="通用名称" readonly="true"/>
+                <condition name="preparation_name" input="text" title="剂型"/>
+                <condition name="specification" input="text" size="20" title="规格" readonly="true"/>
+                <condition name="unit_name" input="text" title="单位"/>
+                <condition name="place" input="text" size="20" title="生产企业" readonly="true"/>
+                <condition name="registration_number" input="text" size="20" title="批准文号" readonly="true"/>
+                <condition name="place_of_origin" input="text" size="20" title="产地" readonly="true"/>
+                <condition name="amount_of_money" input="text" size="20" title="金额" readonly="true"/>
+                <condition name="purchase_price" input="text" size="20" title="采购药品单价" required="true"
+                           popuplinkage="2220" width="800" passvalue="true"/>
+                <condition name="sterilization_batch" input="text" size="20" title="灭菌批次" required="true"/>
+                <!-- <condition name="quantity_rejected" input="text" size="20" title="拒收数量" /> -->
+                <condition name="sampling_quantity" input="text" size="20" title="抽样数量" required="true"/>
+                <condition name="arrival_quantity" input="text" size="20" title="到货数量" readonly="true"/>
+                <condition name="number_of_qualified_acceptance" input="text" size="20" title="验收合格数量" required="true"/>
+                <!-- <condition name="storage_quantity" input="text" size="20" title="入库数量" /> -->
+                <condition name="batch_number" input="text" size="20" title="批号" required="true"/>
+                <condition name="production_date" input="date" title="生产日期" required="true"/>
+                <condition name="valid_period_to" input="date" size="20" title="有效期至" required="true"/>
+                <condition name="inspection_report" input="text" size="20" title="检验报告"/>
+                <condition name="product_quality" input="text" size="20" title="产品质量"/>
+                <condition name="reasons_of_rejection" input="text" size="20" title="拒收原因"/>
+                <condition name="acceptance_conclusion" input="text" size="20" title="验收结论"/>
+            </conditions>
+        </button>
+
+
+        <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+        <button id="test2" title="修改" icon="icon-edit" channel="select_query_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="sql" ref="updateAddrSql"/>
+
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>pi_number</key>
+            <table>saas_in_check</table>
+            <conditions>
+                <condition name="supplier_number" input="text" size="20" title="供应商编号"/>
+                <condition name="pr_number" input="text" size="50" title="采购收货单号"/>
+                <condition name="pi_number" input="text" size="50" title="采购验收单号" key="true"/>
+                <condition name="check_name" input="text" size="20" title="验收人"/>
+                <condition name="put_name" input="text" size="20" title="入库人员名字"/>
+                <condition name="reviewer" input="text" size="20" title="审核人员"/>
+                <condition name="state" input="text" size="20" title="状态"/>
+                <!-- <condition name="money" input="text" size="20" title="采购订单总金额" /> -->
+                <condition name="check_time" input="date" title="验收时间"/>
+                <condition name="put_time" input="date" title="入库时间"/>
+                <condition name="number" input="text" size="20" title="商品编码" readonly="true"/>
+                <condition name="name" input="text" size="20" title="商品名称" readonly="true"/>
+                <condition name="common_name" input="text" size="20" title="通用名称" readonly="true"/>
+                <condition name="preparation_id" input="select" title="剂型">
+                    <sql>
+                        SELECT
+                        a.`value` id,
+                        a.`name` text
+                        FROM
+                        saas_dictionary a
+                        WHERE
+                        a.`code` = "preparation_id"
+                    </sql>
+                    <!-- <option id="0" text="片剂" /> <option id="1" text="针剂" /> <option id="2" text="成药" /> <option id="3" text="器械" /> <option id="4" text="麻药" /> <option id="5" text="饮片" /> <option id="6" text="生物制品" /> <option id="7" text="基药" /> -->
+                </condition>
+                <condition name="specification" input="text" size="20" title="规格" readonly="true"/>
+                <condition name="unit_id" input="select" title="单位">
+                    <sql>
+                        SELECT
+                        a.`value` id,
+                        a.`name` text
+                        FROM
+                        saas_dictionary a
+                        WHERE
+                        a.`code` = "unit_id"
+                    </sql>
+                    <!-- <option id="0" text="盒" /> <option id="1" text="瓶" /> <option id="2" text="支" /> <option id="3" text="版" /> <option id="4" text="袋" /> <option id="5" text="轴" /> <option id="6" text="丸" /> <option id="7" text="桶" /> <option id="8" text="贴" /> <option id="9" text="提" /> <option id="10" text="盆" /> <option id="11" text="包" /> <option id="12" text="台" /> <option id="13" text="个" /> <option id="14" text="条" /> <option id="15" text="克" /> <option id="16" text="具" /> <option id="17" text="对"
+                        /> <option id="18" text="千克" /> <option id="19" text="次" /> <option id="20" text="列" /> <option id="21" text="片" /> <option id="22" text="付" /> <option id="23" text="套" /> -->
+                </condition>
+                <condition name="place" input="text" size="20" title="生产企业" readonly="true"/>
+                <condition name="registration_number" input="text" size="20" title="批准文号" readonly="true"/>
+                <condition name="batch_number" input="text" size="20" title="批号" readonly="true"/>
+                <condition name="production_date" input="date" title="生产日期" readonly="true"/>
+                <condition name="valid_period_to" input="text" size="20" title="有效期至" readonly="true"/>
+                <condition name="place_of_origin" input="text" size="20" title="产地" readonly="true"/>
+                <condition name="sterilization_batch" input="text" size="20" title="灭菌批次" readonly="true"/>
+                <condition name="arrival_quantity" input="text" size="20" title="到货数量" readonly="true"/>
+                <condition name="sampling_quantity" input="text" size="20" title="抽样数量" readonly="true"/>
+                <condition name="number_of_qualified_acceptance" input="text" size="20" title="验收合格数量" readonly="true"/>
+                <condition name="quantity_rejected" input="text" size="20" title="拒收数量" readonly="true"/>
+                <condition name="storage_quantity" input="text" size="20" title="入库数量" readonly="true"/>
+                <condition name="purchase_price" input="text" size="20" title="进货单价" readonly="true"/>
+                <condition name="amount_of_money" input="text" size="20" title=" 金额" readonly="true"/>
+                <condition name="inspection_report" input="text" size="20" title="检验报告" readonly="true"/>
+                <condition name="product_quality" input="text" size="20" title="产品质量" readonly="true"/>
+                <condition name="reasons_of_rejection" input="text" size="20" title="拒收原因" readonly="true"/>
+                <condition name="acceptance_conclusion" input="text" size="20" title="验收结论" readonly="true"/>
+
+            </conditions>
+
+        </button>
+
+        <!-- 删除节点 -->
+        <button id="test3" title="删除" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="deleteSql"/>
+                <step channel="sql" ref="deleteAddSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>pi_number</key>
+            <condition name="pi_number"/>
+        </button>
+
+    </buttons>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+
+</template>
+
+

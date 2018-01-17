@@ -1,0 +1,763 @@
+<template menuId="212" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="基础数据"/>
+        <direct name="药品启用"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            toxicology,
+            domestic_import,
+            registration_code,
+            registration_code_expire_date,
+            barcode,
+            operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,
+            factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            category_id,
+            gsp_category_id,
+            retail_price,
+            member_price,
+            mcountry_price,
+            integral_good,
+            special_price,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            scatter_specification,
+            scattered,
+            curing,
+            prescription_drug,
+            ephedrine,
+            medical_insurance,
+            medical_insurance_code,
+            GMP,
+            GMP_code,
+            storage_condition,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            )
+            AS FIRST_name,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            sale_status,
+            CASE
+            sale_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS sale_status_name,
+
+            enable_user_id,
+            enable_user_name,
+            disable_user_id,
+            disable_user_name,
+            department,
+            enable_reason,
+            disable_reason,
+            enable_time,
+            disable_time,
+            create_time,
+            update_time,
+            remarks,
+            attachment
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1 and sale_status= 0 and NOT INSTR(RIGHT(CODE,3),'_01')>0
+            <if method="isNoEmpty" args="${startTime}"> <![CDATA[and create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}"> <![CDATA[ and create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}"> <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}"> <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}"> <![CDATA[ and creater_name like %${creater_name}%]]>
+            </if>
+            <!-- <if method="isNoEmpty" args="${gsp_category_id}"> <![CDATA[ and gsp_category_id like %${gsp_category_id}%]]> </if> -->
+            <if method="isNoEmpty" args="${sale_status}"> <![CDATA[ and sale_status like %${sale_status}%]]>
+            </if>
+            order by update_time desc
+        </sql>
+
+        <sql id="querySql" method="query">
+
+            select * from SAAS_TEST.saas_goods where id=${key}
+        </sql>
+
+        <sql id="ckSql" method="query">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            pinyin_code,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            toxicology,
+            CASE toxicology
+            WHEN '0' THEN
+            '无毒'
+            WHEN '1' THEN
+            '有毒'
+            END AS toxicology_name,
+            domestic_import,
+            CASE domestic_import
+            WHEN
+            '0' THEN
+            '国产'
+            WHEN '1'
+            THEN
+            '进口'
+            END AS domestic_import_name,
+            registration_code,
+            registration_code_expire_date,
+            barcode,
+            operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,
+            factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "goods_type"
+            AND dd.`value` = goods_type
+            ) AS goods_type_name,
+            category_id,
+            gsp_category_id,
+            retail_price,
+            member_price,
+            mcountry_price,
+            integral_good,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = integral_good
+            ) AS integral_good_name,
+            special_price,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = special_price
+            ) AS special_price_name,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            scatter_specification,
+            scattered,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = scattered
+            ) AS scattered_name,
+            curing,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` =
+            "has_seal"
+            AND dd.`value` = curing
+            ) AS curing_name,
+            prescription_drug,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = prescription_drug
+            ) AS prescription_drug_name,
+            ephedrine,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = ephedrine
+            ) AS ephedrine_name,
+            medical_insurance,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND
+            dd.`value` = medical_insurance
+            ) AS medical_insurance_name,
+            medical_insurance_code,
+            GMP,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = GMP
+            ) AS GMP_name,
+            GMP_code,
+            storage_condition,
+            CASE storage_condition
+            WHEN '0' THEN
+            '常温'
+            WHEN '1' THEN
+            '阴凉'
+            WHEN '2' THEN
+            '冷藏'
+            END AS storage_condition_name,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            ) AS FIRST_name,
+            sale_status,
+            CASE sale_status
+            WHEN '0' THEN
+            '启用'
+            WHEN '1'
+            THEN
+            '停用'
+            END AS sale_status_name,
+            remarks
+            FROM
+            SAAS_TEST.saas_goods
+            where id=${key}
+        </sql>
+        <!-- 插入SQL语句 -->
+
+
+        <sql id="updateSql" method="update">
+            update SAAS_TEST.saas_goods set
+            <if method="isNoEmpty" args="${code}">
+                code=${code},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code=${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${generic_name}">
+                generic_name=${generic_name},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification=${specification},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place=${place},
+            </if>
+            <if method="isNoEmpty" args="${manufacturer}">
+                manufacturer=${manufacturer},
+            </if>
+            <if method="isNoEmpty" args="${preparation_id}">
+                preparation_id=${preparation_id},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id=${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${toxicology}">
+                toxicology=${toxicology},
+            </if>
+            <if method="isNoEmpty" args="${domestic_import}">
+                domestic_import=${domestic_import},
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                registration_code=${registration_code},
+            </if>
+            <if method="isNoEmpty" args="${registration_code_expire_date}">
+                registration_code_expire_date=${registration_code_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${barcode}">
+                barcode=${barcode},
+            </if>
+            <if method="isNoEmpty" args="${operating_license}">
+                operating_license=${operating_license},
+            </if>
+            <if method="isNoEmpty" args="${enterprise_gmp_code}">
+                enterprise_gmp_code=${enterprise_gmp_code},
+            </if>
+            <if method="isNoEmpty" args="${enterprise_gmp_expire_date}">
+                enterprise_gmp_expire_date=${enterprise_gmp_expire_date},
+            </if>
+            <if method="isNoEmpty" args="${drug_licence}">
+                drug_licence=${drug_licence},
+            </if>
+            <if method="isNoEmpty" args="${factory_report}">
+                factory_report=${factory_report},
+            </if>
+            <if method="isNoEmpty" args="${valid_months}">
+                valid_months=${valid_months},
+            </if>
+            <if method="isNoEmpty" args="${registered_trademark}">
+                registered_trademark=${registered_trademark},
+            </if>
+            <if method="isNoEmpty" args="${certificated}">
+                certificated=${certificated},
+            </if>
+            <if method="isNoEmpty" args="${purchase_tax_rate}">
+                purchase_tax_rate=${purchase_tax_rate},
+            </if>
+            <if method="isNoEmpty" args="${sell_tax_rate}">
+                sell_tax_rate=${sell_tax_rate},
+            </if>
+            <if method="isNoEmpty" args="${goods_type}">
+                goods_type=${goods_type},
+            </if>
+            <if method="isNoEmpty" args="${category_id}">
+                category_id=${category_id},
+            </if>
+            <if method="isNoEmpty" args="${gsp_category_id}">
+                gsp_category_id=${gsp_category_id},
+            </if>
+            <if method="isNoEmpty" args="${retail_price}">
+                retail_price=${retail_price},
+            </if>
+            <if method="isNoEmpty" args="${member_price}">
+                member_price=${member_price},
+            </if>
+            <if method="isNoEmpty" args="${mcountry_price}">
+                mcountry_price=${mcountry_price},
+            </if>
+            <if method="isNoEmpty" args="${integral_good}">
+                integral_good=${integral_good},
+            </if>
+            <if method="isNoEmpty" args="${special_price}">
+                special_price=${special_price},
+            </if>
+            <if method="isNoEmpty" args="${integral_multiple}">
+                integral_multiple=${integral_multiple},
+            </if>
+            <if method="isNoEmpty" args="${scatter_unit_id}">
+                scatter_unit_id=${scatter_unit_id},
+            </if>
+            <if method="isNoEmpty" args="${scattter_quantity}">
+                scattter_quantity=${scattter_quantity},
+            </if>
+            <if method="isNoEmpty" args="${scatter_specification}">
+                scatter_specification=${scatter_specification},
+            </if>
+            <if method="isNoEmpty" args="${scattered}">
+                scattered=${scattered},
+            </if>
+            <if method="isNoEmpty" args="${curing}">
+                curing=${curing},
+            </if>
+            <if method="isNoEmpty" args="${prescription_drug}">
+                prescription_drug=${prescription_drug},
+            </if>
+            <if method="isNoEmpty" args="${ephedrine}">
+                ephedrine=${ephedrine},
+            </if>
+            <if method="isNoEmpty" args="${medical_insurance}">
+                medical_insurance=${medical_insurance},
+            </if>
+            <if method="isNoEmpty" args="${medical_insurance_code}">
+                medical_insurance_code=${medical_insurance_code},
+            </if>
+            <if method="isNoEmpty" args="${GMP}">
+                GMP=${GMP},
+            </if>
+            <if method="isNoEmpty" args="${GMP_code}">
+                GMP_code=${GMP_code},
+            </if>
+            <if method="isNoEmpty" args="${storage_condition}">
+                storage_condition=${storage_condition},
+            </if>
+            <if method="isNoEmpty" args="${first}">
+                first=${first},
+            </if>
+            <if method="isNoEmpty" args="${sale_status}">
+                sale_status=${sale_status},
+            </if>
+            <if method="isNoEmpty" args="${remarks}">
+                remarks=${remarks},
+            </if>
+            <if method="isNoEmpty" args="${attachment}">
+                attachment=${attachment},
+            </if>
+            update_time=now(),
+            where id=${key}
+        </sql>
+
+        <sql id="updateAddrSql" method="update">
+            update KKMY_CHANNELS_ACCOUNT set
+            <if method="isNoEmpty" args="${channels_username}">
+                channels_username=${channels_username},
+            </if>
+            <if method="isNoEmpty" args="${creator}">
+                creator=${creator},
+            </if>
+            where channels_id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from SAAS_TEST.saas_goods where
+            id= ${id}
+        </sql>
+
+
+        <sql id="enableSql" method="update">
+            update SAAS_TEST.saas_goods set
+            <if method="isNoEmpty" args="${enable_user_id}">
+                enable_user_id=${enable_user_id},
+            </if>
+            <if method="isNoEmpty" args="${enable_user_name}">
+                enable_user_name=${enable_user_name},
+            </if>
+            <if method="isNoEmpty" args="${disable_time}">
+                enable_time=${enable_time},
+            </if>
+            <if method="isNoEmpty" args="${enable_reason}">
+                enable_reason=${enable_reason},
+            </if>
+            sale_status=1,
+            where id=${key}
+        </sql>
+
+
+        <sql id="checkSSql" method="query">
+            SELECT
+            CASE
+            WHEN '0' = sale_status THEN
+            'false'
+            ELSE
+            'true'
+            END AS mustBreak
+            FROM
+            SAAS_TEST.saas_goods
+            WHERE
+            id = ${id}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="CODE" sortable="false" title="编码"/>
+            <clumn name="NAME" sortable="false" title="名称"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="FIRST_name" sortable="false" title="是否首营"/>
+            <clumn name="sale_status_name" sortable="false" title="销售状态"/>
+            <!-- <clumn name="scatter_unit_id" sortable="false" title="拆零单位ID" /> -->
+
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <!-- <condition input="text" title="创建人" name="creater_name" /> -->
+            <!-- <condition input="select" title="GSP分类" name="gsp_category_id"> <option id="0" text="中药饮片" /> <option id="1" text="中成药" /> <option id="2" text="化学药制剂" /> <option id="3" text="抗生素制剂" /> <option id="4" text="生化药品" /> <option id="5" text="生物制药" /> <option id="6" text="进口药品" /> <option id="7" text="保健食品" /> <option id="8" text="化妆品" /> <option id="9" text="消毒产品" /> <option id="10" text="非药品" /> <option id="11" text="玻璃仪器" /> <option id="12" text="计生用品" /> <option id="13" text="医疗器械" /> </condition> -->
+            <!-- <condition input="select" title="销售状态" name="sale_status">
+                <option id="0" text="提交" /> <option id="1" text="一级审批" /> <option id="2" text="二级审批" />
+                <option id="" text="全部" />
+                <option id="1" text="启用" />
+                <option id="0" text="停用" />
+            </condition> -->
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <operate>
+        <button id="test1" title="查看" icon="icon-remove" channel="query" width="1200">
+            <queryProcess>
+                <step channel="sql" ref="ckSql"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_goods</table>
+            <conditions>
+                <condition startArea="基础信息" name="goods_type_name" input="text" size="20" title="商品种类" readonly="true"/>
+                <condition name="category_id" input="select" size="20" title="药品分类" readonly="true"/>
+                <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true"/>
+                <condition name="standard_library_id" input="text" size="20" title="标准库ID" readonly="true"/>
+                <condition name="NAME" input="text" size="20" title="名称" readonly="true"/>
+                <condition name="generic_name" input="text" size="20" title="通用名称" readonly="true"/>
+                <condition name="preparation_name" input="text" size="20" title="剂型" readonly="true"/>
+                <condition name="barcode" input="text" size="20" title="条形码" readonly="true"/>
+                <condition name="specification" input="text" size="20" title="规格" required="true" readonly="true"/>
+                <condition name="unit_name" input="text" size="20" title="单位" readonly="true"/>
+                <!-- <condition name="CODE" input="text" size="50" title="编码" readonly="true" /> -->
+                <condition name="packing_specification" input="text" size="20" title="包装规格" readonly="true"/>
+                <condition name="packing_unit_id" input="text" size="20" title="包装单位" readonly="true"/>
+                <condition name="manufacturer" input="text" size="20" title="生产企业" readonly="true"/>
+                <condition name="place" input="text" size="20" title="产地" readonly="true"/>
+                <condition name="registration_code" input="text" size="20" title="批准文号" readonly="true"/>
+                <condition name="registration_code_expire_date" input="date" title="批准文号期限" readonly="true"/>
+                <condition name="toxicology_name" input="text" size="20" title="毒理" readonly="true"/>
+                <condition name="domestic_import_name" input="text" size="20" title="国产/进口" readonly="true"/>
+                <condition endArea="基础信息" name="valid_months" input="text" size="20" title="有效月数" required="true"
+                           readonly="true"/>
+
+                <condition startArea="销售设置" name="retail_price" input="text" size="20" title="零售价" readonly="true"/>
+                <condition name="member_price" input="text" size="20" title="会员价" readonly="true"/>
+                <condition name="mcountry_price" input="text" size="20" title="国零价" readonly="true"/>
+                <condition name="safe_inventory" input="text" size="20" validate="number" title="安全库存" readonly="true"/>
+                <condition name="integral_good_name" input="text" size="20" title="积分商品" readonly="true"/>
+                <condition name="integral_multiple" input="text" size="20" title="积分倍数" readonly="true"/>
+                <condition name="special_price_name" input="text" size="20" title="特价商品" readonly="true"/>
+                <condition name="storage_id_name" input="text" size="20" title="默认货位" readonly="true"/>
+                <condition name="scattered_name" input="text" size="20" title="拆零" readonly="true"/>
+                <condition name="scatter_unit_id" input="select" size="20" title="拆零单位" readonly="true"/>
+                <condition name="scattter_quantity" input="text" size="20" title="拆零数量" readonly="true"/>
+                <condition name="scatter_specification" input="text" size="20" title="拆零规格" readonly="true"/>
+                <condition name="purchase_tax_rate" input="text" size="20" title="采购税率(%)" readonly="true"/>
+                <condition endArea="销售设置" name="sell_tax_rate" input="text" size="20" title="销售税率(%)" readonly="true"/>
+
+                <condition startArea="GSP设置" name="prescription_drug_name" input="text" size="20" title="处方药"
+                           readonly="true"/>
+                <condition name="ephedrine_name" input="text" size="20" title="麻黄碱" readonly="true"/>
+                <condition name="curing_name" input="text" size="20" title="重点养护" readonly="true"/>
+                <condition name="storage_condition_name" input="text" size="20" title="储存条件" readonly="true"/>
+                <condition name="medical_insurance_name" input="select" size="20" title="医保药品" readonly="true"/>
+                <condition endArea="GSP管理" name="medical_insurance_code" input="text" size="20" title="医保号"
+                           readonly="true"/>
+
+                <condition startArea="其他" name="sale_status_name" input="text" size="20" title="药品状态" readonly="true"/>
+                <condition name="FIRST_name" input="text" size="20" title="首营" readonly="true"/>
+                <condition endArea="其他" name="remarks_name" input="textarea" hiddenid="remarks" size="20" title="添加附件 "
+                           readonly="true"/>
+            </conditions>
+        </button>
+
+
+        <!-- <button id="test2" title="修改" icon="icon-edit" channel="select_query_execute" width="1100"> <preprocess> <step channel="service" ref="commonSearchService2" method="test" /> </preprocess> <process> <step channel="service" ref="saasSupplierService" method="modiReviewedData" /> <step channel="sql" ref="updateSql" /> <step channel="service" ref="commonSearchService2" method="test" /> </process> <queryProcess> <step channel="service" ref="commonSearchService2" method="test" /> <step channel="sql"
+            ref="querySql" /> <step channel="service" ref="commonSearchService2" method="test" /> </queryProcess> <key>id</key> <table>SAAS_TEST.saas_goods</table> <conditions> <condition startArea="基础信息" name="code" input="text" size="50" title="编码" readonly="true" /> <condition name="name" input="text" size="20" title="名称" required="true" popuplinkage="888888" width="100" passvalue="true" /> <condition name="pinyin_code" input="text" size="20" title="拼音码" readonly="true" /> <condition name="generic_name" input="text"
+            size="20" title="通用名称" /> <condition name="specification" input="text" size="20" title="规格" required="true" /> <condition name="place" input="text" size="20" title="产地" /> <condition name="manufacturer" input="text" size="20" title="生产企业" required="true" /> <condition name="preparation_id" input="select" size="20" title="剂型"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'preparation_id' </sql> </condition> <condition name="unit_id" input="select" size="20"
+            title="单位"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'unit_id' </sql> </condition> <condition name="toxicology" input="select" size="20" title="毒理"> <option id="0" text="无毒" /> <option id="1" text="有毒" /> </condition> <condition name="domestic_import" input="select" size="20" title="国产/进口"> <option id="0" text="国产" /> <option id="1" text="进口" /> </condition> <condition name="registration_code" input="text" size="20" title="批准文号" required="true" /> <condition
+            name="registration_code_expire_date" input="date" title="注册文号期限" /> <condition name="barcode" input="text" size="20" title="条码" /> <condition name="operating_license" input="date" size="20" title="营业执照期限" /> <condition name="enterprise_gmp_code" input="text" size="20" title="企业GMP号" /> <condition name="enterprise_gmp_expire_date" input="date" title="企业GMP期限" /> <condition name="drug_licence" input="date" size="20" title="药品许可证期限" /> <condition name="factory_report" input="date" size="20" title="厂检报告书的期限"
+            /> <condition name="valid_months" input="text" size="20" title="有效月数" required="true" /> <condition name="registered_trademark" input="text" size="20" title="注册商标" /> <condition name="certificated" input="text" size="20" title="合格证" /> <condition name="purchase_tax_rate" input="text" size="20" title="采购税率(%)" /> <condition endArea="基础信息" name="sell_tax_rate" input="text" size="20" title="销售税率(%)" /> <condition startArea="销售设置" name="goods_type" input="select" size="20" title="商品种类"> <sql> select
+            a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'goods_type' </sql> </condition> <condition name="category_id" input="select" size="20" title="药品分类ID" /> <condition name="gsp_category_id" input="text" size="20" title="GSP分类ID"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'goods_type' </sql> </condition> <condition name="mcountry_price" input="text" size="20" title="国零价" /> <condition name="retail_price" input="text" size="20"
+            title="零售价" required="true" /> <condition name="member_price" input="text" size="20" title="标准会员价" required="true" /> <condition name="integral_good" input="select" size="20" title="积分商品"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition name="special_price" input="select" size="20" title="特价商品"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition
+            name="integral_multiple" input="text" size="20" title="积分倍数" /> <condition name="scatter_unit_id" input="select" size="20" title="拆零单位" /> <condition endArea="销售设置" name="scattter_quantity" input="text" size="20" title="拆零数量" /> <condition startArea="GSP管理" name="scatter_specification" input="text" size="20" title="拆零规格" /> <condition name="scattered" input="select" size="20" title="拆零"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition>
+            <condition name="curing" input="select" size="20" title="重点养护"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition name="prescription_drug" input="select" size="20" title="处方药"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition name="ephedrine" input="select" size="20" title="麻黄碱"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary
+            a where a.category = 'has_seal' </sql> </condition> <condition name="medical_insurance" input="select" size="20" title="医保药品"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition name="medical_insurance_code" input="text" size="20" title="医保号" /> <condition name="GMP" input="select" size="20" title="获得GMP认证"> <sql> select a.value id,a.name text from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition>
+            <condition name="GMP_code" input="text" size="20" title="证书号" /> <condition endArea="GSP管理" name="storage_condition" input="select" size="20" title="储存条件"> <option id="0" text="常温" /> <option id="1" text="阴凉" /> <option id="1" text="冷藏" /> </condition> <condition startArea="其他" name="sale_status" input="select" size="20" title="销售状态"> <option id="0" text="禁用" /> <option id="1" text="启用" /> </condition> <condition name="first" input="select" size="20" title="首营"> <sql> select a.value id,a.name text
+            from SAAS_TEST.saas_dictionary a where a.category = 'has_seal' </sql> </condition> <condition endArea="其他" name="remarks_name" input="textarea" hiddenid="remarks" size="20" title=" 备注 " /> </conditions> </button> -->
+    </operate>
+
+    <buttons>
+
+        <button id="test3" title="启用药品" icon="icon-ok" channel="select_query_execute" width="1000" height="200">
+            <process>
+                <step channel="service" ref="saasGoodsService" method="setReviewedBusData1"/>
+                <step channel="sql" ref="enableSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="saasGoodsService" method="setBusPageData1"/>
+            </queryProcess>
+            <preprocess>
+                <step channel="sql" ref="checkSSql">
+                    <breakMessage>此商品已启用</breakMessage>
+                </step>
+            </preprocess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_goods</table>
+            <conditions>
+                <condition name="enable_user_id" input="text" title="启用人ID" readonly="true"/>
+                <condition name="enable_user_name" input="text" title="启用人" readonly="true"/>
+                <condition name="enable_time" input="date" size="10" title="启用时间"
+                           defaultprocess="saasSupplierService.setDate"/>
+                <condition name="enable_reason_name" input="textarea" hiddenid="enable_reason" size="11" title="启用原因"/>
+            </conditions>
+        </button>
+
+        <button id="testimport" title="导入" icon="icon-inboxDownload" channel="import" width="1100">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="insertSql"/>
+                <step channel="sql" ref="insertAddrSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition name="channels_name" input="text" title="渠道商名称" required="true" repeat="false"
+                           table="KKMY_CHANNELS"/>
+                <condition name="channels_addr" input="text" size="10" validate="number" title="渠道商地址"/>
+                <condition name="docking_people" input="text" size="10" validate="email" title="邮箱人"/>
+                <condition name="docking_phone" input="text" size="11" validate="mobile" title="对接人电话"/>
+                <condition name="channels_username" input="text" size="22" title="账号表用户名"/>
+                <condition name="creator" input="text" size="22" title="账号表创建人"/>
+                <condition input="select" title="渠道商地址" name="channels_addr1">
+                    <option id="1" text="aaa"/>
+                    <option id="2" text="bbb"/>
+                </condition>
+            </conditions>
+        </button>
+
+    </buttons>
+
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+</template>
+
+

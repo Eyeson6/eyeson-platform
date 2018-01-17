@@ -1,0 +1,315 @@
+<template menuId="2100" version="2"><!--模板跟节点 -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="基础数据"/>
+        <direct name="价格维护"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置 -->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            CODE,
+            NAME,
+            generic_name,
+            specification,
+            place,
+            manufacturer,
+            preparation_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "preparation_id"
+            AND dd.`value` = preparation_id
+            ) AS preparation_name,
+            unit_id,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "unit_id"
+            AND dd.`value` = unit_id
+            ) AS unit_name,
+            toxicology,
+            domestic_import,
+            registration_code,
+            registration_code_expire_date,
+            barcode,
+            operating_license,
+            enterprise_gmp_code,
+            enterprise_gmp_expire_date,
+            drug_licence,
+            factory_report,
+            valid_months,
+            registered_trademark,
+            certificated,
+            purchase_tax_rate,
+            sell_tax_rate,
+            goods_type,
+            category_id,
+            gsp_category_id,
+            retail_price,
+            member_price,
+            mcountry_price,
+            integral_good,
+            special_price,
+            integral_multiple,
+            scatter_unit_id,
+            scattter_quantity,
+            scatter_specification,
+            scattered,
+            curing,
+            prescription_drug,
+            ephedrine,
+            medical_insurance,
+            medical_insurance_code,
+            GMP,
+            GMP_code,
+            storage_condition,
+            FIRST,
+            (
+            SELECT
+            NAME
+            FROM
+            SAAS_TEST.saas_dictionary dd
+            WHERE
+            dd.`category` = "has_seal"
+            AND dd.`value` = FIRST
+            )
+            AS FIRST_name,
+            quality_manager_approver_id,
+            quality_manager_approver_name,
+            quality_manager_approval_status,
+            quality_manager_approval_time,
+            quality_manager_approval_reason,
+            quality_approver_id,
+            quality_approver_name,
+            quality_approval_time,
+            quality_approval_reason,
+            creater_id,
+            creater_name,
+            modifier_id,
+            modifier_name,
+            sale_status,
+            CASE
+            sale_status
+            WHEN '0' THEN
+            '停用'
+            WHEN '1' THEN
+            '启用'
+            END AS sale_status_name,
+
+            enable_user_id,
+            enable_user_name,
+            disable_user_id,
+            disable_user_name,
+            department,
+            enable_reason,
+            disable_reason,
+            enable_time,
+            disable_time,
+            create_time,
+            update_time,
+            remarks,
+            attachment
+            FROM
+            SAAS_TEST.saas_goods
+            where 1=1
+            <if method="isNoEmpty" args="${name}"> <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${code}"> <![CDATA[ and code like %${code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}"> <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_code}">
+                <![CDATA[ and registration_code like %${registration_code}%]]>
+            </if>
+            order by update_time desc
+        </sql>
+
+        <sql id="querySql" method="query">
+
+            select * from SAAS_TEST.saas_goods where id=${key}
+        </sql>
+
+
+        <sql id="updateSqlBatch" method="update">
+            update SAAS_TEST.saas_goods set
+            <if method="isNoEmpty" args="${rows.retail_price}">
+                retail_price=${rows.retail_price},
+            </if>
+            <if method="isNoEmpty" args="${rows.member_price}">
+                member_price=${rows.member_price},
+            </if>
+            <if method="isNoEmpty" args="${rows.mcountry_price}">
+                mcountry_price=${rows.mcountry_price},
+            </if>
+            update_time=now(),
+            where id=${rows.id}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.channels_id) channelsid
+            from KKMY_CHANNELS a where 1=1
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_time >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_time <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${channels_name}">
+                <![CDATA[ and a.channels_name like %${channels_name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${docking_people}">
+                <![CDATA[ and a.channels_id =${docking_people}]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            delete from SAAS_TEST.saas_goods where
+            id= ${id}
+        </sql>
+
+        <sql id="disableSql" method="update">
+            update SAAS_TEST.saas_goods set
+            <if method="isNoEmpty" args="${disable_user_id}">
+                disable_user_id=${disable_user_id},
+            </if>
+            <if method="isNoEmpty" args="${disable_user_name}">
+                disable_user_name=${disable_user_name},
+            </if>
+            <if method="isNoEmpty" args="${disable_time}">
+                disable_time=${disable_time},
+            </if>
+            <if method="isNoEmpty" args="${disable_reason}">
+                disable_reason=${disable_reason},
+            </if>
+            sale_status=0,
+            where id=${key}
+        </sql>
+
+        <sql id="enableSql" method="update">
+            update SAAS_TEST.saas_goods set
+            <if method="isNoEmpty" args="${enable_user_id}">
+                enable_user_id=${enable_user_id},
+            </if>
+            <if method="isNoEmpty" args="${enable_user_name}">
+                enable_user_name=${enable_user_name},
+            </if>
+            <if method="isNoEmpty" args="${disable_time}">
+                enable_time=${enable_time},
+            </if>
+            <if method="isNoEmpty" args="${enable_reason}">
+                enable_reason=${enable_reason},
+            </if>
+            sale_status=1,
+            where id=${key}
+        </sql>
+
+        <sql id="checkNumSql" method="query">
+            select
+            CASE
+            WHEN CONVERT(${member_price},SIGNED) > CONVERT(${retail_price},SIGNED) THEN
+            'true'
+            ELSE
+            'false'
+            END AS mustBreak
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="id" sortable="false" title="id" hidden="true"/>
+            <clumn name="CODE" sortable="false" title="编码"/>
+            <clumn name="NAME" sortable="false" title="名称"/>
+            <clumn name="generic_name" sortable="false" title="通用名"/>
+            <clumn name="unit_name" sortable="false" title="单位"/>
+            <clumn name="preparation_name" sortable="false" title="剂型"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="manufacturer" sortable="false" title="生产企业"/>
+            <clumn name="registration_code" sortable="false" title="批准文号"/>
+            <clumn name="retail_price" sortable="false" title="零售价" editor="true"/>
+            <clumn name="member_price" sortable="false" title="会员价" editor="true"/>
+            <clumn name="mcountry_price" sortable="false" title="国零价" editor="true"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="商品编码" name="code"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="批准文号" name="registration_code"/>
+        </conditions>
+    </query>
+
+
+    <buttons>
+
+        <button id="testrowsave" title="全部批量修改" icon="icon-add" channel="fastSave" width="1100"
+                successMessage="批量修改成功！">
+            <process>
+                <!-- 				<step channel="sql" ref="checkNumSql">
+                                    <breakMessage>零售价应该大于会员价</breakMessage>
+                                </step> -->
+                <step channel="batchSql" ref="updateSqlBatch" collection="rows" item="rows"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>id</key>
+            <table>SAAS_TEST.saas_goods</table>
+            <conditions>
+                <condition name="code" input="text" size="50" title="" readonly="true"/>
+            </conditions>
+        </button>
+
+
+    </buttons>
+
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联 -->
+    <charts>
+        <chart input="Pie2D" labels="dat" title="红包个数饼图">
+            <process>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="totalSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+        </chart>
+        <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+            <data name="redNum" title="实发个数"></data>
+            <data name="backNum" title="退领个数"></data>
+        </chart>
+    </charts>
+
+</template>
+
+

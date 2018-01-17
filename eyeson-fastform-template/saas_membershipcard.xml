@@ -1,0 +1,721 @@
+<template menuId="498" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="门店管理"/>
+        <direct name="会员卡管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+
+            CASE memship_category
+            WHEN '0' THEN
+            '普通会员卡'
+            ELSE
+            '其他'
+            END AS memship_category,
+
+            memship_name,
+            memship_num,
+            discount,
+
+            CASE sex
+            WHEN '0' THEN
+            '男'
+            WHEN '1' THEN
+            '女'
+            ELSE
+            '其他'
+            END AS sex,
+
+            CASE profession
+            WHEN '0' THEN
+            '教师职业'
+            ELSE
+            '其他'
+            END AS profession,
+
+            tel,
+            cellphone_num,
+            mon_income,
+
+            CASE qualification
+            WHEN '0' THEN
+            '博士'
+            WHEN '1' THEN
+            '硕士'
+            WHEN '2' THEN
+            '本科'
+            WHEN '3' THEN
+            '大专'
+            ELSE
+            '无'
+            END AS qualification,
+
+            identification_card,
+            illness,
+            address,
+            post_code,
+            score_amount,
+            birth_date,
+            remark,
+            keyword,
+            pinyin_code,
+            application_date,
+            effect_date,
+            history_score,
+            current_score,
+            upgrade_score,
+            commission_date,
+            cumulative,
+            initial_amount,
+            integral_consumption,
+            barcode,
+            used_medicines,
+            allergy_medicines,
+            under_channel,
+            interest_hobbies,
+            interest_content,
+            activity,
+            creater_id,
+            creater_name,
+            create_date,
+            delete_state
+            FROM
+            saas_test.saas_member where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                <![CDATA[ and memship_num like %${memship_num}%]]>
+            </if>
+            order by create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_membershipcard where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_membershipcard(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${memship_category}">
+                memship_category,
+            </if>
+            <if method="isNoEmpty" args="${memship_name}">
+                memship_name,
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                memship_num,
+            </if>
+            <if method="isNoEmpty" args="${discount}">
+                discount,
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                sex,
+            </if>
+            <if method="isNoEmpty" args="${profession}">
+                profession,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${cellphone_num}">
+                cellphone_num,
+            </if>
+            <if method="isNoEmpty" args="${mon_income}">
+                mon_income,
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                qualification,
+            </if>
+            <if method="isNoEmpty" args="${identification_card}">
+                identification_card,
+            </if>
+            <if method="isNoEmpty" args="${illness}">
+                illness,
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address,
+            </if>
+            <if method="isNoEmpty" args="${post_code}">
+                post_code,
+            </if>
+            <if method="isNoEmpty" args="${score_amount}">
+                score_amount,
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                birth_date,
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                remark,
+            </if>
+            <if method="isNoEmpty" args="${keyword}">
+                keyword,
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code,
+            </if>
+            <if method="isNoEmpty" args="${application_date}">
+                application_date,
+            </if>
+            <if method="isNoEmpty" args="${effect_date}">
+                effect_date,
+            </if>
+            <if method="isNoEmpty" args="${history_score}">
+                history_score,
+            </if>
+            <if method="isNoEmpty" args="${current_score}">
+                current_score,
+            </if>
+            <if method="isNoEmpty" args="${upgrade_score}">
+                upgrade_score,
+            </if>
+            <if method="isNoEmpty" args="${commission_date}">
+                commission_date,
+            </if>
+            <if method="isNoEmpty" args="${cumulative}">
+                cumulative,
+            </if>
+            <if method="isNoEmpty" args="${initial_amount}">
+                initial_amount,
+            </if>
+            <if method="isNoEmpty" args="${integral_consumption}">
+                integral_consumption,
+            </if>
+            <if method="isNoEmpty" args="${barcode}">
+                barcode,
+            </if>
+            <if method="isNoEmpty" args="${used_medicines}">
+                used_medicines,
+            </if>
+            <if method="isNoEmpty" args="${allergy_medicines}">
+                allergy_medicines,
+            </if>
+            <if method="isNoEmpty" args="${under_channel}">
+                under_channel,
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                interest_hobbies,
+            </if>
+            <if method="isNoEmpty" args="${interest_content}">
+                interest_content,
+            </if>
+            <if method="isNoEmpty" args="${activity}">
+                activity,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state,
+            </if>
+            create_date,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${memship_category}">
+                ${memship_category},
+            </if>
+            <if method="isNoEmpty" args="${memship_name}">
+                ${memship_name},
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                ${memship_num},
+            </if>
+            <if method="isNoEmpty" args="${discount}">
+                ${discount},
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                ${sex},
+            </if>
+            <if method="isNoEmpty" args="${profession}">
+                ${profession},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${cellphone_num}">
+                ${cellphone_num},
+            </if>
+            <if method="isNoEmpty" args="${mon_income}">
+                ${mon_income},
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                ${qualification},
+            </if>
+            <if method="isNoEmpty" args="${identification_card}">
+                ${identification_card},
+            </if>
+            <if method="isNoEmpty" args="${illness}">
+                ${illness},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                ${address},
+            </if>
+            <if method="isNoEmpty" args="${post_code}">
+                ${post_code},
+            </if>
+            <if method="isNoEmpty" args="${score_amount}">
+                ${score_amount},
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                ${birth_date},
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                ${remark},
+            </if>
+            <if method="isNoEmpty" args="${keyword}">
+                ${keyword},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                ${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${application_date}">
+                ${application_date},
+            </if>
+            <if method="isNoEmpty" args="${effect_date}">
+                ${effect_date},
+            </if>
+            <if method="isNoEmpty" args="${history_score}">
+                ${history_score},
+            </if>
+            <if method="isNoEmpty" args="${current_score}">
+                ${current_score},
+            </if>
+            <if method="isNoEmpty" args="${upgrade_score}">
+                ${upgrade_score},
+            </if>
+            <if method="isNoEmpty" args="${commission_date}">
+                ${commission_date},
+            </if>
+            <if method="isNoEmpty" args="${cumulative}">
+                ${cumulative},
+            </if>
+            <if method="isNoEmpty" args="${initial_amount}">
+                ${initial_amount},
+            </if>
+            <if method="isNoEmpty" args="${integral_consumption}">
+                ${integral_consumption},
+            </if>
+            <if method="isNoEmpty" args="${barcode}">
+                ${barcode},
+            </if>
+            <if method="isNoEmpty" args="${used_medicines}">
+                ${used_medicines},
+            </if>
+            <if method="isNoEmpty" args="${allergy_medicines}">
+                ${allergy_medicines},
+            </if>
+            <if method="isNoEmpty" args="${under_channel}">
+                ${under_channel},
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                ${interest_hobbies},
+            </if>
+            <if method="isNoEmpty" args="${interest_content}">
+                ${interest_content},
+            </if>
+            <if method="isNoEmpty" args="${activity}">
+                ${activity},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                ${delete_state},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_membershipcard set
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${memship_category}">
+                memship_category=${memship_category},
+            </if>
+            <if method="isNoEmpty" args="${memship_name}">
+                memship_name=${memship_name},
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                memship_num=${memship_num},
+            </if>
+            <if method="isNoEmpty" args="${discount}">
+                discount=${discount},
+            </if>
+            <if method="isNoEmpty" args="${sex}">
+                sex=${sex},
+            </if>
+            <if method="isNoEmpty" args="${profession}">
+                profession=${profession},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${cellphone_num}">
+                cellphone_num=${cellphone_num},
+            </if>
+            <if method="isNoEmpty" args="${mon_income}">
+                mon_income=${mon_income},
+            </if>
+            <if method="isNoEmpty" args="${qualification}">
+                qualification=${qualification},
+            </if>
+            <if method="isNoEmpty" args="${identification_card}">
+                identification_card=${identification_card},
+            </if>
+            <if method="isNoEmpty" args="${illness}">
+                illness=${illness},
+            </if>
+            <if method="isNoEmpty" args="${address}">
+                address=${address},
+            </if>
+            <if method="isNoEmpty" args="${post_code}">
+                post_code=${post_code},
+            </if>
+            <if method="isNoEmpty" args="${score_amount}">
+                score_amount=${score_amount},
+            </if>
+            <if method="isNoEmpty" args="${birth_date}">
+                birth_date=${birth_date},
+            </if>
+            <if method="isNoEmpty" args="${remark}">
+                remark=${remark},
+            </if>
+            <if method="isNoEmpty" args="${keyword}">
+                keyword=${keyword},
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                pinyin_code=${pinyin_code},
+            </if>
+            <if method="isNoEmpty" args="${application_date}">
+                application_date=${application_date},
+            </if>
+            <if method="isNoEmpty" args="${effect_date}">
+                effect_date=${effect_date},
+            </if>
+            <if method="isNoEmpty" args="${history_score}">
+                history_score=${history_score},
+            </if>
+            <if method="isNoEmpty" args="${current_score}">
+                current_score=${current_score},
+            </if>
+            <if method="isNoEmpty" args="${upgrade_score}">
+                upgrade_score=${upgrade_score},
+            </if>
+            <if method="isNoEmpty" args="${commission_date}">
+                commission_date=${commission_date},
+            </if>
+            <if method="isNoEmpty" args="${cumulative}">
+                cumulative=${cumulative},
+            </if>
+            <if method="isNoEmpty" args="${initial_amount}">
+                initial_amount=${initial_amount},
+            </if>
+            <if method="isNoEmpty" args="${integral_consumption}">
+                integral_consumption=${integral_consumption},
+            </if>
+            <if method="isNoEmpty" args="${barcode}">
+                barcode=${barcode},
+            </if>
+            <if method="isNoEmpty" args="${used_medicines}">
+                used_medicines=${used_medicines},
+            </if>
+            <if method="isNoEmpty" args="${allergy_medicines}">
+                allergy_medicines=${allergy_medicines},
+            </if>
+            <if method="isNoEmpty" args="${under_channel}">
+                under_channel=${under_channel},
+            </if>
+            <if method="isNoEmpty" args="${interest_hobbies}">
+                interest_hobbies=${interest_hobbies},
+            </if>
+            <if method="isNoEmpty" args="${interest_content}">
+                interest_content=${interest_content},
+            </if>
+            <if method="isNoEmpty" args="${activity}">
+                activity=${activity},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id=${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${create_date}">
+                create_date=${create_date},
+            </if>
+            <if method="isNoEmpty" args="${delete_state}">
+                delete_state=${delete_state},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from saas_membershipcard a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${memship_num}">
+                <![CDATA[ and memship_num like %${memship_num}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update saas_membershipcard set delete_state = '1' where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="memship_category" sortable="false" title="会员类别"/>
+            <clumn name="memship_name" sortable="false" title="会员名称"/>
+            <clumn name="memship_num" sortable="false" title="会员卡号"/>
+            <clumn name="discount" sortable="false" title="折让"/>
+            <clumn name="sex" sortable="false" title="性别"/>
+            <clumn name="profession" sortable="false" title="职业"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="cellphone_num" sortable="false" title="手机号码"/>
+            <clumn name="mon_income" sortable="false" title="月收入"/>
+            <clumn name="qualification" sortable="false" title="学历"/>
+            <clumn name="identification_card" sortable="false" title="身份证号码"/>
+            <clumn name="illness" sortable="false" title="病史"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="post_code" sortable="false" title="邮编"/>
+            <clumn name="score_amount" sortable="false" title="记分金额"/>
+            <clumn name="birth_date" sortable="false" title="出生日期"/>
+            <clumn name="remark" sortable="false" title="摘要"/>
+            <clumn name="keyword" sortable="false" title="关键字"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="application_date" sortable="false" title="申请日期"/>
+            <clumn name="effect_date" sortable="false" title="失效日期"/>
+            <clumn name="history_score" sortable="false" title="历史积分"/>
+            <clumn name="current_score" sortable="false" title="当前积分"/>
+            <clumn name="upgrade_score" sortable="false" title="升级积分"/>
+            <clumn name="commission_date" sortable="false" title="启用日期"/>
+            <clumn name="cumulative" sortable="false" title="累计消费"/>
+            <clumn name="initial_amount" sortable="false" title="初始金额"/>
+            <clumn name="integral_consumption" sortable="false" title="积分消费"/>
+            <clumn name="barcode" sortable="false" title="条码"/>
+            <clumn name="used_medicines" sortable="false" title="常用药"/>
+            <clumn name="allergy_medicines" sortable="false" title="过敏药"/>
+            <clumn name="under_channel" sortable="false" title="了解渠道"/>
+            <clumn name="interest_hobbies" sortable="false" title="兴趣爱好"/>
+            <clumn name="interest_content" sortable="false" title="感兴趣内容"/>
+            <clumn name="activity" sortable="false" title="喜欢的活动"/>
+            <clumn name="creater_id" sortable="false" title="业务员编码"/>
+            <clumn name="creater_name" sortable="false" title="业务员名称"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="会员卡号" name="memship_num"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <insert width="1020">
+        <process>
+            <step channel="service" ref="saasMembershipcardService" method="saveReviewedData"/>
+            <step channel="sql" ref="insertSql"/>
+            <!--<step channel="sql" ref="insertAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <conditions>
+            <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+            <condition name="memship_category" input="select" size="20" title="会员类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_category'
+                </sql>
+            </condition>
+
+            <condition name="memship_name" input="text" size="20" title="会员名称"/>
+            <condition name="memship_num" input="text" size="20" title="会员卡号"/>
+            <condition name="discount" input="text" size="20" title="折让"/>
+            <condition name="sex" input="select" size="20" title="性别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_sex'
+                </sql>
+            </condition>
+
+            <condition name="profession" input="select" size="20" title="职业">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'profession'
+                </sql>
+            </condition>
+            <condition name="tel" input="text" size="20" title="联系电话"/>
+            <condition name="cellphone_num" input="text" size="20" title="手机号码"/>
+            <condition name="mon_income" input="text" size="20" title="月收入"/>
+            <condition name="qualification" input="select" size="20" title="学历">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'qualification'
+                </sql>
+            </condition>
+            <condition name="identification_card" input="text" size="20" title="身份证号码"/>
+            <condition name="illness" input="text" size="20" title="病史"/>
+            <condition name="address" input="text" size="20" title="地址"/>
+            <condition name="post_code" input="text" size="20" title="邮编"/>
+            <condition name="score_amount" input="text" size="20" title="记分金额"/>
+            <condition name="birth_date" input="date" title="出生日期"/>
+            <condition name="remark" input="text" size="20" title="摘要"/>
+            <condition name="keyword" input="text" size="20" title="关键字"/>
+            <condition name="pinyin_code" input="text" size="20" title="拼音码"/>
+            <condition name="application_date" input="date" title="申请日期"/>
+            <condition name="effect_date" input="date" title="失效日期"/>
+            <condition name="used_medicines" input="text" size="20" title="常用药"/>
+            <condition name="allergy_medicines" input="text" size="20" title="过敏药"/>
+            <condition name="under_channel" input="text" size="20" title="了解渠道"/>
+            <condition name="interest_hobbies" input="text" size="20" title="兴趣爱好"/>
+            <condition name="interest_content" input="text" size="20" title="感兴趣内容"/>
+            <condition name="activity" input="text" size="20" title="喜欢的活动"/>
+        </conditions>
+    </insert>
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <update width="1020">
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_prescriptregist</table>
+        <conditions>
+            <condition name="memship_category" input="select" size="20" title="会员类别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_category'
+                </sql>
+            </condition>
+
+            <condition name="memship_name" input="text" size="20" title="会员名称"/>
+            <condition name="memship_num" input="text" size="20" title="会员卡号"/>
+            <condition name="discount" input="text" size="20" title="折让"/>
+            <condition name="sex" input="select" size="20" title="性别">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'memship_sex'
+                </sql>
+            </condition>
+
+            <condition name="profession" input="select" size="20" title="职业">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'profession'
+                </sql>
+            </condition>
+            <condition name="tel" input="text" size="20" title="联系电话"/>
+            <condition name="cellphone_num" input="text" size="20" title="手机号码"/>
+            <condition name="mon_income" input="text" size="20" title="月收入"/>
+            <condition name="qualification" input="select" size="20" title="学历">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'qualification'
+                </sql>
+            </condition>
+            <condition name="identification_card" input="text" size="20" title="身份证号码"/>
+            <condition name="illness" input="text" size="20" title="病史"/>
+            <condition name="address" input="text" size="20" title="地址"/>
+            <condition name="post_code" input="text" size="20" title="邮编"/>
+            <condition name="score_amount" input="text" size="20" title="记分金额"/>
+            <condition name="birth_date" input="date" title="出生日期"/>
+            <condition name="remark" input="text" size="20" title="摘要"/>
+            <condition name="keyword" input="text" size="20" title="关键字"/>
+            <condition name="pinyin_code" input="text" size="20" title="拼音码"/>
+            <condition name="application_date" input="date" title="申请日期"/>
+            <condition name="effect_date" input="date" title="失效日期"/>
+            <condition name="used_medicines" input="text" size="20" title="常用药"/>
+            <condition name="allergy_medicines" input="text" size="20" title="过敏药"/>
+            <condition name="under_channel" input="text" size="20" title="了解渠道"/>
+            <condition name="interest_hobbies" input="text" size="20" title="兴趣爱好"/>
+            <condition name="interest_content" input="text" size="20" title="感兴趣内容"/>
+            <condition name="activity" input="text" size="20" title="喜欢的活动"/>
+        </conditions>
+
+    </update>
+
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

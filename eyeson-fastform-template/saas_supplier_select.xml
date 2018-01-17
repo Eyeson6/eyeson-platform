@@ -1,0 +1,272 @@
+<template menuId="301" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品管理"/>
+        <direct name="供方信息添加"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            category_id,
+
+            CASE category_id
+            WHEN '0' THEN
+            '经营单位'
+            WHEN '1' THEN
+            '生产单位'
+            ELSE '其他' END
+            as category_name,
+
+            settlement_id,
+
+            CASE settlement_id
+            WHEN '0' THEN
+            '现金'
+            WHEN '1' THEN
+            '月票'
+            WHEN '2' THEN
+            '支票'
+            ELSE '其他' END
+            as settlement_name,
+
+            area_code,
+            pinyin_code,
+            code,
+            name,
+            address,
+            contact,
+            tel,
+            bank_code,
+            bank_name,
+            bank_account,
+            business_license_code,
+            business_license_date,
+            business_license_expire_date,
+            business_license_approval,
+            license_code,
+            license_date,
+            license_expire_date,
+            license_name,
+            consigner,
+            consign_date,
+            consign_expire_date,
+            quality_license_expire_date,
+            health_license_expire_date,
+            gsp_code,
+            gsp_date,
+            gsp_expire_date,
+            gmp_one_code,
+            gmp_one_date,
+            gmp_one_expire_date,
+            gmp_two_code,
+            gmp_two_date,
+            gmp_two_expire_date,
+            business_scope,
+            business_scopename,
+            quality_head,
+            certification_scope,
+            tax_registration_code,
+            registered_capital,
+            business_pattern,
+            economic_nature,
+            legal_person,
+
+            has_annual_inspection,
+            CASE has_annual_inspection
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_annual_inspectionname,
+
+            has_seal,
+            CASE has_seal
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_sealname,
+
+            has_manifest,
+            CASE has_manifest
+            WHEN '0' THEN
+            '否'
+            WHEN '1' THEN
+            '是'
+            ELSE '其他' END
+            as has_manifestname,
+
+            oraganization_code_expire_date,
+            annual_output_value,
+            quality_manager_count,
+            business_approval_user_id,
+            business_approval_user_name,
+
+            CASE business_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as business_approval_status,
+
+            business_approval_time,
+            quality_manager_approval_user_id,
+            quality_manager_approval_user_name,
+
+            CASE quality_manager_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_manager_approval_status,
+
+            quality_manager_approval_time,
+            quality_approval_user_id,
+            quality_approval_user_name,
+
+            CASE quality_approval_status
+            WHEN '0' THEN
+            '待审核'
+            WHEN '1' THEN
+            '驳回'
+            WHEN '2' THEN
+            '通过'
+            ELSE '其他' END
+            as quality_approval_status,
+
+            quality_approval_time,
+            creater_name,
+            modifier_name,
+            create_date,
+            update_date
+            FROM
+            saas_supplier where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${category_id}">
+                <![CDATA[ and category_id like %${category_id}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[ and pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                <![CDATA[ and creater_name like %${creater_name}%]]>
+            </if>
+            order by update_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_supplier where id=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+
+            <clumn name="category_name" sortable="false" title="类别名称" sort="desc"/>
+            <clumn name="settlement_name" sortable="true" title="结算名称"/>
+            <clumn name="area_code" sortable="false" title="区号"/>
+            <clumn name="pinyin_code" sortable="false" title="拼音码"/>
+            <clumn name="name" sortable="true" title="供方名称"/>
+            <clumn name="code" sortable="false" title="供方编码"/>
+            <clumn name="address" sortable="false" title="地址"/>
+            <clumn name="contact" sortable="false" title="联系人"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="bank_code" sortable="false" title="开户行代码"/>
+            <clumn name="bank_name" sortable="false" title="开户行名称"/>
+            <clumn name="bank_account" sortable="false" title="开户行账号"/>
+            <clumn name="business_license_code" sortable="false" title="营业执照号"/>
+            <clumn name="business_license_date" sortable="false" title="营业执照发证日期"/>
+            <clumn name="business_license_expire_date" sortable="false" title="营业执照过期日期"/>
+            <clumn name="business_license_approval" sortable="false" title="营业执照审批方"/>
+            <clumn name="license_code" sortable="false" title="许可证号"/>
+            <clumn name="license_date" sortable="false" title="许可证发证日期"/>
+            <clumn name="license_expire_date" sortable="false" title="许可证过期日期"/>
+            <clumn name="license_name" sortable="false" title="许可证名称"/>
+            <clumn name="consigner" sortable="false" title="委托人"/>
+            <clumn name="consign_date" sortable="false" title="委托日期"/>
+            <clumn name="consign_expire_date" sortable="false" title="委托过期日期"/>
+            <clumn name="quality_license_expire_date" sortable="false" title="质保到期日期"/>
+            <clumn name="health_license_expire_date" sortable="false" title="卫生许可到期日期"/>
+            <clumn name="gsp_code" sortable="false" title="GSP证书号"/>
+            <clumn name="gsp_date" sortable="false" title="GSP发证日期"/>
+            <clumn name="gsp_expire_date" sortable="false" title="GSP过期日期"/>
+            <clumn name="gmp_one_code" sortable="false" title="GMP证书编号"/>
+            <clumn name="gmp_one_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_one_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="gmp_two_code" sortable="false" title="GMP证书编号"/>
+            <clumn name="gmp_two_date" sortable="false" title="GMP发证日期"/>
+            <clumn name="gmp_two_expire_date" sortable="false" title="GMP过期日期"/>
+            <clumn name="business_scopename" sortable="false" title="经营范围"/>
+            <clumn name="quality_head" sortable="false" title="质量负责人"/>
+            <clumn name="certification_scope" sortable="false" title="认证范围"/>
+            <clumn name="tax_registration_code" sortable="false" title="税务登记证号"/>
+            <clumn name="registered_capital" sortable="false" title="注册资金"/>
+            <clumn name="business_pattern" sortable="false" title="经营方式"/>
+            <clumn name="economic_nature" sortable="false" title="经济性质"/>
+            <clumn name="legal_person" sortable="false" title="法人"/>
+            <clumn name="has_annual_inspectionname" sortable="false" title="是否年检"/>
+            <clumn name="has_sealname" sortable="false" title="是否有印章印模"/>
+            <clumn name="has_manifestname" sortable="false" title="是否有货单"/>
+            <clumn name="oraganization_code_expire_date" sortable="false" title="组织代码过期日期"/>
+            <clumn name="annual_output_value" sortable="false" title="年产值"/>
+            <clumn name="quality_manager_count" sortable="false" title="质管人数"/>
+            <clumn name="business_approval_user_id" sortable="false" title="业务审核用户ID"/>
+            <clumn name="business_approval_user_name" sortable="false" title="业务审核用户名称"/>
+            <clumn name="business_approval_status" sortable="false" title="业务审核状态"/>
+            <clumn name="business_approval_time" sortable="false" title="业务审核时间"/>
+            <clumn name="quality_manager_approval_user_id" sortable="false" title="质管审核用户ID"/>
+            <clumn name="quality_manager_approval_user_name" sortable="false" title="质管审核用户名称"/>
+            <clumn name="quality_manager_approval_status" sortable="false" title="质管审核状态"/>
+            <clumn name="quality_manager_approval_time" sortable="false" title="质管审核时间"/>
+            <clumn name="quality_approval_user_id" sortable="false" title="质量审核用户ID"/>
+            <clumn name="quality_approval_user_name" sortable="false" title="质量审核用户名称"/>
+            <clumn name="quality_approval_status" sortable="false" title="质量审核状态"/>
+            <clumn name="quality_approval_time" sortable="false" title="质量审核时间"/>
+            <clumn name="creater_name" sortable="false" title="创建人"/>
+            <clumn name="modifier_name" sortable="false" title="修改人"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+            <clumn name="update_date" sortable="false" title="修改时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="创建人" name="creater_name"/>
+            <condition input="select" title="类别" name="category_id">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'category_id'
+                </sql>
+            </condition>
+
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+</template>

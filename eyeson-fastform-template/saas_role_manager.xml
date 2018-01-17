@@ -1,0 +1,233 @@
+<template menuId="00702" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="角色管理"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            sr.sr_id,
+            sr.sr_code,
+            sr.sr_name,
+            sr.sr_add_time,
+            group_concat(sm.sm_id SEPARATOR '|') AS sm_id,
+            group_concat(sm.sm_name SEPARATOR '|') AS sm_name
+            FROM
+            sys_role sr
+            LEFT JOIN sys_role_menu srm ON sr.sr_id = srm.sr_id
+            LEFT JOIN sys_menu sm ON srm.sm_id = sm.SM_ID
+            WHERE
+            1 = 1
+            <!--  SELECT
+                 sr.sr_id,
+                 sr.sr_code,
+                 sr.sr_name,
+                 sr.sr_status,
+                 sr.sr_add_user,
+                 sr.sr_add_time
+            FROM
+                sys_role sr
+            WHERE
+                1=1  -->
+            <if method="isNoEmpty" args="${key}">
+                and sr.sr_id=${key}
+            </if>
+            <if method="isNoEmpty" args="${loginUserId}">
+                and sr.sr_add_user=${loginUserId}
+            </if>
+            <if method="isNoEmpty" args="${sr_code}">
+                and sr.sr_code = ${sr_code}
+            </if>
+            <if method="isNoEmpty" args="${sr_name}">
+                and sr.sr_name like %${sr_name}%
+            </if>
+            GROUP BY
+            sr.sr_id
+        </sql>
+
+        <sql id="querySql" method="query">
+            SELECT sr.sr_id,sr.sr_code,sr.sr_name,group_concat(sm.sm_id SEPARATOR '|') as sm_id,group_concat(sm.sm_name
+            SEPARATOR '|') as sm_name
+            from sys_role sr
+            LEFT JOIN sys_role_menu srm ON sr.sr_id=srm.sr_id
+            LEFT JOIN sys_menu sm ON srm.sm_id=sm.SM_ID
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${key}">
+                and sr.sr_id=${key}
+            </if>
+        </sql>
+
+        <sql id="insertSql" method="insert">
+            insert into sys_role(
+            <if method="isNoEmpty" args="${primary_key}">
+                sr_id,
+            </if>
+            <if method="isNoEmpty" args="${sr_code}">
+                sr_code,
+            </if>
+            <if method="isNoEmpty" args="${sr_name}">
+                sr_name,
+            </if>
+            sr_status,
+            <if method="isNoEmpty" args="${loginUserId}">
+                sr_add_user,
+            </if>
+            sr_add_time,
+            ) values(
+            <if method="isNoEmpty" args="${primary_key}">
+                ${primary_key},
+            </if>
+            <if method="isNoEmpty" args="${sr_code}">
+                ${sr_code},
+            </if>
+            <if method="isNoEmpty" args="${sr_name}">
+                ${sr_name},
+            </if>
+            '1',
+            <if method="isNoEmpty" args="${loginUserId}">
+                ${loginUserId},
+            </if>
+            now(),
+            )
+        </sql>
+
+        <sql id="insertSqlOf" method="insert">
+            insert into sys_role_menu(
+            <if method="isNoEmpty" args="${primary_key}">
+                srm_id,
+            </if>
+            <if method="isNoEmpty" args="${primary_key}">
+                sr_id,
+            </if>
+            <if method="isNoEmpty" args="${sm_id}">
+                sm_id,
+            </if>
+            ) values(
+            <if method="isNoEmpty" args="${primary_key}">
+                ${primary_key},
+            </if>
+            <if method="isNoEmpty" args="${primary_key}">
+                ${primary_key},
+            </if>
+            <if method="isNoEmpty" args="${sm_id}">
+                ${sm_id},
+            </if>
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update sys_role set
+            <if method="isNoEmpty" args="${sr_code}">
+                sr_code = ${sr_code},
+            </if>
+            <if method="isNoEmpty" args="${sr_name}">
+                sr_name = ${sr_name},
+            </if>
+            where sr_id=${key}
+        </sql>
+
+        <sql id="countSql" method="query">
+            SELECT
+            count(1) as sysRoleCount
+            FROM
+            sys_user_role sur
+            WHERE
+            1=1
+            <if method="isNoEmpty" args="${sr_id}">
+                and sur.sr_id=${sr_id}
+            </if>
+        </sql>
+
+        <sql id="dynamicDeleteSql" method="delete">
+            DELETE FROM
+            sys_role
+            WHERE
+            sr_id = ${sr_id}
+            AND 0=${sysRoleCount}
+        </sql>
+
+        <sql id="DeleteSql" method="delete">
+            DELETE FROM
+            sys_role_menu
+            WHERE
+            sr_id = ${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="loginService" method="getLoginUser"/>
+            <step channel="sql" ref="listsql"/>
+        </process>
+        <model>
+            <clumn name="sr_code" sortable="true" title="角色编码"/>
+            <clumn name="sr_name" sortable="true" title="角色名称"/>
+            <clumn name="sm_name" sortable="true" title="可见菜单模块"/>
+            <clumn name="sr_add_time" sortable="true" title="创建时间"/>
+        </model>
+        <conditions>
+            <condition input="text" title="角色编码" name="sr_code"/>
+            <condition input="text" title="角色名称" name="sr_name"/>
+        </conditions>
+    </query>
+
+
+    <buttons>
+        <button id="test1" title="添加角色" icon="icon-add" channel="query_execute" width="800">
+            <process>
+                <step channel="service" ref="loginService" method="getLoginUser"/>
+                <step channel="service" ref="userCommonService" method="saveRole"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <conditions>
+                <condition input="text" title="角色编码" name="sr_code" required="true"/>
+                <condition input="text" title="角色名称" name="sr_name"/>
+                <condition name="sm_name" input="text" title="菜单" hiddenid="sm_id" popuplinkage="800" popuptitle="菜单选择"
+                           width="600"/>
+            </conditions>
+        </button>
+
+        <button id="test2" title="修改角色" icon="icon-edit" channel="select_query_execute" width="800">
+            <process>
+                <step channel="sql" ref="updateSql"/>
+                <step channel="sql" ref="DeleteSql"/>
+                <step channel="service" ref="loginService" method="getLoginUser"/>
+                <step channel="service" ref="userCommonService" method="updateRoleMenu"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <queryProcess>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+                <step channel="sql" ref="querySql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </queryProcess>
+            <key>sr_id</key>
+            <table>sys_role</table>
+            <conditions>
+                <condition input="text" title="角色编码" name="sr_code"/>
+                <condition input="text" title="角色名称" name="sr_name"/>
+                <condition name="sm_name" input="text" title="菜单" hiddenid="sm_id" popuplinkage="800" popuptitle="菜单选择"
+                           width="1000"/>
+            </conditions>
+        </button>
+
+        <button id="test3" title="删除角色" icon="icon-remove" channel="select_execute" width="1200">
+            <process>
+                <step channel="sql" ref="countSql"/>
+                <step channel="sql" ref="dynamicDeleteSql"/>
+                <step channel="service" ref="commonSearchService2" method="test"/>
+            </process>
+            <key>sr_id</key>
+            <condition name="sr_id"/>
+        </button>
+    </buttons>
+
+</template>
+
+

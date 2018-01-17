@@ -1,0 +1,496 @@
+<template menuId="500" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="门店管理"/>
+        <direct name="处方登记药审核"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            id,
+            number,
+            name,
+            specification,
+            s_id,
+            patient_name,
+            place,
+
+            CASE unit_id
+            WHEN '0' THEN
+            '盒'
+            WHEN '1' THEN
+            '瓶'
+            WHEN '2' THEN
+            '支'
+            WHEN '3' THEN
+            '版'
+            WHEN '4' THEN
+            '袋'
+            WHEN '5' THEN
+            '轴'
+            WHEN '6' THEN
+            '丸'
+            WHEN '7' THEN
+            '桶'
+            WHEN '8' THEN
+            '贴'
+            WHEN '9' THEN
+            '提'
+            WHEN '10' THEN
+            '盆'
+            WHEN '11' THEN
+            '包'
+            WHEN '12' THEN
+            '台'
+            WHEN '13' THEN
+            '个'
+            WHEN '14' THEN
+            '条'
+            WHEN '15' THEN
+            '克'
+            WHEN '16' THEN
+            '具'
+            WHEN '17' THEN
+            '对'
+            WHEN '18' THEN
+            '千克'
+            WHEN '19' THEN
+            '次'
+            WHEN '20' THEN
+            '列'
+            WHEN '21' THEN
+            '片'
+            WHEN '22' THEN
+            '付'
+            WHEN '23' THEN
+            '套'
+            ELSE
+            '其他'
+            END AS unit_id,
+
+            serial_number,
+            age,
+            sale_quantity,
+            buy_time,
+            tel,
+            prescription_source,
+            physician,
+            physician_name,
+            customer_name,
+            creater_id,
+            creater_name,
+            create_date,
+            prescription_reviewer,
+            prescription_reviewername
+            FROM
+            saas_prescriptregist where 1=1 and delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and number like %${number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                <![CDATA[ and s_id like %${s_id}%]]>
+            </if>
+            order by create_date desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_prescriptregist where id=${key}
+        </sql>
+        <sql id="insertSql" method="insert">
+            insert into saas_prescriptregist(
+            <if method="isNoEmpty" args="${id}">
+                id,
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number,
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name,
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification,
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                s_id,
+            </if>
+            <if method="isNoEmpty" args="${patient_name}">
+                patient_name,
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place,
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id,
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                serial_number,
+            </if>
+            <if method="isNoEmpty" args="${age}">
+                age,
+            </if>
+            <if method="isNoEmpty" args="${sale_quantity}">
+                sale_quantity,
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel,
+            </if>
+            <if method="isNoEmpty" args="${prescription_source}">
+                prescription_source,
+            </if>
+            <if method="isNoEmpty" args="${physician}">
+                physician,
+            </if>
+            <if method="isNoEmpty" args="${physician_name}">
+                physician_name,
+            </if>
+            <if method="isNoEmpty" args="${customer_name}">
+                customer_name,
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id,
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name,
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewer}">
+                prescription_reviewer,
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewername}">
+                prescription_reviewername,
+            </if>
+            create_date,
+            buy_time,
+            ) values(
+            <if method="isNoEmpty" args="${id}">
+                ${id},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                ${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                ${name},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                ${specification},
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                ${s_id},
+            </if>
+            <if method="isNoEmpty" args="${patient_name}">
+                ${patient_name},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                ${place},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                ${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                ${serial_number},
+            </if>
+            <if method="isNoEmpty" args="${age}">
+                ${age},
+            </if>
+            <if method="isNoEmpty" args="${sale_quantity}">
+                ${sale_quantity},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                ${tel},
+            </if>
+            <if method="isNoEmpty" args="${prescription_source}">
+                ${prescription_source},
+            </if>
+            <if method="isNoEmpty" args="${physician}">
+                ${physician},
+            </if>
+            <if method="isNoEmpty" args="${physician_name}">
+                ${physician_name},
+            </if>
+            <if method="isNoEmpty" args="${customer_name}">
+                ${customer_name},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                ${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                ${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewer}">
+                ${prescription_reviewer},
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewername}">
+                ${prescription_reviewername},
+            </if>
+            now(),
+            now(),
+            )
+        </sql>
+
+        <sql id="updateSql" method="update">
+            update saas_prescriptregist set
+            <if method="isNoEmpty" args="${id}">
+                id=${id},
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                number=${number},
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                name=${name},
+            </if>
+            <if method="isNoEmpty" args="${specification}">
+                specification=${specification},
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                s_id=${s_id},
+            </if>
+            <if method="isNoEmpty" args="${patient_name}">
+                patient_name=${patient_name},
+            </if>
+            <if method="isNoEmpty" args="${place}">
+                place=${place},
+            </if>
+            <if method="isNoEmpty" args="${unit_id}">
+                unit_id=${unit_id},
+            </if>
+            <if method="isNoEmpty" args="${serial_number}">
+                serial_number=${serial_number},
+            </if>
+            <if method="isNoEmpty" args="${age}">
+                age=${age},
+            </if>
+            <if method="isNoEmpty" args="${sale_quantity}">
+                sale_quantity=${sale_quantity},
+            </if>
+            <if method="isNoEmpty" args="${buy_time}">
+                buy_time=${buy_time},
+            </if>
+            <if method="isNoEmpty" args="${tel}">
+                tel=${tel},
+            </if>
+            <if method="isNoEmpty" args="${prescription_source}">
+                prescription_source=${prescription_source},
+            </if>
+            <if method="isNoEmpty" args="${physician}">
+                physician=${physician},
+            </if>
+            <if method="isNoEmpty" args="${physician_name}">
+                physician_name=${physician_name},
+            </if>
+            <if method="isNoEmpty" args="${customer_name}">
+                customer_name=${customer_name},
+            </if>
+            <if method="isNoEmpty" args="${creater_id}">
+                creater_id=${creater_id},
+            </if>
+            <if method="isNoEmpty" args="${creater_name}">
+                creater_name=${creater_name},
+            </if>
+            <if method="isNoEmpty" args="${create_date}">
+                create_date=${create_date},
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewer}">
+                prescription_reviewer=${prescription_reviewer},
+            </if>
+            <if method="isNoEmpty" args="${prescription_reviewername}">
+                prescription_reviewername=${prescription_reviewername},
+            </if>
+            where id=${key}
+        </sql>
+
+        <sql id="totalSql" method="select">
+            select count(a.id) id
+            from saas_prescriptregist a where 1=1 and a.delete_state = '0'
+            <if method="isNoEmpty" args="${startTime}">
+                <![CDATA[and a.create_date >= ${startTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${endTime}">
+                <![CDATA[ and a.create_date <= ${endTime}]]>
+            </if>
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and a.name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[ and a.number like %${number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${s_id}">
+                <![CDATA[ and a.s_id like %${s_id}%]]>
+            </if>
+        </sql>
+        <sql id="deleteSql" method="delete">
+            update saas_prescriptregist set delete_state = '1' where
+            <if method="isNoEmpty" args="${value}">
+                <![CDATA[id= ${value}]]>
+            </if>
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <!--<clumn name="id" sortable="false" title="ID"  key="true"/>-->
+            <clumn name="number" sortable="false" title="商品编号"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="s_id" sortable="false" title="订单号"/>
+            <clumn name="patient_name" sortable="false" title="患者名称"/>
+            <clumn name="place" sortable="false" title="产地"/>
+            <clumn name="unit_id" sortable="false" title="单位"/>
+            <clumn name="serial_number" sortable="false" title="产品序号"/>
+            <clumn name="age" sortable="false" title="年龄"/>
+            <clumn name="sale_quantity" sortable="false" title="销售数量"/>
+            <clumn name="buy_time" sortable="false" title="购买时间"/>
+            <clumn name="tel" sortable="false" title="联系电话"/>
+            <clumn name="prescription_source" sortable="false" title="处方来源"/>
+            <clumn name="physician_name" sortable="false" title="医师名称"/>
+            <clumn name="customer_name" sortable="false" title="顾客名称"/>
+            <clumn name="creater_name" sortable="false" title="登记人名称"/>
+            <clumn name="create_date" sortable="false" title="创建时间"/>
+            <clumn name="prescription_reviewername" sortable="false" title="处方审核人名称"/>
+        </model>
+        <conditions>
+            <condition input="text" title="商品名称" name="name"/>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="text" title="订单号" name="s_id"/>
+            <condition input="date" title="创建时间" name="startTime" type="3"/>
+            <condition input="date" title="至" name="endTime" type="3"/>
+        </conditions>
+    </query>
+
+    <!-- 添加节点，配包括添加操作请求的执行流程、页面渲染方式 -->
+    <insert width="1020">
+        <process>
+            <step channel="service" ref="saasPrescriptregistService" method="saveReviewedData"/>
+            <step channel="sql" ref="insertSql"/>
+            <!--<step channel="sql" ref="insertAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <conditions>
+            <!--<condition name="category_id" input="text" size="20" title="类别ID" />-->
+            <condition name="number" input="text" size="50" title="商品编号"/>
+            <condition name="name" input="text" size="50" title="商品名称"/>
+            <condition name="specification" input="text" size="50" title="规格"/>
+            <condition name="s_id" input="text" size="12" title="订单号"/>
+            <condition name="patient_name" input="text" size="50" title="患者名称"/>
+            <condition name="place" input="text" size="200" title="产地"/>
+            <condition name="unit_id" input="select" size="20" title="单位">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'unit_id'
+                </sql>
+            </condition>
+
+            <condition name="serial_number" input="text" size="10" validate="number" title="产品序号"/>
+            <condition name="age" input="text" size="10" validate="number" title="年龄"/>
+            <condition name="sale_quantity" input="text" size="10" validate="number" title="销售数量"/>
+            <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+            <condition name="prescription_source" input="text" size="50" title="处方来源"/>
+            <condition name="physician_name" input="text" size="50" title="医师名称"/>
+            <condition name="customer_name" input="text" size="50" title="顾客名称"/>
+            <condition name="creater_name" input="text" size="50" title="登记人名称"/>
+            <condition name="prescription_reviewername" input="text" size="50" title="处方审核人名称"/>
+        </conditions>
+    </insert>
+    <!-- 修改节点，配包括查询请求的执行流程、页面渲染方式、获取修改前数据的配置 -->
+    <update width="1020">
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="updateSql"/>
+            <!--<step channel="sql" ref="updateAddrSql" />-->
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <queryProcess>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="querySql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </queryProcess>
+        <key>id</key>
+        <table>saas_prescriptregist</table>
+        <conditions>
+            <condition name="number" input="text" size="50" title="商品编号"/>
+            <condition name="name" input="text" size="50" title="商品名称"/>
+            <condition name="specification" input="text" size="50" title="规格"/>
+            <condition name="s_id" input="text" size="12" title="订单号"/>
+            <condition name="patient_name" input="text" size="50" title="患者名称"/>
+            <condition name="place" input="text" size="200" title="产地"/>
+
+            <condition name="unit_id" input="select" size="20" title="单位">
+                <sql>
+                    select a.value id,a.name text
+                    from saas_dictionary a where a.code = 'unit_id'
+                </sql>
+            </condition>
+
+            <condition name="serial_number" input="text" size="10" validate="number" title="产品序号"/>
+            <condition name="age" input="text" size="10" validate="number" title="年龄"/>
+            <condition name="sale_quantity" input="text" size="10" validate="number" title="销售数量"/>
+            <condition name="tel" input="text" size="50" validate="mobile" title="联系电话"/>
+            <condition name="prescription_source" input="text" size="50" title="处方来源"/>
+            <condition name="physician_name" input="text" size="50" title="医师名称"/>
+            <condition name="customer_name" input="text" size="50" title="顾客名称"/>
+            <condition name="creater_name" input="text" size="50" title="登记人名称"/>
+            <condition name="prescription_reviewername" input="text" size="50" title="处方审核人名称"/>
+        </conditions>
+
+    </update>
+
+
+    <delete>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="deleteSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <condition name="id"/>
+    </delete>
+
+    <!-- 数据概况节点，用户在页面头部显示数据的总体信息，比如总金额、总数量等等 -->
+    <total>
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="totalSql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <column name="channelsid" title="渠道总数"/>
+        </model>
+    </total>
+
+    <!-- 统计图节点，可以配置多个统计图，跟查询<query>节点关联
+   <charts>
+       <chart input="Pie2D" labels="dat" title="红包个数饼图">
+               <process>
+                  <step channel="service" ref="commonSearchService2" method="test" />
+                  <step channel="sql" ref="totalSql" />
+                  <step channel="service" ref="commonSearchService2" method="test" />
+              </process>
+            <data name="rednum" title="实发个数"></data>
+            <data name="backnum" title="退领个数"></data>
+       </chart>
+      <chart input="ColumnMulti2D" labels="dat" title="红包个数柱状图">
+          <data name="rednum" title="实发个数"></data>
+          <data name="backnum" title="退领个数"></data>
+      </chart>
+      <chart input="LineBasic2D" labels="dat" title="红包个数折线图">
+          <data name="redNum" title="实发个数"></data>
+          <data name="backNum" title="退领个数"></data>
+      </chart>
+  </charts>
+  -->
+</template>

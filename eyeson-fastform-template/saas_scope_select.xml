@@ -1,0 +1,41 @@
+<template menuId="300" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="商品管理"/>
+        <direct name="供方信息添加"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            select id as dicid, code as diccode, name as business_scopename, value as business_scope
+            from saas_dictionary a where a.code = 'unit_id'
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[ and a.name like %${name}%]]>
+            </if>
+            order by sort_order desc
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_dictionary where dicid=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="false" key="business_scope">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="dicid" sortable="false" title="ID" key="true"/>
+            <clumn name="business_scopename" sortable="true" title="名称"/>
+            <clumn name="business_scope" sortable="false" title="值"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+        </conditions>
+    </query>
+</template>

@@ -92,3 +92,8 @@ spring:
       cache: false
       template-loader-path: classpath:/templates/
 
+commom:
+  search:
+    xml:
+      path: /Users/blues/dev/workspace-eyeson/eyeson-platform/eyeson-fastform-template
+

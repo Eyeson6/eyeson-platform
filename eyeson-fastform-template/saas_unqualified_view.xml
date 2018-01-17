@@ -1,0 +1,78 @@
+<template menuId="405" version="2"><!--模板跟节点  -->
+
+    <!-- 在页面上显示页面的所在位置 -->
+    <directions>
+        <direct name="系统管理"/>
+        <direct name="商品选择"/>
+    </directions>
+
+    <!-- 将模块所有sql语句统一配置，供各个操作使用，其中包含多个sql配置-->
+    <sqls sql="true">
+        <sql id="listsql" method="select">
+            SELECT
+            i.id as inventory_id,
+            g.number,
+            g.name as name,
+            g.preparation_id,
+            g.specification,
+            g.unit_id,
+            g.major_supplier,
+            i.batch_number,
+            i.expiry_date,
+            g.storeroom_id,
+            i.produce_date,
+            i.quantity
+            FROM
+            saas_goods g
+            inner JOIN saas_inventory i ON g.number = i.gds_code
+            <if method="isNoEmpty" args="${name}">
+                <![CDATA[and g.name like %${name}%]]>
+            </if>
+            <if method="isNoEmpty" args="${pinyin_code}">
+                <![CDATA[and g.pinyin_code like %${pinyin_code}%]]>
+            </if>
+            <if method="isNoEmpty" args="${number}">
+                <![CDATA[and g.number like %${number}%]]>
+            </if>
+            <if method="isNoEmpty" args="${registration_number}">
+                <![CDATA[and g.registration_number like %${registration_number}%]]>
+            </if>
+
+        </sql>
+        <sql id="querySql" method="query">
+            select * from saas_inventory where id=${key}
+        </sql>
+    </sqls>
+
+    <!-- 查询节点，配包括查询请求的执行流程、页面渲染方式、查询条件配置等几个部分 -->
+    <query pagesize="50" singleSelect="true" key="inventory_id">
+        <!-- 执行流程，包含多个步骤，每个步骤可以选择调用service、执行sql，调用http等不同类型的操作 -->
+        <process>
+
+            <step channel="sql" ref="listsql"/>
+            <step channel="service" ref="commonSearchService2" method="test"/>
+        </process>
+        <model>
+            <clumn name="inventory_id" sortable="false" title="ID" key="true"/>
+            <clumn name="number" sortable="false" title="商品编码"/>
+            <clumn name="name" sortable="false" title="商品名称"/>
+            <clumn name="preparation_id" sortable="false" title="剂型id"/>
+            <clumn name="specification" sortable="false" title="规格"/>
+            <clumn name="unit_id" sortable="false" title="单位ID"/>
+            <clumn name="major_supplier" sortable="false" title="生产厂商"/>
+            <clumn name="registration_number" sortable="false" title="批准文号"/>
+            <clumn name="batch_number" sortable="false" title="批号"/>
+            <clumn name="expiry_date" sortable="false" title="有效期"/>
+            <clumn name="storeroom_id" sortable="false" title="货位"/>
+            <clumn name="quantity" sortable="false" title="库存数量"/>
+        </model>
+        <conditions>
+            <condition input="text" title="名称" name="name"/>
+            <condition input="text" title="拼音码" name="pinyin_code"/>
+            <condition input="text" title="商品编码" name="number"/>
+            <condition input="text" title="批准文号" name="registration_number"/>
+        </conditions>
+    </query>
+
+
+</template>
